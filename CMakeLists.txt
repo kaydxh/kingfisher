@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.18.1)
 
 project (kingfisher CXX)
 
+# ignore warning
+# add_definitions(-w)
+
 if(NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE "Debug")
 endif()
