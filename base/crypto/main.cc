@@ -3,11 +3,12 @@
 //
 #include <iostream>
 #include <string>
+
 #include "md5.h"
 using namespace std;
 
 int main() {
   string str = "abc";
-  auto hash = kingfisher::hash::Md5SumString(str);
-  cout << hash << endl;
+  auto md5 = kingfisher::crypto::Md5SumString(str);
+  cout << md5 << endl;
 }

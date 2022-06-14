@@ -4,7 +4,7 @@ set (
   dump/stack_trace.cc
   file/file.cc
   file/file_util.cc
-  hash/md5.cc
+  crypto/md5.cc
   net/ip.cc
   os/getwd.cc
   os/signal/signal.cc
@@ -19,10 +19,10 @@ set (
   time/timestamp.cc
   time/time_zone.cc
   uuid/guid.cc
-
   )
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/configparser)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hash)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/serializer)
 
 add_library(kingfisher_base SHARED ${base_SRC})

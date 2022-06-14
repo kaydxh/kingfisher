@@ -5,7 +5,7 @@
 #include "md5.h"
 
 namespace kingfisher {
-namespace hash {
+namespace crypto {
 
 // Constants for MD5Transform routine.
 #define S11 7
@@ -269,5 +269,5 @@ std::string Md5SumString(const std::string &str) {
   return md5.Md5SumString(str);
 }
 
-}  // namespace hash
+}  // namespace crypto
 }  // namespace kingfisher
