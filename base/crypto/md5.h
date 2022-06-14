@@ -2,15 +2,16 @@
 // Created by kayxhding on 2020-04-15 13:54:29
 //
 
-#ifndef HASH_MD5_H
-#define HASH_MD5_H
+#ifndef CRYPTO_MD5_H
+#define CRYPTO_MD5_H
 
 #include <stdint.h>
+
 #include <cstring>
 #include <string>
 
 namespace kingfisher {
-namespace hash {
+namespace crypto {
 
 struct Context {
   uint32_t state[4];
@@ -71,7 +72,7 @@ class MD5 {
 };
 
 std::string Md5SumString(const std::string &str);
-}  // namespace hash
+}  // namespace crypto
 }  // namespace kingfisher
 
 #endif
