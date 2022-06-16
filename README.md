@@ -4,7 +4,7 @@
 [![build](https://img.shields.io/badge/build-standard-brightgreen.svg?style=flat-square)](./doc/build/build.md)
 
 ## Welcome to kingfisher
-> kingfisher is a based library on linux platform with c++ implemenation. 
+> kingfisher is a based library for building microservices in c++. It has very useful interface or service to develop application on linux platform.
 
 ### configparser
 > configparser can prase the config file which is toml format.
