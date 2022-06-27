@@ -46,10 +46,11 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 include_directories (.)
 include_directories (base)
 include_directories (third_party)
+include(pkg/cmake/Build.options.cmake)
 
 add_subdirectory (base)
 
-LINK_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/lib)
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_subdirectory (test/base)
 
 #INSTALL(TARGETS kingfisher_base 
