@@ -1,0 +1,15 @@
+option(ENABLE_GRAPHICS_MAGICK "ENABLE_GRAPHICS_MAGICK" OFF)
+if (ENABLE_GRAPHICS_MAGICK)
+  message(STATUS " > build with graphics magick lib")
+  add_definitions(-DENABLE_GRAPHICS_MAGICK)
+  set(MAGICK_DEPS z bz2 gomp GraphicsMagickWand-so GraphicsMagick++-so GraphicsMagick-so)
+endif()
+
+# cmake -DENABLE_CRYPTO_OPENSSL=ON ..
+option(ENABLE_CRYPTO_OPENSSL "ENABLE_CRYPTO_OPENSSL" ON)
+if (ENABLE_CRYPTO_OPENSSL)
+  message(STATUS "> build with openssl lib")
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party/openssl-v1.1.1)
+  add_definitions(-DENABLE_CRYPTO_OPENSSL)
+  set(OPENSSL_DEPS crypto ssl)
+endif()

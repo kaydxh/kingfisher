@@ -5,6 +5,7 @@ set (
   file/file.cc
   file/file_util.cc
   crypto/md5.cc
+  crypto/sha256.cc
   net/ip.cc
   os/getwd.cc
   os/signal/signal.cc
@@ -27,6 +28,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/serializer)
 
 add_library(kingfisher_base SHARED ${base_SRC})
 file(GLOB_RECURSE ALLEGRO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+target_link_libraries(kingfisher_base ${OPENSSL_DEPS})
 # message(STATUS "current dir = ${CMAKE_CURRENT_SOURCE_DIR}, include files =  ${ALLEGRO_INCLUDE_DIR}")
 
 #set_target_properties(kingfisher_base PROPERTIES PUBLIC_HEADER "${ALLEGRO_INCLUDE_DIR}")
