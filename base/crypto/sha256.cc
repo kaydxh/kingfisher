@@ -46,8 +46,10 @@ std::string Sha256SumString(const std::string& str) {
   std::shared_ptr<CryptoBase> sha256(new SHA256());
   sha256->Update(str.data(), str.length());
 
-  // std::string hash(SHA256_DIGEST_LENGTH, 0);
-  // sha256->Finish((void*)(hash.data()), SHA256_DIGEST_LENGTH);
+  /*
+  std::string hash(SHA256_DIGEST_LENGTH, 0);
+  sha256->Finish((void*)(hash.data()), SHA256_DIGEST_LENGTH);
+  */
   unsigned char hash[SHA256_DIGEST_LENGTH] = {0};
   sha256->Finish((void*)(hash), SHA256_DIGEST_LENGTH);
 
