@@ -1,29 +1,3 @@
-
-
-#set (
-#  base_SRC
-#  configparser/config_parser.cc
-#  dump/stack_trace.cc
-#  file/file.cc
-#  file/file_util.cc
-#  crypto/md5.cc
-#  crypto/sha256.cc
-#  net/ip.cc
-#  os/getwd.cc
-#  os/signal/signal.cc
-#  path/path.cc
-#  serializer/djson.cc
-#  strings/strings.cc
-#  thread/thread.cc
-#  thread/thread_pool.cc
-#  time/date.cc
-#  time/timer.cc
-#  time/time_counter.cc
-#  time/timestamp.cc
-#  time/time_zone.cc
-#  uuid/guid.cc
-#  )
-#
 file(GLOB_RECURSE BASE_SRC TRUE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 list(FILTER BASE_SRC EXCLUDE REGEX "main.*")
 message(STATUS "BASE_SRC= ${BASE_SRC}")
