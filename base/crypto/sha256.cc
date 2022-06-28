@@ -46,16 +46,17 @@ std::string Sha256SumString(const std::string& str) {
   std::shared_ptr<CryptoBase> sha256(new SHA256());
   sha256->Update(str.data(), str.length());
 
-  /*
   std::string hash(SHA256_DIGEST_LENGTH, 0);
   sha256->Finish((void*)(hash.data()), SHA256_DIGEST_LENGTH);
-  */
+  /*
   unsigned char hash[SHA256_DIGEST_LENGTH] = {0};
   sha256->Finish((void*)(hash), SHA256_DIGEST_LENGTH);
+  */
 
   char output[2 * SHA256_DIGEST_LENGTH + 1] = {0};
   for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-    sprintf(output + i * 2, "%02x", hash[i]);
+    // need convert (unsigned char to print hex, or it will overflow
+    sprintf(output + i * 2, "%02x", (unsigned char)(hash[i]));
   }
   return std::string(output);
 }
