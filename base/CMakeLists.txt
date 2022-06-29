@@ -2,9 +2,6 @@ file(GLOB_RECURSE BASE_SRC TRUE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CUR
 list(FILTER BASE_SRC EXCLUDE REGEX "main.*")
 message(STATUS "BASE_SRC = ${BASE_SRC}")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/configparser)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/serializer)
 
 add_library(kingfisher_base SHARED ${BASE_SRC})
 file(GLOB_RECURSE ALLEGRO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*.h")

@@ -19,7 +19,7 @@ set(CXX_FLAGS
  # -Wconversion
   -Wno-unused-parameter
  # -Wold-style-cast
- -Woverloaded-virtual
+ # -Woverloaded-virtual
  -Wpointer-arith
  -Wshadow
  -Wwrite-strings
@@ -46,10 +46,12 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 
 include_directories (.)
 include_directories (base)
+include_directories (pkg)
 include_directories (third_party)
 include(pkg/cmake/Build.options.cmake)
 
 add_subdirectory (base)
+add_subdirectory (pkg)
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_subdirectory (test/base)
