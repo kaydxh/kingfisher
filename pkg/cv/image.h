@@ -17,10 +17,11 @@ namespace cv {
 class Image {
  public:
   enum ColorSpace {
-    UnknownColorSpace,
-    RGBColorSpace,
-    CMYKColorSpace,
-    GRAYColorSpace
+    UnknownColorSpace = 0,
+    BGRColorSpace = 1,
+    BGRAColorSpace = 2,
+    GRAYColorSpace = 3,
+    GRAYAColorSpace = 4
   };
 
   static int GlobalInit();
