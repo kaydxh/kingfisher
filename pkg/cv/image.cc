@@ -40,18 +40,33 @@ int Image::ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
                         ::cv::Mat &matOutput) {
   int w = image.columns();
   int h = image.rows();
-  // if (image.colorSpace() == Magic::CMYKColorspace) {
+
   switch (targetColorSpace) {
-    case RGBColorSpace:
-      image.colorSpace(Magick::RGBColorspace);
+    case BGRColorSpace:
+      // image.colorSpace(Magick::CMYKColorspace);
+      // image.quantizeColorSpace(Magick::CMYKColorspace);
+      // image.type(Magick::GrayscaleMatteType);
+      // image.colorSpace(Magick::RGBColorspace);
       matOutput = ::cv::Mat(h, w, CV_8UC3);
+      image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
+      break;
+    case BGRAColorSpace:
+      matOutput = ::cv::Mat(h, w, CV_8UC4);
+      image.write(0, 0, w, h, "BGRA", Magick::CharPixel, matOutput.data);
+      break;
+    case GRAYColorSpace:
+      image.type(Magick::GrayscaleType);
+      matOutput = ::cv::Mat(h, w, CV_8UC3);
+      image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
+      break;
+    case GRAYAColorSpace:
+      image.type(Magick::GrayscaleMatteType);
+      matOutput = ::cv::Mat(h, w, CV_8UC4);
+      image.write(0, 0, w, h, "BGRA", Magick::CharPixel, matOutput.data);
       break;
     default:
       return -1;
   }
-  //}
-
-  image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
 
   return 0;
 }
