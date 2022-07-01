@@ -5,17 +5,10 @@
 namespace kingfisher {
 namespace cv {
 
-int Image::GlobalInit() {
-  Magick::InitializeMagick(nullptr);
-  return 0;
-}
-
-int Image::DecodeImage(const std::string &imageData,
-                       ColorSpace targetColorSpace, ::cv::Mat &matOutput) {
-  Magick::Image image;
+static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
   try {
     Magick::Blob blob((void *)imageData.data(), imageData.length());
-    image.read(blob);
+    imageOutput.read(blob);
   } catch (Magick::Warning &w) {
     std::cout << "warn: " << w.what() << std::endl;
   } catch (Magick::Error &e) {
@@ -27,20 +20,22 @@ int Image::DecodeImage(const std::string &imageData,
     return -1;
   }
 
-  int rows = image.rows();
-  int columns = image.columns();
-  if (rows <= 0 || columns <= 0) {
+  return 0;
+}
+
+static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
+                        bool autoOrient, ::cv::Mat &matOutput) {
+  int w = image.columns();
+  int h = image.rows();
+  if (h <= 0 || w <= 0) {
     return -1;
   }
 
-  return ConvertImage(image, targetColorSpace, matOutput);
-}
+  if (autoOrient) {
+    image.autoOrient();
+  }
 
-int Image::ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
-                        ::cv::Mat &matOutput) {
-  int w = image.columns();
-  int h = image.rows();
-
+  image.colorSpace(Magick::RGBColorspace);
   switch (targetColorSpace) {
     case BGRColorSpace:
       // image.colorSpace(Magick::CMYKColorspace);
@@ -69,6 +64,23 @@ int Image::ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
   }
 
   return 0;
+}
+
+int Image::GlobalInit() {
+  Magick::InitializeMagick(nullptr);
+  return 0;
+}
+
+int Image::DecodeImage(const std::string &imageData,
+                       ColorSpace targetColorSpace, bool autoOrient,
+                       ::cv::Mat &matOutput) {
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    return 0;
+  }
+
+  return ConvertImage(image, targetColorSpace, autoOrient, matOutput);
 }
 
 }  // namespace cv
