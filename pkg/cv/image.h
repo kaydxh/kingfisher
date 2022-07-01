@@ -11,17 +11,10 @@
 #endif
 
 #include "Magick++.h"
+#include "types.h"
 
 namespace kingfisher {
 namespace cv {
-
-enum ColorSpace {
-  UnknownColorSpace = 0,
-  BGRColorSpace = 1,
-  BGRAColorSpace = 2,
-  GRAYColorSpace = 3,
-  GRAYAColorSpace = 4
-};
 
 class Image {
  public:
@@ -29,7 +22,11 @@ class Image {
 
   static int DecodeImage(const std::string &image, ColorSpace targetColorSpace,
                          bool autoOrient, ::cv::Mat &matOutput);
+  static int RotateImage(const std::string &imageData, double degree,
+                         ::cv::Mat &matOutput);
 
+  static int ResizeImage(const std::string &imageData, int width, int height,
+                         bool keepRatio, ::cv::Mat &matOutput);
   // static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
   //                        ::cv::Mat &matOutput);
 };

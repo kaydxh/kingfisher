@@ -76,11 +76,72 @@ int Image::DecodeImage(const std::string &imageData,
                        ::cv::Mat &matOutput) {
   Magick::Image image;
   auto ret = imageRead(imageData, image);
-  if (ret != 0) {
+  if (ret != ret) {
     return 0;
   }
 
   return ConvertImage(image, targetColorSpace, autoOrient, matOutput);
+}
+
+int Image::RotateImage(const std::string &imageData, double degree,
+                       ::cv::Mat &matOutput) {
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    return ret;
+  }
+
+  if (degree) {
+    image.rotate(degree);
+  }
+
+  int w = image.columns();
+  int h = image.rows();
+  if (h <= 0 || w <= 0) {
+    return -1;
+  }
+
+  matOutput = ::cv::Mat(h, w, CV_8UC3);
+  image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
+
+  return 0;
+}
+
+// https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp
+int Image::ResizeImage(const std::string &imageData, int width, int height,
+                       bool keepRatio, ::cv::Mat &matOutput) {
+  if (width <= 0 || height <= 0) {
+    return -1;
+  }
+
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    return ret;
+  }
+
+  int w0 = image.columns();
+  int h0 = image.rows();
+  if (h0 <= 0 || w0 <= 0) {
+    return -1;
+  }
+
+  if (keepRatio) {
+    if (width > height) {
+      height = static_cast<double>(h0 * width) / w0;
+    } else {
+      width = static_cast<double>(w0 * height) / h0;
+    }
+  }
+
+  char buf[64] = {0};
+  snprintf(buf, sizeof(buf), "%dx%d!", width, height);
+  image.zoom(buf);
+
+  matOutput = ::cv::Mat(height, width, CV_8UC3);
+  image.write(0, 0, width, height, "BGR", Magick::CharPixel, matOutput.data);
+
+  return 0;
 }
 
 }  // namespace cv
