@@ -31,9 +31,9 @@ TEST_F(test_Image, DecodeImage) {
 
   ::cv::Mat mat;
   int ret = kingfisher::cv::Image::DecodeImage(
-      content, kingfisher::cv::Image::RGBColorSpace, mat);
+      content, kingfisher::cv::BGRColorSpace, true, mat);
   EXPECT_EQ(ret, 0);
-  ::cv::imwrite("./output.1.jpg", mat);
+  ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
 
 #endif
