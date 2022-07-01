@@ -36,4 +36,28 @@ TEST_F(test_Image, DecodeImage) {
   ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
 
+TEST_F(test_Image, RotateImage) {
+  kingfisher::cv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  ::cv::Mat mat;
+  int ret = kingfisher::cv::Image::RotateImage(content, -90, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.rotate.png", mat);
+}
+
+TEST_F(test_Image, ResizeImage) {
+  kingfisher::cv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  ::cv::Mat mat;
+  int ret = kingfisher::cv::Image::ResizeImage(content, 100, 30, true, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.resize.png", mat);
+}
+
 #endif
