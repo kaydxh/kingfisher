@@ -10,7 +10,7 @@
 #include "cv/image.h"
 
 using namespace kingfisher;
-using namespace kingfisher::cv;
+using namespace kingfisher::kcv;
 
 //./kingfisher_base_test  --gtest_filter=test_Image.*
 class test_Image : public testing::Test {
@@ -24,40 +24,53 @@ class test_Image : public testing::Test {
 };
 
 TEST_F(test_Image, DecodeImage) {
-  kingfisher::cv::Image::GlobalInit();
+  kingfisher::kcv::Image::GlobalInit();
   std::string imageFile = "./testdata/1.jpg";
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::cv::Image::DecodeImage(
-      content, kingfisher::cv::BGRColorSpace, true, mat);
+  int ret = kingfisher::kcv::Image::DecodeImage(
+      content, kingfisher::kcv::BGRColorSpace, true, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
 
 TEST_F(test_Image, RotateImage) {
-  kingfisher::cv::Image::GlobalInit();
+  kingfisher::kcv::Image::GlobalInit();
   std::string imageFile = "./testdata/1.jpg";
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::cv::Image::RotateImage(content, -90, mat);
+  int ret = kingfisher::kcv::Image::RotateImage(content, -90, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.rotate.png", mat);
 }
 
 TEST_F(test_Image, ResizeImage) {
-  kingfisher::cv::Image::GlobalInit();
+  kingfisher::kcv::Image::GlobalInit();
   std::string imageFile = "./testdata/1.jpg";
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::cv::Image::ResizeImage(content, 100, 30, true, mat);
+  int ret = kingfisher::kcv::Image::ResizeImage(content, 100, 30, true, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.resize.png", mat);
+}
+
+TEST_F(test_Image, CropImage) {
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  ::cv::Mat mat;
+  int ret = kingfisher::kcv::Image::CropImage(
+      content, kingfisher::kcv::Rect{10, 10, 1000, 1000}, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.crop.png", mat);
 }
 
 #endif
