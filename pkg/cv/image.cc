@@ -3,7 +3,19 @@
 #include "Magick++.h"
 
 namespace kingfisher {
-namespace cv {
+namespace kcv {
+
+static int ImageToMat(Magick::Image &image, ::cv::Mat &matOutput) {
+  int w = image.columns();
+  int h = image.rows();
+  if (w <= 0 || h <= 0) {
+    return -1;
+  }
+
+  matOutput = ::cv::Mat(h, w, CV_8UC3);
+  image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
+  return 0;
+}
 
 static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
   try {
@@ -144,5 +156,22 @@ int Image::ResizeImage(const std::string &imageData, int width, int height,
   return 0;
 }
 
-}  // namespace cv
+int Image::CropImage(const std::string &imageData, const Rect &rect,
+                     ::cv::Mat &matOutput) {
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    return ret;
+  }
+  int w0 = image.columns();
+  int h0 = image.rows();
+
+  auto rect0 = ::cv::Rect(0, 0, w0, h0);
+  auto intesectRect = rect0 & cv::Rect(rect.x, rect.y, rect.height, rect.width);
+  image.crop(Magick::Geometry(intesectRect.width, intesectRect.height,
+                              intesectRect.x, intesectRect.y));
+  return ImageToMat(image, matOutput);
+}
+
+}  // namespace kcv
 }  // namespace kingfisher

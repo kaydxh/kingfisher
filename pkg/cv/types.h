@@ -1,7 +1,7 @@
 #ifndef KINGFISHER_PKG_CV_TYPES_H_
 #define KINGFISHER_PKG_CV_TYPES_H_
 namespace kingfisher {
-namespace cv {
+namespace kcv {
 
 enum ColorSpace {
   UnknownColorSpace = 0,
@@ -18,7 +18,7 @@ struct Rect {
   int width;
 };
 
-}  // namespace cv
+}  // namespace kcv
 }  // namespace kingfisher
 
 #endif

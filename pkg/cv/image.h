@@ -14,7 +14,7 @@
 #include "types.h"
 
 namespace kingfisher {
-namespace cv {
+namespace kcv {
 
 class Image {
  public:
@@ -27,10 +27,13 @@ class Image {
 
   static int ResizeImage(const std::string &imageData, int width, int height,
                          bool keepRatio, ::cv::Mat &matOutput);
-  // static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
-  //                        ::cv::Mat &matOutput);
+
+  static int CropImage(const std::string &imageData, const Rect &rect,
+                       ::cv::Mat &matOutput);
+  // static int ZoomImage(const std::string &imageData, double ratio,
+  //                     ::cv::Mat &matOutput);
 };
-}  // namespace cv
+}  // namespace kcv
 }  // namespace kingfisher
 
 #endif
