@@ -6,11 +6,11 @@ namespace kingfisher {
 namespace kcv {
 
 static int ImageToMat(Magick::Image &image, ::cv::Mat &matOutput) {
-  int w = image.columns();
-  int h = image.rows();
-  if (w <= 0 || h <= 0) {
+  if (!image.isValid()) {
     return -1;
   }
+  int w = image.columns();
+  int h = image.rows();
 
   matOutput = ::cv::Mat(h, w, CV_8UC3);
   image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
@@ -31,17 +31,20 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
               << std::endl;
     return -1;
   }
+  if (!imageOutput.isValid()) {
+    return -1;
+  }
 
   return 0;
 }
 
 static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
                         bool autoOrient, ::cv::Mat &matOutput) {
-  int w = image.columns();
-  int h = image.rows();
-  if (h <= 0 || w <= 0) {
+  if (!image.isValid()) {
     return -1;
   }
+  int w = image.columns();
+  int h = image.rows();
 
   if (autoOrient) {
     image.autoOrient();
@@ -109,10 +112,6 @@ int Image::RotateImage(const std::string &imageData, double degree,
 
   int w = image.columns();
   int h = image.rows();
-  if (h <= 0 || w <= 0) {
-    return -1;
-  }
-
   matOutput = ::cv::Mat(h, w, CV_8UC3);
   image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
 
@@ -134,10 +133,6 @@ int Image::ResizeImage(const std::string &imageData, int width, int height,
 
   int w0 = image.columns();
   int h0 = image.rows();
-  if (h0 <= 0 || w0 <= 0) {
-    return -1;
-  }
-
   if (keepRatio) {
     if (width > height) {
       height = static_cast<double>(h0 * width) / w0;
