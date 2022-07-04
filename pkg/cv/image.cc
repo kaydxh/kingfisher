@@ -1,6 +1,7 @@
 #include "image.h"
 
 #include "Magick++.h"
+#include "wrap.func.h"
 
 namespace kingfisher {
 namespace kcv {
@@ -18,6 +19,11 @@ static int ImageToMat(Magick::Image &image, ::cv::Mat &matOutput) {
 }
 
 static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
+  auto ret = WrapFuncT([&]() {
+    Magick::Blob blob((void *)imageData.data(), imageData.length());
+    imageOutput.read(blob);
+  });
+#if 0
   try {
     Magick::Blob blob((void *)imageData.data(), imageData.length());
     imageOutput.read(blob);
@@ -31,6 +37,11 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
               << std::endl;
     return -1;
   }
+#endif
+  if (ret != 0) {
+    return ret;
+  }
+
   if (!imageOutput.isValid()) {
     return -1;
   }
@@ -47,7 +58,7 @@ static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
   int h = image.rows();
 
   if (autoOrient) {
-    image.autoOrient();
+    WrapFuncT([&]() { image.autoOrient(); });
   }
 
   image.colorSpace(Magick::RGBColorspace);
@@ -165,6 +176,24 @@ int Image::CropImage(const std::string &imageData, const Rect &rect,
   auto intesectRect = rect0 & cv::Rect(rect.x, rect.y, rect.height, rect.width);
   image.crop(Magick::Geometry(intesectRect.width, intesectRect.height,
                               intesectRect.x, intesectRect.y));
+  return ImageToMat(image, matOutput);
+}
+
+int Image::AnnotateImage(const std::string &imageData, const std::string &text,
+                         const Rect &rect, ::cv::Mat &matOutput) {
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    return ret;
+  }
+
+  ret = WrapFuncT([&]() {
+    image.annotate(text,
+                   Magick::Geometry(rect.width, rect.height, rect.x, rect.y));
+  });
+  if (ret != 0) {
+    return ret;
+  }
   return ImageToMat(image, matOutput);
 }
 

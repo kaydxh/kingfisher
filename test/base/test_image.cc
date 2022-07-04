@@ -73,4 +73,18 @@ TEST_F(test_Image, CropImage) {
   ::cv::imwrite("./output.crop.png", mat);
 }
 
+//../output/bin/kingfisher_base_test --gtest_filter=test_Image.AnnotateImage
+TEST_F(test_Image, AnnotateImage) {
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  ::cv::Mat mat;
+  int ret = kingfisher::kcv::Image::AnnotateImage(
+      content, "1", kingfisher::kcv::Rect{10, 10, 10, 10}, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.annotate.png", mat);
+}
+
 #endif
