@@ -30,6 +30,10 @@ class Image {
 
   static int CropImage(const std::string &imageData, const Rect &rect,
                        ::cv::Mat &matOutput);
+
+  static int AnnotateImage(const std::string &imageData,
+                           const std::string &text, const Rect &rect,
+                           ::cv::Mat &matOutput);
   // static int ZoomImage(const std::string &imageData, double ratio,
   //                     ::cv::Mat &matOutput);
 };
