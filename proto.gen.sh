@@ -9,5 +9,5 @@ set -o pipefail
 set -o xtrace
 
 mkdir -p ./scripts
-#bash -c "curl -s -L -o ./scripts/proto-gen.sh https://raw.githubusercontent.com/kaydxh/sea/master/api/scripts/go_proto_gen.sh"
-bash scripts/proto-gen.sh -I . --proto_file_path ./pkg  --with-cpp 
+bash -c "curl -s -L -H 'Cache-Control: no-cache' -o ./scripts/proto-gen.sh https://raw.githubusercontent.com/kaydxh/sea/master/api/scripts/go_proto_gen.sh"
+bash scripts/proto-gen.sh -I .  --proto_file_path ./pkg  --with-cpp 
