@@ -13,7 +13,7 @@ define joinwith
 endef
 
 .PHONY: all
-all: deps generate  test
+all: deps generate
 	@echo "${MAKEFILE_DIR}"
 	@echo "${PROJECT_ROOT_DIR}"
 	@echo "${TARGET}"
@@ -39,6 +39,4 @@ generate:
 	@bash -c "bash  proto.gen.sh"
 	@echo "  >  start to generate protocol buffers by cpp"
 	@mkdir -p ${PROJECT_ROOT_DIR}/build; cd ${PROJECT_ROOT_DIR}/build; cmake .. 
-	@cmake --build ${PROJECT_ROOT_DIR}/build --target proto-${TARGET} -- -j `nproc`;
-	@echo "  >  install generated protocol buffers by cpp"
-	@cd ${PROJECT_ROOT_DIR}/build; cmake --install .
+	@cmake --build ${PROJECT_ROOT_DIR}/build -- -j `nproc`;
