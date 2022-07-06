@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package pkg.cv;
+
+import "google/protobuf/duration.proto";
+
+message DecodeOptions {
+  bool auto_orient = 1;
+}
