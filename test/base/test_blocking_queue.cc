@@ -72,11 +72,11 @@ TEST_F(test_BlockingQueue, TakeWait) {
 TEST_F(test_BlockingQueue, PutWait) {
   kingfisher::thread::BlockingQueue<const char*> q(5);
 
-  const char* num_addrs[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+  const char* num_addrs[] = {"1", "2", "3", "4", "5", "6"};
 
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 6; ++i) {
     int result = -1;
-    q.PutWait(result, num_addrs[i], 3000);
+    q.PutWait(result, num_addrs[i], 1000);
     if (0 == result) {
       std::cout << "put " << num_addrs[i] << std::endl;
     } else {

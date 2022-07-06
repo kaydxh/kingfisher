@@ -5,6 +5,7 @@ if (ENABLE_GRAPHICS_MAGICK)
   set(MAGICK_DEPS z bz2 gomp GraphicsMagickWand GraphicsMagick++ GraphicsMagick tiff)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphicsMagick_v1.3.35/include)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphicsMagick_v1.3.35/lib)
+  # link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/png/lib)
 endif()
 
 option(ENABLE_OPENCV "ENABLE_OPENSSL" ON)

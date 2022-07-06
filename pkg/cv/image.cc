@@ -1,7 +1,11 @@
 #include "image.h"
 
-#include "Magick++.h"
+#include <Magick++.h>
+#include <magick/api.h>
+
 #include "wrap.func.h"
+using namespace Magick;
+using namespace MagickLib;
 
 namespace kingfisher {
 namespace kcv {
@@ -18,56 +22,17 @@ static int ImageToMat(Magick::Image &image, ::cv::Mat &matOutput) {
   return 0;
 }
 
-static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
-  auto ret = WrapFuncT([&]() {
-    Magick::Blob blob((void *)imageData.data(), imageData.length());
-    imageOutput.read(blob);
-  });
-#if 0
-  try {
-    Magick::Blob blob((void *)imageData.data(), imageData.length());
-    imageOutput.read(blob);
-  } catch (Magick::Warning &w) {
-    std::cout << "warn: " << w.what() << std::endl;
-  } catch (Magick::Error &e) {
-    std::cout << "a Magick++ error occurred: " << e.what() << std::endl;
-    return -1;
-  } catch (...) {
-    std::cout << "an unhandled error has occurred; exiting application."
-              << std::endl;
-    return -1;
-  }
-#endif
-  if (ret != 0) {
-    return ret;
-  }
-
-  if (!imageOutput.isValid()) {
-    return -1;
-  }
-
-  return 0;
-}
-
-static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
-                        bool autoOrient, ::cv::Mat &matOutput) {
+static int ImageToMat(Magick::Image &image, ColorSpace targetColorSpace,
+                      ::cv::Mat &matOutput) {
   if (!image.isValid()) {
     return -1;
   }
   int w = image.columns();
   int h = image.rows();
 
-  if (autoOrient) {
-    WrapFuncT([&]() { image.autoOrient(); });
-  }
-
   image.colorSpace(Magick::RGBColorspace);
   switch (targetColorSpace) {
     case BGRColorSpace:
-      // image.colorSpace(Magick::CMYKColorspace);
-      // image.quantizeColorSpace(Magick::CMYKColorspace);
-      // image.type(Magick::GrayscaleMatteType);
-      // image.colorSpace(Magick::RGBColorspace);
       matOutput = ::cv::Mat(h, w, CV_8UC3);
       image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
       break;
@@ -89,7 +54,39 @@ static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
       return -1;
   }
 
+  matOutput = ::cv::Mat(h, w, CV_8UC3);
+  image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
   return 0;
+}
+
+// https://github.com/rodlie/cyan/blob/3382ed70237861e178de5e08ea8be1bf4475bff7/src/FXX.cpp
+static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
+  auto ret = WrapFuncT([&]() {
+    Magick::Blob blob((void *)imageData.data(), imageData.length());
+    imageOutput.read(blob);
+  });
+  if (ret != 0) {
+    return ret;
+  }
+
+  if (!imageOutput.isValid()) {
+    return -1;
+  }
+
+  return 0;
+}
+
+static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
+                        bool autoOrient, ::cv::Mat &matOutput) {
+  if (!image.isValid()) {
+    return -1;
+  }
+
+  if (autoOrient) {
+    WrapFuncT([&]() { image.autoOrient(); });
+  }
+
+  return ImageToMat(image, targetColorSpace, matOutput);
 }
 
 int Image::GlobalInit() {
@@ -104,9 +101,13 @@ int Image::DecodeImage(const std::string &imageData, const DecodeOptions &opts,
   if (ret != 0) {
     return 0;
   }
-
   return ConvertImage(image, opts.targetcolorspace(), opts.auto_orient(),
                       matOutput);
+}
+
+int Image::GlobalRelease() {
+  DestroyMagick();
+  return 0;
 }
 
 int Image::RotateImage(const std::string &imageData, double degree,
@@ -118,15 +119,13 @@ int Image::RotateImage(const std::string &imageData, double degree,
   }
 
   if (degree) {
-    image.rotate(degree);
+    ret = WrapFuncT([&]() { image.rotate(degree); });
+    if (ret != 0) {
+      return ret;
+    }
   }
 
-  int w = image.columns();
-  int h = image.rows();
-  matOutput = ::cv::Mat(h, w, CV_8UC3);
-  image.write(0, 0, w, h, "BGR", Magick::CharPixel, matOutput.data);
-
-  return 0;
+  return ImageToMat(image, matOutput);
 }
 
 // https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp
@@ -156,10 +155,11 @@ int Image::ResizeImage(const std::string &imageData, int width, int height,
   snprintf(buf, sizeof(buf), "%dx%d!", width, height);
   image.zoom(buf);
 
-  matOutput = ::cv::Mat(height, width, CV_8UC3);
-  image.write(0, 0, width, height, "BGR", Magick::CharPixel, matOutput.data);
+  return ImageToMat(image, matOutput);
+  // matOutput = ::cv::Mat(height, width, CV_8UC3);
+  // image.write(0, 0, width, height, "BGR", Magick::CharPixel, matOutput.data);
 
-  return 0;
+  // return 0;
 }
 
 int Image::CropImage(const std::string &imageData, const Rect &rect,
@@ -181,17 +181,42 @@ int Image::CropImage(const std::string &imageData, const Rect &rect,
 }
 
 #if 0
+// https://github.com/AndreMouche/GraphicsStudy/blob/master/GraphicsMagicUsage/water_mark_txt.cpp
 int Image::AnnotateImage(const std::string &imageData, const std::string &text,
-                         const Rect &rect, ::cv::Mat &matOutput) {
+                         const Point &point, ::cv::Mat &matOutput) {
   Magick::Image image;
   auto ret = imageRead(imageData, image);
   if (ret != 0) {
     return ret;
   }
 
+  // DrawContext drawContext;
   ret = WrapFuncT([&]() {
-    image.annotate(text,
-                   Magick::Geometry(rect.width, rect.height, rect.x, rect.y));
+  /*DrawContext*/
+
+#if 0
+    // drawContext = DrawAllocateContext((DrawInfo *)nullptr, &image);
+    drawContext = DrawAllocateContext((DrawInfo *)nullptr, image.image());
+    DrawSetFillColorString(drawContext, "red");
+    DrawAnnotation(drawContext, point.x, point.y,
+                   (const unsigned char *)text.c_str());
+
+    DrawSetTextAntialias(drawContext, 1);
+    // DrawSetFont(drawContext, FONT_DEFAULT);
+    // DrawSetFontSize(drawContext, font_pointsize);
+    DrawSetGravity(drawContext, CenterGravity);
+    DrawSetTextEncoding(drawContext, "UTF-8");
+
+    DrawRender(drawContext);
+    // image.write("./11111.jpg");
+    // DrawDestroyContext(drawContext);
+#endif
+    // image.annotate(text, Magick::Geometry(100, 100, point.x, point.y));
+    // image.fillColor("blue");
+    // image.font("Helvetica");
+    // image.fontPointsize(14);
+    image.annotate("Goodbye cruel world!", "+150+20");
+    // Magick::Geometry(rect.width, rect.height, rect.x, rect.y));
   });
   if (ret != 0) {
     return ret;

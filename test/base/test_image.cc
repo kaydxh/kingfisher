@@ -89,7 +89,7 @@ TEST_F(test_Image, AnnotateImage) {
 
   ::cv::Mat mat;
   int ret = kingfisher::kcv::Image::AnnotateImage(
-      content, "1", kingfisher::kcv::Rect{10, 10, 10, 10}, mat);
+      content, "hello word", kingfisher::kcv::Point{100, 100}, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.annotate.png", mat);
 }
