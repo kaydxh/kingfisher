@@ -11,7 +11,8 @@
 #endif
 
 #include "Magick++.h"
-#include "types.h"
+#include "image.pb.h"
+//#include "types.h"
 
 namespace kingfisher {
 namespace kcv {
@@ -20,8 +21,8 @@ class Image {
  public:
   static int GlobalInit();
 
-  static int DecodeImage(const std::string &image, ColorSpace targetColorSpace,
-                         bool autoOrient, ::cv::Mat &matOutput);
+  static int DecodeImage(const std::string &imageData,
+                         const DecodeOptions &opts, ::cv::Mat &matOutput);
   static int RotateImage(const std::string &imageData, double degree,
                          ::cv::Mat &matOutput);
 
@@ -31,9 +32,9 @@ class Image {
   static int CropImage(const std::string &imageData, const Rect &rect,
                        ::cv::Mat &matOutput);
 
-  static int AnnotateImage(const std::string &imageData,
-                           const std::string &text, const Rect &rect,
-                           ::cv::Mat &matOutput);
+  // static int AnnotateImage(const std::string &imageData,
+  //                        const std::string &text, const Rect &rect,
+  //                       ::cv::Mat &matOutput);
   // static int ZoomImage(const std::string &imageData, double ratio,
   //                     ::cv::Mat &matOutput);
 };
