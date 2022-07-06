@@ -30,8 +30,10 @@ TEST_F(test_Image, DecodeImage) {
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::kcv::Image::DecodeImage(
-      content, kingfisher::kcv::BGRColorSpace, true, mat);
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = kingfisher::kcv::Image::DecodeImage(content, opts, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
@@ -67,13 +69,18 @@ TEST_F(test_Image, CropImage) {
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::kcv::Image::CropImage(
-      content, kingfisher::kcv::Rect{10, 10, 1000, 1000}, mat);
+  kingfisher::kcv::Rect rect;
+  rect.set_x(10);
+  rect.set_y(10);
+  rect.set_width(100);
+  rect.set_height(200);
+  int ret = kingfisher::kcv::Image::CropImage(content, rect, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.crop.png", mat);
 }
 
 //../output/bin/kingfisher_base_test --gtest_filter=test_Image.AnnotateImage
+#if 0
 TEST_F(test_Image, AnnotateImage) {
   kingfisher::kcv::Image::GlobalInit();
   std::string imageFile = "./testdata/1.jpg";
@@ -86,5 +93,6 @@ TEST_F(test_Image, AnnotateImage) {
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.annotate.png", mat);
 }
+#endif
 
 #endif

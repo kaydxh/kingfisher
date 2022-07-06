@@ -31,3 +31,12 @@ if (ENABLE_CRYPTO_OPENSSL)
   set(OPENSSL_DEPS crypto ssl)
 endif()
 
+# cmake -DENABLE_PROTOBUF=ON ..
+option(ENABLE_PROTOBUF "ENABLE_PROTOBUF" ON)
+if (ENABLE_PROTOBUF)
+  message(STATUS "> build with protobuf lib")
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/protobuf-v3.6.1)
+  add_definitions(-DENABLE_PROTOBUF)
+  set(PROTOBUF_DEPS protobuf)
+endif()
+

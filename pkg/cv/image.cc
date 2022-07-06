@@ -97,16 +97,16 @@ int Image::GlobalInit() {
   return 0;
 }
 
-int Image::DecodeImage(const std::string &imageData,
-                       ColorSpace targetColorSpace, bool autoOrient,
+int Image::DecodeImage(const std::string &imageData, const DecodeOptions &opts,
                        ::cv::Mat &matOutput) {
   Magick::Image image;
   auto ret = imageRead(imageData, image);
-  if (ret != ret) {
+  if (ret != 0) {
     return 0;
   }
 
-  return ConvertImage(image, targetColorSpace, autoOrient, matOutput);
+  return ConvertImage(image, opts.targetcolorspace(), opts.auto_orient(),
+                      matOutput);
 }
 
 int Image::RotateImage(const std::string &imageData, double degree,
@@ -173,12 +173,14 @@ int Image::CropImage(const std::string &imageData, const Rect &rect,
   int h0 = image.rows();
 
   auto rect0 = ::cv::Rect(0, 0, w0, h0);
-  auto intesectRect = rect0 & cv::Rect(rect.x, rect.y, rect.height, rect.width);
+  auto intesectRect =
+      rect0 & cv::Rect(rect.x(), rect.y(), rect.height(), rect.width());
   image.crop(Magick::Geometry(intesectRect.width, intesectRect.height,
                               intesectRect.x, intesectRect.y));
   return ImageToMat(image, matOutput);
 }
 
+#if 0
 int Image::AnnotateImage(const std::string &imageData, const std::string &text,
                          const Rect &rect, ::cv::Mat &matOutput) {
   Magick::Image image;
@@ -196,6 +198,7 @@ int Image::AnnotateImage(const std::string &imageData, const std::string &text,
   }
   return ImageToMat(image, matOutput);
 }
+#endif
 
 }  // namespace kcv
 }  // namespace kingfisher
