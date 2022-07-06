@@ -12,7 +12,6 @@
 
 #include "Magick++.h"
 #include "image.pb.h"
-//#include "types.h"
 
 namespace kingfisher {
 namespace kcv {
@@ -20,6 +19,7 @@ namespace kcv {
 class Image {
  public:
   static int GlobalInit();
+  static int GlobalRelease();
 
   static int DecodeImage(const std::string &imageData,
                          const DecodeOptions &opts, ::cv::Mat &matOutput);

@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <vector>
+
 #include "dump/stack_trace.h"
 
 using namespace kingfisher;
@@ -37,17 +39,12 @@ TEST_F(test_Dump, MulitThreads) {
   for (auto &t : threads) {
     t = std::thread([=]() {
       std::this_thread::sleep_for(sec);
-      char *p = nullptr;
-      *p = 'a';
+      //    char *p = nullptr;
+      //   *p = 'a';
     });
   }
 
-  std::thread t_crash([]() {
-#if 0
-    char *p = nullptr;
-    *p = 'a';
-#endif
-  });
+  std::thread t_crash([]() {});
 
   for (auto &t : threads) {
     t.join();
