@@ -21,7 +21,7 @@ set(CXX_FLAGS
  # -Wold-style-cast
  # -Woverloaded-virtual
  -Wpointer-arith
- -Wshadow
+ # -Wshadow
  -Wwrite-strings
  -march=native
  -std=c++11
@@ -40,6 +40,9 @@ set (INCLUDE_OUTPUL_PATH ${CMAKE_INSTALL_PREFIX}/include)
 set (EXECUTABLE_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/bin)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/lib)
 #set_target_properties(kingfisher_base PROPERTIES PUBLIC_HEADER "*.h")
+
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/pkg/cmake/")
+#message(STATUS "CMAKE_MODULE_PATH = " ${CMAKE_MODULE_PATH})
 
 string (TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})

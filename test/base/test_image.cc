@@ -7,7 +7,7 @@
 #include <string>
 
 #include "core/scope_guard.h"
-#include "cv/image.h"
+#include "cv/image/image.h"
 
 using namespace kingfisher;
 using namespace kingfisher::kcv;
