@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kingfisher.kcv;
 
-import "google/protobuf/duration.proto";
+// import "google/protobuf/duration.proto";
 
 enum ColorSpace {
   UnknownColorSpace = 0;

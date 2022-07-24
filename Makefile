@@ -38,5 +38,6 @@ generate:
 	@echo "  >  start to generate protocol buffers for target ${TARGET} in golang"
 	@bash -c "bash  proto.gen.sh"
 	@echo "  >  start to generate protocol buffers by cpp"
+	@if [[ -d "${PROJECT_ROOT_DIR}/build" ]]; then rm -rf "${PROJECT_ROOT_DIR}/build"; fi
 	@mkdir -p ${PROJECT_ROOT_DIR}/build; cd ${PROJECT_ROOT_DIR}/build; cmake .. 
 	@cmake --build ${PROJECT_ROOT_DIR}/build -- -j `nproc`;
