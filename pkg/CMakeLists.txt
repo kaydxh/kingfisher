@@ -19,4 +19,10 @@ add_library(kingfisher_pkg STATIC ${PKG_SRC})
 file(GLOB_RECURSE ALLEGRO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 target_link_libraries(kingfisher_pkg ${OPENCV_DEPS} ${MAGICK_DEPS} ${PROTOBUF_DEPS})
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/
+        DESTINATION ${INCLUDE_OUTPUL_PATH}
+        FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp")
+
 
