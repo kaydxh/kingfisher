@@ -105,7 +105,7 @@ TEST_F(test_Strings, TrimRight) {
   }
 }
 
-TEST_F(test_Strings, All) {
+TEST_F(test_Strings, Split) {
   std::string filepath = "./tmp/test";
   std::vector<std::string> path_nodes = Split(filepath, '/');
 
