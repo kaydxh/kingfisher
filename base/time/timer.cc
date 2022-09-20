@@ -62,7 +62,7 @@ void TimerWheel::runLoop() {
   while (running_) {
     if (!process_current_slot()) {
     }
-    msleep(1);
+    MsSleep(1);
   }
 }
 
@@ -79,7 +79,7 @@ bool TimerWheel::process_current_slot() {
     } else {
       auto event = slot->popEvent();
       event->run();
-      now_ = getJiffies();
+      now_ = GetJiffies();
       if (event->repeated_times_ == 1) {
         ;  // do nothing
 
@@ -104,7 +104,7 @@ void TimerWheel::Stop() {
 
 void TimerWheel::Schedule(TimerEventBase* event, Tick interval,
                           int32_t repeated_times) {
-  auto tm = getJiffies() - now_ + interval;
+  auto tm = GetJiffies() - now_ + interval;
   int rotation = tm / NUM_SLOTS;
   size_t slot_index = (tm + cur_slot_index_) % NUM_SLOTS;
   event->set_rotation_at(rotation);
@@ -117,18 +117,28 @@ void TimerWheel::Schedule(TimerEventBase* event, Tick interval,
   event->relink(slot);
 }
 
-uint64_t getJiffies() {
+uint64_t GetJiffies() {
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
   return (ts.tv_sec * 1000 + ts.tv_nsec / 1e6);
 }
 
-void msleep(uint32_t msecs) {
+void MsSleep(uint32_t time_ms) {
   struct timeval tv;
   tv.tv_sec = 0;
-  tv.tv_usec = msecs * 1000;
+  tv.tv_usec = time_ms * 1000;
   select(0, nullptr, nullptr, nullptr, &tv);
-  //  std::cout << "msleep" << msecs << std::endl;
+
+// also can use nanosleep
+#if 0
+    timespec t;
+    t.tv_sec = time_ms / 1000;
+    t.tv_nsec = (time_ms % 1000) * 1000000;
+    int ret = 0;
+    do {
+        ret = ::nanosleep(&t, &t);
+    } while (ret == -1 && errno == EINTR);
+#endif
 }
 
 }  // namespace time
