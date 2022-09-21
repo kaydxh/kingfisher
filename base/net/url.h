@@ -10,6 +10,7 @@ namespace net {
 
 // http://www.geekhideout.com/urlcode.shtml
 std::string URLEncode(const std::string &source);
+std::string URLDecode(const std::string &source);
 }
 }
 
