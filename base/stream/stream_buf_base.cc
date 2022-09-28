@@ -21,9 +21,8 @@ int StreamBufBase::Underflow() {
   if (ret > 0) {
     setg(eback(), eback(), eback() + ret);
     return traits_type::to_int_type(*gptr());
-  } else {
-    return traits_type::eof();
   }
+  return traits_type::eof();
 }
 
 int StreamBufBase::Sync() {
@@ -33,9 +32,8 @@ int StreamBufBase::Sync() {
     int ret = psend(pbase() + sent, total - sent, 0);
     if (ret > 0) {
       sent += ret;
-    } else {
-      return -1;
     }
+    return -1;
   }
 
   setp(pbase(), pbase() + buf_size_);
