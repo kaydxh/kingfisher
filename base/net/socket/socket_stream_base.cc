@@ -44,32 +44,6 @@ bool SocketStreamBase::GetRemoteHost(char* ip, size_t size, int* port) {
   return ret == 0;
 }
 
-/*
-bool TcpSocket::SetNonBlock(bool flag) {
-  int ret = 0;
-  int opt_val = fcntl(fd, F_GETFL, 0);
-  if (flag) {
-    ret = fcntl(socket_t, F_SETFL, opt_val | O_NONBLOCK);
-  } else {
-    ret = fcntl(fd, F_SETFL, opt_val & (~O_NONBLOCK));
-  }
-
-  if (0 != ret) {
-  }
-
-  return 0 == ret;
-}
-
-bool TcpSocket::SetNoDelay(int fd, bool flag) {
-  int opt_val = flag ? 1 : 0;
-
-  int ret = setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val,
-                       sizeof(opt_val));
-  if (0 != ret) {
-  }
-
-  return 0 == ret;
-}
-*/
+//
 }
 }
