@@ -6,6 +6,7 @@
 namespace kingfisher {
 namespace stream {
 
+// https://izualzhy.cn/stream-buffer
 StreamBufBase::StreamBufBase(size_t buf_size) : buf_size_(buf_size) {
   std::shared_ptr<char> gbuf(new char[buf_size_]);
   std::shared_ptr<char> pbuf(new char[buf_size_]);
@@ -32,6 +33,7 @@ int StreamBufBase::Sync() {
     int ret = psend(pbase() + sent, total - sent, 0);
     if (ret > 0) {
       sent += ret;
+      continue;
     }
     return -1;
   }
@@ -43,7 +45,7 @@ int StreamBufBase::Sync() {
 }
 
 int StreamBufBase::Overflow(int c) {
-  if (-1 == sync()) {
+  if (-1 == Sync()) {
     return traits_type::eof();
   }
   if (!traits_type::eq_int_type(c, traits_type::eof())) {

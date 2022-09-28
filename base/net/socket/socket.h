@@ -12,13 +12,13 @@ class Socket {
 
   int SetNonBlock(bool flag);
 
-  int SetNoDelay(bool flag);
+  int SetTcpNoDelay(bool flag);
 
-  void SetReuseAddr(bool flag);
+  int SetReuseAddr(bool flag);
 
-  void SetReusePort(bool flag);
+  int SetReusePort(bool flag);
 
-  void SetKeepAlive(bool flag);
+  int SetKeepAlive(bool flag);
 
  private:
   const int sockfd_;
