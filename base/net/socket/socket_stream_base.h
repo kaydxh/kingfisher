@@ -27,13 +27,6 @@ class SocketStreamBase : public std::iostream {
 
   const size_t buf_size_;
 };
-
-class TcpSocket {
- public:
-  static bool SetNonBlock(int fd, bool flag);
-
-  static bool SetNoDelay(int fd, bool flag);
-};
 }
 }
 
