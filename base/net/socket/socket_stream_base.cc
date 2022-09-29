@@ -24,9 +24,7 @@ SocketStreamBase::SocketStreamBase(size_t buf_size)
 
 SocketStreamBase::~SocketStreamBase() {}
 
-void SocketStreamBase::NewRdbuf(SocketStreamBase* buf) {
-  // rdbuf(buf);
-}
+void SocketStreamBase::NewRdbuf(SocketStreamBase* buf) { rdbuf(buf); }
 
 bool SocketStreamBase::GetRemoteHost(char* ip, size_t size, int* port) {
   struct sockaddr_in addr;
