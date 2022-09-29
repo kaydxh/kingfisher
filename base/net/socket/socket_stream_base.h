@@ -6,7 +6,7 @@
 namespace kingfisher {
 namespace net {
 
-class SocketStreamBase : public std::iostream {
+class SocketStreamBase : public std::streambuf, public std::iostream {
  public:
   SocketStreamBase(size_t buf_size = 4096);
 
