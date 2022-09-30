@@ -7,6 +7,7 @@ namespace kingfisher {
 namespace coroutine {
 
 enum {
+  ROUTINE_RESERVE,
   ROUTINE_RUNNING,
   ROUTINE_SUSPEND,
   ROUTINE_DONE
