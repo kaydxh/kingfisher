@@ -5,7 +5,8 @@
 namespace kingfisher {
 namespace coroutine {
 RoutineContext::RoutineContext(size_t stack_size, RoutineFunc f, void *args)
-    : func_(f), args_(args), stack_size_(stack_size) {
+    //: func_(f), args_(args), stack_size_(stack_size) {
+    : RoutineContextBase::RoutineContextBase(stack_size, f, args) {
   Make(f, args);
 }
 
@@ -64,7 +65,15 @@ void RoutineContext::handle(uintptr_t ptr) {
   //  uintptr_t ptr = (uintptr_t)low32 | ((uintptr_t)high32 << 32);
   RoutineContext *rc = reinterpret_cast<RoutineContext *>(ptr);
   if (rc) {
-    rc->func_(rc->args_);
+    if (rc->preFunc_) {
+      rc->preFunc_();
+    }
+    if (rc->func_) {
+      rc->func_(rc->args_);
+    }
+    if (rc->postFunc_) {
+      rc->postFunc_();
+    }
   }
 }
 }

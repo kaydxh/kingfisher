@@ -26,11 +26,11 @@ class RoutineContext : public RoutineContextBase {
 
   // var
   ucontext_t context_;
-  RoutineFunc func_ = nullptr;
-  void *args_ = nullptr;
+  // RoutineFunc func_ = nullptr;
+  // void *args_ = nullptr;
   // 64k
-  size_t stack_size_ = 64 * 1024;
-  void *stack_ = nullptr;
+  // size_t stack_size_ = 64 * 1024;
+  // void *stack_ = nullptr;
 };
 }
 }
