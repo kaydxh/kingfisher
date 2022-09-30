@@ -10,7 +10,7 @@ namespace coroutine {
 
 class RoutinePool {
  public:
-  RoutinePool(size_t stack_size, int n);
+  RoutinePool(size_t stack_size);
   ~RoutinePool();
 
   int Make(RoutineFunc f, void* args);
@@ -23,7 +23,6 @@ class RoutinePool {
  private:
   struct RoutineContextSlot {
     std::shared_ptr<RoutineContextBase> routine_ = nullptr;
-    // int next_;
     int status_ = ROUTINE_RESERVE;
   };
 

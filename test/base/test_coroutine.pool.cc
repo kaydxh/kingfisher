@@ -35,7 +35,7 @@ void task(void *args) {
 
 TEST(test_RoutinePool, RoutinePool) {
 
-  RoutinePool pool(64 * 1024, 0);
+  RoutinePool pool(64 * 1024);
   int n = 4;
   std::vector<TaskArg> args(n);
   for (int i = 0; i < n; ++i) {
