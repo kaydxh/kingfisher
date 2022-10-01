@@ -34,6 +34,7 @@ void task(void *args) {
 }
 
 TEST(test_RoutinePool, RoutinePool) {
+  srandom(time(NULL));
 
   RoutinePool pool(64 * 1024);
   int n = 4;
