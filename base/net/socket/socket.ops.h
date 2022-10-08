@@ -14,6 +14,8 @@ void BindOrDie(int sockfd, const struct sockaddr* addr);
 void ListenOrDie(int sockfd);
 int Accept(int sockfd, struct sockaddr_in6* addr);
 
+ssize_t read(int sockfd, void* buf, size_t count);
+
 void Close(int sockfd);
 
 std::string ToIpPort(const struct sockaddr* addr);

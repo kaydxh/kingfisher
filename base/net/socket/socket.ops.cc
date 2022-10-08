@@ -100,6 +100,10 @@ int Accept(int sockfd, struct sockaddr_in6* addr) {
   return connfd;
 }
 
+ssize_t read(int sockfd, void* buf, size_t count) {
+  return ::read(sockfd, buf, count);
+}
+
 void Close(int sockfd) {
   if (::close(sockfd) < 0) {
     std::cout << "sockets::close";
