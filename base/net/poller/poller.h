@@ -12,11 +12,13 @@ class Channel;
 class IPoller {
  public:
   IPoller();
-  ~IPoller();
-  int Poll(std::vector<std::shared_ptr<Channel>> &channels, int timeout_ms);
-  int Add(std::shared_ptr<Channel> channel, int timeout_ms);
-  int Update(std::shared_ptr<Channel> channel, int timeout_ms);
-  int Delete(std::shared_ptr<Channel> channel, int timeout_ms);
+  virtual ~IPoller();
+
+  virtual int Poll(std::vector<std::shared_ptr<Channel>> &channels,
+                   int timeout_ms) = 0;
+  virtual int Add(std::shared_ptr<Channel> channel, int timeout_ms) = 0;
+  virtual int Update(std::shared_ptr<Channel> channel, int timeout_ms) = 0;
+  virtual int Delete(std::shared_ptr<Channel> channel, int timeout_ms) = 0;
 };
 }
 }

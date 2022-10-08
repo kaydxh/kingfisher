@@ -1,21 +1,26 @@
 #include "channel.h"
 #include <poll.h>
 #include <sstream>
+#include <iostream>
 
 namespace kingfisher {
 namespace net {
 
 Channel::Channel(EventLoop* loop, int fd) : loop_(loop), fd_(fd) {}
 
-void Channel::SetReadCallback(ReadEventCallback cb) {
-  readCallback_ = std::move(cb);
+Channel::~Channel() {}
+
+void Channel::SetReadCallback(EventCallback cb) {
+  // readCallback_ = std::move(cb);
+  readCallback_ = cb;
 }
 
 void Channel::SetWriteCallback(EventCallback cb) {
-  writeCallback_ = std::move(cb);
+  // writeCallback_ = std::move(cb);
+  writeCallback_ = cb;
 }
 
-void Channel::SetReadEvent(ReadEventCallback cb) {
+void Channel::SetReadEvent(EventCallback cb) {
   SetReadCallback(cb);
   EnableEvent(POLLIN | POLLPRI);
 }
@@ -37,7 +42,8 @@ void Channel::update() {
   // loop_->
 }
 
-void Channel::handleEvent(time::Timestamp receivedTime) {
+/*
+void Channel::handleEvent() {
   std::shared_ptr<void> guard;
   if (tied_) {
     guard = tie_.lock();
@@ -47,8 +53,10 @@ void Channel::handleEvent(time::Timestamp receivedTime) {
   }
   return doHandleEvent(receivedTime);
 }
+*/
 
-void Channel::doHandleEvent(time::Timestamp receivedTime) {
+void Channel::HandleEvent() {
+  std::cout << "HandleEvent" << std::endl;
   // close event
   // POLLHUP: Hang up (output only)
   // POLLIN: There is data to read
@@ -71,7 +79,7 @@ void Channel::doHandleEvent(time::Timestamp receivedTime) {
   // definition.
   if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
     if (readCallback_) {
-      readCallback_(receivedTime);
+      readCallback_();
     }
   }
 

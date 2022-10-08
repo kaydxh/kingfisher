@@ -104,6 +104,10 @@ ssize_t read(int sockfd, void* buf, size_t count) {
   return ::read(sockfd, buf, count);
 }
 
+ssize_t write(int sockfd, const void* buf, size_t count) {
+  return ::write(sockfd, buf, count);
+}
+
 void Close(int sockfd) {
   if (::close(sockfd) < 0) {
     std::cout << "sockets::close";

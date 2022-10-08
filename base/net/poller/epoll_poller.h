@@ -13,7 +13,7 @@ class Channel;
 
 class EPoller : public IPoller {
  public:
-  EPoller();
+  EPoller(int maxevents = 16);
   ~EPoller();
   int Poll(std::vector<std::shared_ptr<Channel>> &channels, int timeout_ms);
   int Add(std::shared_ptr<Channel> channel, int timeout_ms);

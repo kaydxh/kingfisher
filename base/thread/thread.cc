@@ -14,6 +14,8 @@ Thread::~Thread() {
   }
 }
 
+std::thread::id Thread::thread_id() noexcept { return thread_.get_id(); }
+
 void Thread::run() {
   if (nullptr == func_) {
     return;
@@ -21,9 +23,11 @@ void Thread::run() {
 
   try {
     func_();
-  } catch (std::exception &ex) {
+  }
+  catch (std::exception &ex) {
     std::cerr << "unhandle std::exception: " << ex.what() << std::endl;
-  } catch (...) {
+  }
+  catch (...) {
     std::cerr << "unhandle unknown exception" << std::endl;
   }
 
