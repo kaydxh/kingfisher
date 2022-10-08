@@ -20,7 +20,11 @@ class EPoller : public IPoller {
   int Update(std::shared_ptr<Channel> channel, int timeout_ms);
   int Delete(std::shared_ptr<Channel> channel, int timeout_ms);
 
+  bool Validate() const;
+
  private:
+  int operate(int operation, std::shared_ptr<Channel> channel);
+
   int epoll_fd_ = -1;
   std::vector<epoll_event> events_;
 };

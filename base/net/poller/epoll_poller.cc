@@ -15,15 +15,18 @@ namespace net {
 // why this may be useful
 EPoller::EPoller(int maxevents)
     : epoll_fd_(::epoll_create1(EPOLL_CLOEXEC)), events_(maxevents) {
-  assert(epoll_fd_ >= 0);
+  assert(Validate());
 }
 
 EPoller::~EPoller() {
-  if (epoll_fd_ >= 0) {
+  if (Validate()) {
     ::close(epoll_fd_);
     epoll_fd_ = -1;
   }
 }
+
+bool EPoller::Validate() const { return epoll_fd_ >= 0; }
+
 int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
                   int timeout_ms) {
   int events_cout = ::epoll_wait(epoll_fd_, &*events_.begin(),
@@ -45,9 +48,19 @@ int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
   return 0;
 }
 
-int EPoller::Add(std::shared_ptr<Channel> channel, int timeout_ms) { return 0; }
+int EPoller::Add(std::shared_ptr<Channel> channel, int timeout_ms) {
+  return operate(EPOLL_CTL_ADD, channel);
+}
 
 int EPoller::Update(std::shared_ptr<Channel> channel, int timeout_ms) {
+  return operate(EPOLL_CTL_MOD, channel);
+}
+
+int EPoller::Delete(std::shared_ptr<Channel> channel, int timeout_ms) {
+  return operate(EPOLL_CTL_DEL, channel);
+}
+
+int EPoller::operate(int operation, std::shared_ptr<Channel> channel) {
   struct epoll_event event;
   memset(&event, 0, sizeof(event));
   event.events = channel->Events();
@@ -55,22 +68,7 @@ int EPoller::Update(std::shared_ptr<Channel> channel, int timeout_ms) {
   event.data.ptr = &channel;
 
   // fd target file descriptor
-  int ret = ::epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, channel->Fd(), &event);
-  if (ret != 0) {
-    return ret;
-  }
-
-  return 0;
-}
-int EPoller::Delete(std::shared_ptr<Channel> channel, int timeout_ms) {
-  struct epoll_event event;
-  memset(&event, 0, sizeof(event));
-  event.events = channel->Events();
-  event.data.fd = channel->Fd();
-  //  event.data.ptr = channel;
-
-  // fd target file descriptor
-  int ret = ::epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, channel->Fd(), &event);
+  int ret = ::epoll_ctl(epoll_fd_, operation, channel->Fd(), &event);
   if (ret != 0) {
     return ret;
   }
