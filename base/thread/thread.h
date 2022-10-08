@@ -19,6 +19,8 @@ class Thread : noncopyable {
   explicit Thread(ThreadFunc);
   ~Thread();
 
+  std::thread::id thread_id() noexcept;
+
   void join();
 
  private:

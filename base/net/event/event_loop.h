@@ -11,6 +11,7 @@ class EventLoop {
   EventLoop();
   ~EventLoop();
 
+  void Wakeup();
   void Run();
   void Quit();
 
@@ -18,10 +19,10 @@ class EventLoop {
   void handleRead();
 
   std::unique_ptr<IPoller> poller_;
-  std::unique_ptr<Channel> wakeup_channel_;
   bool quit_ = false;
 
-  int wakeupFd_ = -1;
+  int wakeup_fd_ = -1;
+  std::unique_ptr<Channel> wakeup_channel_;
 };
 }
 }

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <cstring>
 #include "net/event/channel.h"
+#include <iostream>
 //#include "timestamp.h"
 
 namespace kingfisher {
@@ -12,8 +13,9 @@ namespace net {
 // EPOLL_CLOEXEC Set the close-on-exec (FD_CLOEXEC) flag on the new file
 // descriptor. See the description of the O_CLOEXEC flag in open(2) for reasons
 // why this may be useful
-EPoller::EPoller() : epoll_fd_(::epoll_create1(EPOLL_CLOEXEC)) {
-  assert(epoll_fd_ < 0);
+EPoller::EPoller(int maxevents)
+    : epoll_fd_(::epoll_create1(EPOLL_CLOEXEC)), events_(maxevents) {
+  assert(epoll_fd_ >= 0);
 }
 
 EPoller::~EPoller() {
@@ -26,6 +28,11 @@ int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
                   int timeout_ms) {
   int events_cout = ::epoll_wait(epoll_fd_, &*events_.begin(),
                                  static_cast<int>(events_.size()), timeout_ms);
+  std::cout << "epoll fd: " << epoll_fd_ << " events cout:" << events_cout
+            << std::endl;
+  if (events_cout < 0) {
+    std::cout << errno << std::endl;
+  }
   // time::Timestamp::Now();
   for (int i = 0; i < events_cout; ++i) {
     std::shared_ptr<Channel> channel =
