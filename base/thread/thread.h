@@ -30,6 +30,12 @@ class Thread : noncopyable {
   ThreadFunc func_ = nullptr;
   std::thread thread_;
 };
+
+pid_t GetTid();
+pid_t GetCacheTid();
+
+bool IsMainThread();
+
 }  // namespace thread
 }  // namespace kingfisher
 

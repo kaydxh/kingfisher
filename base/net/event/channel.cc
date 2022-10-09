@@ -1,5 +1,6 @@
 #include "channel.h"
 #include <poll.h>
+#include <memory>
 #include <sstream>
 #include <iostream>
 
@@ -8,16 +9,14 @@ namespace net {
 
 Channel::Channel(EventLoop* loop, int fd) : loop_(loop), fd_(fd) {}
 
-Channel::~Channel() {}
+Channel::~Channel() { std::cout << "~Channel" << std::endl; }
 
 void Channel::SetReadCallback(EventCallback cb) {
-  // readCallback_ = std::move(cb);
-  readCallback_ = cb;
+  readCallback_ = std::move(cb);
 }
 
 void Channel::SetWriteCallback(EventCallback cb) {
-  // writeCallback_ = std::move(cb);
-  writeCallback_ = cb;
+  writeCallback_ = std::move(cb);
 }
 
 void Channel::SetReadEvent(EventCallback cb) {
@@ -29,34 +28,16 @@ void Channel::EnableEvent(int event) { events_ |= event; }
 
 void Channel::SetRevents(int revents) { revents_ = revents; }
 
-void Channel::Tie(const std::shared_ptr<void>& obj) {
-  tie_ = obj;
-  tied_ = true;
-}
-
 int Channel::Events() const { return events_; }
 
 int Channel::Fd() const { return fd_; }
 
 void Channel::update() {
-  // loop_->
+  //    loop_->OperateChannel(0, this);
 }
-
-/*
-void Channel::handleEvent() {
-  std::shared_ptr<void> guard;
-  if (tied_) {
-    guard = tie_.lock();
-    if (guard) {
-      return doHandleEvent(receivedTime);
-    }
-  }
-  return doHandleEvent(receivedTime);
-}
-*/
 
 void Channel::HandleEvent() {
-  std::cout << "HandleEvent" << std::endl;
+  std::cout << "HandleEvent: " << reventsToString() << std::endl;
   // close event
   // POLLHUP: Hang up (output only)
   // POLLIN: There is data to read
@@ -94,7 +75,7 @@ void Channel::HandleEvent() {
 std::string Channel::reventsToString() {
   //  std::ostringstream result;
   char buf[1024] = {0};
-  snprintf(buf, sizeof(buf), "fd[%d]:events[%s]", fd_,
+  snprintf(buf, sizeof(buf), "fd[%d]:events[ %s]", fd_,
            eventsToString(revents_).data());
   return std::string(buf);
 }

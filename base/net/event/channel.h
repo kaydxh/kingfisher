@@ -45,8 +45,6 @@ class Channel {
   int events_;
   // received event type of epoller
   int revents_;
-  std::weak_ptr<void> tie_;
-  bool tied_ = false;
 };
 }
 }
