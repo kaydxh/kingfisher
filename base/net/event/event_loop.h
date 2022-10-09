@@ -16,7 +16,6 @@ class EventLoop {
   void Run();
   void Quit();
   bool IsInLoopThread() const;
-  int OperateChannel(int operation, std::shared_ptr<Channel> channel);
 
  private:
   void handleRead();
