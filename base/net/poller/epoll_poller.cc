@@ -5,6 +5,7 @@
 #include <cstring>
 #include "net/event/channel.h"
 #include <iostream>
+#include <memory>
 //#include "timestamp.h"
 
 namespace kingfisher {
@@ -19,6 +20,7 @@ EPoller::EPoller(int maxevents)
 }
 
 EPoller::~EPoller() {
+  std::cout << "~EPoller()" << std::endl;
   if (Validate()) {
     ::close(epoll_fd_);
     epoll_fd_ = -1;
@@ -36,11 +38,12 @@ int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
   if (events_cout < 0) {
     std::cout << errno << std::endl;
   }
+
+  std::vector<std::shared_ptr<Channel>> result;
   // time::Timestamp::Now();
   for (int i = 0; i < events_cout; ++i) {
     std::shared_ptr<Channel> channel =
-        *static_cast<std::shared_ptr<Channel>*>(events_[i].data.ptr);
-    // auto fd = events_[i].data.fd;
+        *reinterpret_cast<std::shared_ptr<Channel>*>(events_[i].data.ptr);
     channel->SetRevents(events_[i].events);
     channels_reutrn.push_back(channel);
   }
@@ -65,7 +68,8 @@ int EPoller::operate(int operation, std::shared_ptr<Channel> channel) {
   memset(&event, 0, sizeof(event));
   event.events = channel->Events();
   event.data.fd = channel->Fd();
-  event.data.ptr = &channel;
+  // void = shared_ptr, note: need new shared_ptr
+  event.data.ptr = new std::shared_ptr<Channel>(channel);
 
   // fd target file descriptor
   int ret = ::epoll_ctl(epoll_fd_, operation, channel->Fd(), &event);

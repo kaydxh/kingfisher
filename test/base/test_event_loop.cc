@@ -16,22 +16,30 @@ class test_EventLoop : public testing::Test {
   virtual void TearDown(void) {}
 };
 
+EventLoop *g_loop;
 void threadFunc() {
-  printf("threadFunc(): pid = %d\n", getpid());
-  // printf("threadFunc(): pid = %d, tid = %d\n", getpid(),
-  // CurrentThread::tid());
+  printf("threadFunc(): pid = %d, tid = %d\n", getpid(), thread::GetCacheTid());
 
   // assert(EventLoop::getEventLoopOfCurrentThread() == NULL);
   EventLoop loop;
+  g_loop = &loop;
   // assert(EventLoop::getEventLoopOfCurrentThread() == &loop);
   // loop.runAfter(1.0, callback);
   loop.Run();
+  // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 TEST_F(test_EventLoop, EventLoop) {
   // EventLoop loop;
   Thread t(threadFunc);
+  std::cout << "tid1: " << t.thread_id() << std::endl;
+  std::cout << "tid2: " << thread::GetCacheTid() << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::cout << "start quit " << std::endl;
+  g_loop->Quit();
   t.join();
+  std::cout << "end quit " << std::endl;
+  // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   // loop.Run();
 }
 
