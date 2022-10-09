@@ -69,6 +69,7 @@ int EPoller::operate(int operation, std::shared_ptr<Channel> channel) {
   event.events = channel->Events();
   event.data.fd = channel->Fd();
   // void = shared_ptr, note: need new shared_ptr
+  // https://stackoverflow.com/questions/31063055/passing-a-shared-ptr-through-a-c-interface-that-takes-void#:~:text=evt.user.data1%20%3D%20new%20MessagePtr%20(msg)%3B
   event.data.ptr = new std::shared_ptr<Channel>(channel);
 
   // fd target file descriptor

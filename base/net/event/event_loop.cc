@@ -88,15 +88,6 @@ bool EventLoop::IsInLoopThread() const {
   return thread_id_ == thread::GetTid();
 }
 
-int EventLoop::OperateChannel(int operation, std::shared_ptr<Channel> channel) {
-
-  /*
-  switch (operation) {
-  }
-  */
-  return poller_->Add(channel, 0);
-}
-
 //
 }
 }
