@@ -88,6 +88,25 @@ bool EventLoop::IsInLoopThread() const {
   return thread_id_ == thread::GetTid();
 }
 
+void EventLoop::RunInLoop(Functor&& cb) {
+  if (IsInLoopThread()) {
+    cb();
+    return;
+  }
+
+  QueueInLoop(std::move(cb));
+}
+
+void EventLoop::QueueInLoop(Functor&& cb) {
+  {
+    std::lock_guard<std::mutex> guard(mutex_);
+    pending_functors_.emplace_back(std::move(cb));
+  }
+
+  if (!IsInLoopThread()) {
+    Wakeup();
+  }
+}
 //
 }
 }
