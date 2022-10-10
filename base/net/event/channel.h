@@ -27,7 +27,7 @@ class Channel {
 
   /// Tie this channel to the owner object managed by shared_ptr,
   /// prevent the owner object being destroyed in handleEvent.
-  void Tie(const std::shared_ptr<void>&);
+  // void Tie(const std::shared_ptr<void>&);
   int Events() const;
   int Fd() const;
   void HandleEvent();
