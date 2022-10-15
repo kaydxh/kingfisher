@@ -114,3 +114,13 @@ TEST_F(test_Strings, Split) {
     std::cout << node << std::endl;
   }
 }
+
+TEST_F(test_Strings, SplitToInt64) {
+  std::string filepath = "10,20,30,40";
+  std::vector<int64_t> values = SplitToInt64(filepath, ',');
+
+  std::cout << "values: " << std::endl;
+  for (auto &v : values) {
+    std::cout << v << std::endl;
+  }
+}

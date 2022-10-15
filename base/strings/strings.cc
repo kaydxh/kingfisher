@@ -76,6 +76,21 @@ std::vector<std::string> Split(const std::string &s, const char delim) {
   return results;
 }
 
+std::vector<int64_t> SplitToInt64(const std::string &s, const char delim) {
+  std::vector<int64_t> results;
+  auto strs = Split(s, delim);
+  for (auto str : strs) {
+    int64_t value = 0;
+    int ret = ParseInt64(value, str, 10);
+    if (ret != 0) {
+      return {};
+    }
+    results.push_back(value);
+  }
+
+  return results;
+}
+
 bool HasPrefix(const std::string &s, const std::string &prefix,
                bool case_sensitive) {
   if (s.length() < prefix.length()) {
