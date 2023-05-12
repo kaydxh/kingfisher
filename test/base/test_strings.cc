@@ -105,12 +105,22 @@ TEST_F(test_Strings, TrimRight) {
   }
 }
 
-TEST_F(test_Strings, All) {
+TEST_F(test_Strings, Split) {
   std::string filepath = "./tmp/test";
   std::vector<std::string> path_nodes = Split(filepath, '/');
 
   std::cout << "path nodes: " << std::endl;
   for (auto &node : path_nodes) {
     std::cout << node << std::endl;
+  }
+}
+
+TEST_F(test_Strings, SplitToInt64) {
+  std::string filepath = "10,20,30,40";
+  std::vector<int64_t> values = SplitToInt64(filepath, ',');
+
+  std::cout << "values: " << std::endl;
+  for (auto &v : values) {
+    std::cout << v << std::endl;
   }
 }

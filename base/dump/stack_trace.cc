@@ -23,10 +23,11 @@ const char kSymbolCharacters[] =
 const struct {
   int signal_number;
   const char* name;
-} kFailureSignals[] = {
-    {SIGSEGV, "SIGSEGV"}, {SIGILL, "SIGILL"},   {SIGFPE, "SIGFPE"},
-    {SIGABRT, "SIGABRT"}, {SIGTERM, "SIGTERM"},
-};
+} kFailureSignals[] = {{SIGSEGV, "SIGSEGV"},
+                       {SIGILL, "SIGILL"},
+                       {SIGFPE, "SIGFPE"},
+                       {SIGABRT, "SIGABRT"},
+                       {SIGTERM, "SIGTERM"}, };
 
 class MinimalFormatter {
  public:
@@ -34,9 +35,9 @@ class MinimalFormatter {
       : buffer_(buffer), cursor_(buffer), end_(buffer + size) {}
 
  private:
-  char* buffer_;
-  char* cursor_;
-  const char* const end_;
+  char* buffer_ = nullptr;
+  char* cursor_ = nullptr;
+  const char* const end_ = nullptr;
 };
 
 }  // namespace detail
