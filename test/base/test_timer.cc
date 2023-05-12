@@ -25,7 +25,7 @@ TEST_F(test_Timer, Once) {
   std::atomic<int> count(0);
   TimerEvent<Callback> event([&count]() {
     ++count;
-    std::cout << "callback event at time: " << getJiffies()
+    std::cout << "callback event at time: " << GetJiffies()
               << ", count: " << count << std::endl;
   });
 
@@ -43,7 +43,7 @@ TEST_F(test_Timer, Multi) {
   std::atomic<int> count(0);
   TimerEvent<Callback> event([&count]() {
     ++count;
-    //  std::cout << "callback event at time: " << getJiffies()
+    //  std::cout << "callback event at time: " << GetJiffies()
     //           << ", count: " << count << std::endl;
   });
 
@@ -61,13 +61,13 @@ TEST_F(test_Timer, Mix) {
   std::atomic<int> count(0);
   TimerEvent<Callback> event([&count]() {
     ++count;
-    // std::cout << "callback event at time: " << getJiffies()
+    // std::cout << "callback event at time: " << GetJiffies()
     //         << ", count: " << count << std::endl;
   });
 
   TimerEvent<Callback> event2([&count]() {
     ++count;
-    //    std::cout << "callback event2 at time: " << getJiffies()
+    //    std::cout << "callback event2 at time: " << GetJiffies()
     //             << ", count: " << count << std::endl;
   });
 

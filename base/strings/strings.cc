@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-#include <string>
+#include <cstring>
 
 namespace kingfisher {
 namespace strings {
@@ -47,6 +47,7 @@ int ParseUint64(uint64_t &result, const std::string &s, int base) {
 }
 
 std::vector<std::string> Split(const std::string &s, const char delim) {
+#if 0
   std::string word;
   std::stringstream ss(s);
   std::vector<std::string> words;
@@ -55,6 +56,39 @@ std::vector<std::string> Split(const std::string &s, const char delim) {
     words.push_back(word);
   }
   return words;
+#endif
+  std::vector<std::string> results;
+  auto last(0);
+  auto found(s.find_first_of(delim));
+  while (std::string::npos != found) {
+    auto r(s.substr(last, found - last));
+    last = found + 1;
+    found = s.find_first_of(delim, last);
+    if (!r.empty()) {
+      results.push_back(r);
+    }
+  }
+  auto r(s.substr(last));
+  if (!r.empty()) {
+    results.push_back(r);
+  }
+
+  return results;
+}
+
+std::vector<int64_t> SplitToInt64(const std::string &s, const char delim) {
+  std::vector<int64_t> results;
+  auto strs = Split(s, delim);
+  for (auto str : strs) {
+    int64_t value = 0;
+    int ret = ParseInt64(value, str, 10);
+    if (ret != 0) {
+      return {};
+    }
+    results.push_back(value);
+  }
+
+  return results;
 }
 
 bool HasPrefix(const std::string &s, const std::string &prefix,

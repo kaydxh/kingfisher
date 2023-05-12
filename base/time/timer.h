@@ -19,8 +19,8 @@ class TimerWheel;
 
 using Tick = uint64_t;
 
-uint64_t getJiffies();
-void msleep(uint32_t msecs);
+uint64_t GetJiffies();
+void MsSleep(uint32_t time_ms);
 
 class TimerEventBase {
  public:
@@ -101,7 +101,7 @@ class TimerWheelSlot {
 
 class TimerWheel {
  public:
-  TimerWheel() : now_(getJiffies()), ticks_pending_(0) {}
+  TimerWheel() : now_(GetJiffies()), ticks_pending_(0) {}
 
   ~TimerWheel() { thread_pool_.stop(); }
 
