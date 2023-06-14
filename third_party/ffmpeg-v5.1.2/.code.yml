@@ -1,0 +1,7 @@
+source:
+  test_source:
+    filepath_regex: [".*/java/test/.*", ".*/test.java"]
+  auto_generate_source:
+    filepath_regex: ["./*"]
+  third_party_source:
+    filepath_regex: [".*/"]
