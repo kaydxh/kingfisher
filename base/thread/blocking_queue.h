@@ -119,7 +119,7 @@ class BlockingQueue : noncopyable {
     if (capacity_ < 0) {
       return false;
     }
-    return queue_.size() >= capacity_;
+    return static_cast<int>(queue_.size()) >= capacity_;
   }
 
  private:
