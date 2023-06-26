@@ -24,7 +24,7 @@ struct Test1 {
   std::map<std::string, std::string> f;
 };
 
-TEST(test_dson, All) {
+TEST(test_DJson, All) {
   // init
   std::vector<std::pair<std::string, JsonBase *> > vec;
   vec.push_back(std::make_pair("a", new JsonObjector<Test1, int>(&Test1::a)));
@@ -73,4 +73,10 @@ TEST(test_dson, All) {
   } else {
     std::cout << "toObj failed." << std::endl;
   }
+
+  // validJson
+  js = "{\"1\"}";
+  bool validJs = JsonPraser::validJson(js);
+  std::cout << js << " is valid json: " << validJs << std::endl;
+
 }
