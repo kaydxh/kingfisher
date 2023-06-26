@@ -21,10 +21,11 @@ set(CXX_FLAGS
  # -Wold-style-cast
  # -Woverloaded-virtual
  -Wpointer-arith
+ -Wno-noexcept-type
  # -Wshadow
  -Wwrite-strings
  -march=native
- -std=c++11
+ -std=c++14
  -rdynamic
  )
 
