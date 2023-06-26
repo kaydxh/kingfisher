@@ -402,6 +402,15 @@ class JsonPraser {
 
     return JsonHelper<T>::toObj(doc, obj);
   }
+
+  static bool validJson(const std::string& json) {
+    rapidjson::Document doc;
+    doc.Parse(json.c_str());
+    if (doc.HasParseError()) {
+      return false;
+    }
+    return true;
+  }
 };
 
 SERIALIZER_DJSON_NAMESPACE_END
