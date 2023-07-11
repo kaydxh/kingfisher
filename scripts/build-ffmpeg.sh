@@ -68,6 +68,16 @@ function build_nasm() {
   make install
 }
 
+# ERROR: cuvid requested, but not all dependencies are satisfied: cuda/ffnvcodec
+function build_nv_codec_headers() {
+  sdk_version="n10.0.26.2"
+  git_dir="${DOWNLOAD_DIR}/nv-codec-headers-${sdk_version}"
+  git -C ${git_dir} pull origin ${sdk_version} || git clone --branch ${sdk_version} https://github.com/FFmpeg/nv-codec-headers.git ${git_dir}
+  cd ${git_dir}
+  make -j ${CPUS} 
+  make install PREFIX=${FFMPEG_PREFIX} BINDDIR=${FFMPEG_PREFIX}/bin
+}
+
 function build_x264() {
   git_dir="${DOWNLOAD_DIR}/x264"
   git -C ${git_dir} pull || git clone --branch stable https://code.videolan.org/videolan/x264.git ${git_dir}
@@ -126,6 +136,7 @@ function build_ffmpeg() {
 
 #build_nasm
 #build_yasm
+build_nv_codec_headers
 #build_x264
 build_x265
-#build_ffmpeg
+build_ffmpeg
