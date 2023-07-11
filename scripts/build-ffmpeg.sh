@@ -68,6 +68,15 @@ function build_nasm() {
   make install
 }
 
+function build_free_type() {
+  git_dir="${DOWNLOAD_DIR}/freetype"
+  git -C ${git_dir} pull || git clone https://gitlab.freedesktop.org/freetype/freetype.git ${git_dir}
+  cd ${git_dir}
+  bash ./autogen.sh
+  make -j ${CPUS} 
+  make install PREFIX=${FFMPEG_PREFIX} BINDDIR=${FFMPEG_PREFIX}/bin
+}
+
 # ERROR: cuvid requested, but not all dependencies are satisfied: cuda/ffnvcodec
 function build_nv_codec_headers() {
   sdk_version="n10.0.26.2"
@@ -119,6 +128,7 @@ function build_ffmpeg() {
   --disable-debug \
   --enable-cuda \
   --enable-cuvid \
+  --enable-nvdec \
   --enable-nvenc \
   --enable-cuda-nvcc \
   --enable-pic \
@@ -134,9 +144,14 @@ function build_ffmpeg() {
   make install
 }
 
+function install_ffmpeg() {
+  ln -s ${FFMPEG_PACK} ${ROOT_PATH}/../third_party/ffmpeg
+}
+
 #build_nasm
 #build_yasm
-build_nv_codec_headers
+#build_nv_codec_headers
 #build_x264
-build_x265
-build_ffmpeg
+#build_x265
+#build_ffmpeg
+install_ffmpeg
