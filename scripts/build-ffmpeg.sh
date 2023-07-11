@@ -14,7 +14,7 @@ CPUS=$(nproc)
 DOWNLOAD_DIR=${ROOT_PATH}/.download
 FFMPEG_BUILD=${ROOT_PATH}/ffmpeg_build
 FFMPEG_PACK=${ROOT_PATH}/pack/ffmpeg
-FFMPEG_PREFIX=${FFMPEG_PACK}/include
+FFMPEG_PREFIX=${FFMPEG_PACK}
 FFMPEG_BIN=${FFMPEG_PACK}/bin
 FFMPEG_VERSION="5.1.3"
 FFMPEG_NAME="ffmpeg-${FFMPEG_VERSION}.tar.bz2"
@@ -68,6 +68,30 @@ function build_nasm() {
   make install
 }
 
+function build_x264() {
+  git_dir="${DOWNLOAD_DIR}/x264"
+  git -C ${git_dir} pull || git clone --branch stable https://code.videolan.org/videolan/x264.git ${git_dir}
+  cd ${git_dir}
+  PKG_CONFIG_PATH="${FFMPEG_PACK}/lib/pkgconfig" ./configure \
+  --prefix="${FFMPEG_PREFIX}" \
+  --bindir="${FFMPEG_BIN}" \
+  --enable-shared \
+  --disable-asm \
+  --enable-pic \
+  --enable-static 
+  make -j ${CPUS}
+  make install
+}
+
+function build_x265() {
+  git_dir="${DOWNLOAD_DIR}/x265_git"
+  git -C ${git_dir} pull || git clone --branch stable https://bitbucket.org/multicoreware/x265_git ${git_dir}
+  cd ${git_dir}/build/linux
+  cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${FFMPEG_PREFIX}" -DENABLE_SHARED:bool=on ../../source 
+  make -j ${CPUS}
+  make install
+}
+
 function build_ffmpeg() {
   ffmpeg_version="5.1.3"
   ffmpeg_name="ffmpeg"
@@ -100,6 +124,8 @@ function build_ffmpeg() {
   make install
 }
 
-build_nasm
-build_yasm
-build_ffmpeg
+#build_nasm
+#build_yasm
+#build_x264
+build_x265
+#build_ffmpeg
