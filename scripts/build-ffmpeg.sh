@@ -111,6 +111,9 @@ function build_x265() {
   make install
 }
 
+# 编码器
+# aac mp3 opus(RTC直播) vp9(google开源编码器) x264 x265 av1(AOMedia开放
+# 媒体联盟开源的新一代视频编码器)
 function build_ffmpeg() {
   ffmpeg_version="5.1.3"
   ffmpeg_name="ffmpeg"
