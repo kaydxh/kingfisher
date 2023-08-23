@@ -10,7 +10,7 @@
 namespace kingfisher {
 namespace utils {
 
-std::string Guid::GenUuidString() {
+std::string Guid::GuidString() {
   uint64_t most_sign = kingfisher::random::Random::RandUInt64();
   uint64_t least_sign = kingfisher::random::Random::RandUInt64();
 

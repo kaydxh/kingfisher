@@ -20,7 +20,7 @@ class Guid {
   ~Guid() {}
 
  public:
-  static std::string GenUuidString();
+  static std::string GuidString();
 
  private:
   void init();
