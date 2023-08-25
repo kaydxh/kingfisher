@@ -1,6 +1,8 @@
 #ifndef KINGFISHER_PKG_DATABASE_MYSQL_H_
 #define KINGFISHER_PKG_DATABASE_MYSQL_H_
 
+#include <mysql.h>
+
 #include <mutex>
 #include <string>
 
@@ -8,7 +10,8 @@ namespace kingfisher {
 namespace db {
 
 struct MysqlConfig {
-  std::string address;
+  std::string host;
+  unsigned int port;
   std::string data_name;
   std::string user_name;
   std::string password;
@@ -23,10 +26,10 @@ struct MysqlOptions {
 
 class Mysql {
  public:
-  Mysql(const MysqlConfig& conf);
+  Mysql(const MysqlConfig& conf, const MysqlOptions& opts);
   virtual ~Mysql();
   int Init();
-  MYSQL* Connect(const MysqlOptions& opts);
+  MYSQL* Connect();
   void Close();
   MYSQL* GetDatabase();
 

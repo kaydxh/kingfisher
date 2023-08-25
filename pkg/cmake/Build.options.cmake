@@ -44,3 +44,13 @@ if (ENABLE_PROTOBUF)
   set(PROTOBUF_DEPS protobuf)
 endif()
 
+# cmake -DENABLE_MYSQL=ON ..
+option(ENABLE_PROTOBUF "ENABLE_MYSQL" ON)
+if (ENABLE_PROTOBUF)
+  message(STATUS "> build with mysql lib")
+  add_definitions(-DENABLE_PROTOBUF)
+  set(MYSQL_DEPS mysqlclient)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/mysql/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/mysql/lib)
+endif()
+
