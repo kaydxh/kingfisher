@@ -1,7 +1,5 @@
 #include "mysql.h"
 
-#include <mysql.h>
-
 namespace kingfisher {
 namespace db {
 Mysql::Mysql(const MysqlConfig& conf, const MysqlOptions& opts)
@@ -34,9 +32,9 @@ MYSQL* Mysql::Connect() {
                   (char*)&opts_.dial_timeout);
     mysql_options(mysql_, MYSQL_OPT_READ_TIMEOUT, (char*)&opts_.read_timeout);
 
-    if (mysql_real_connect(mysql_, conf_.address, conf_.user_name,
-                           conf_.password, conf_.data_name,
-                           nullptr) == nullptr) {
+    if (mysql_real_connect(mysql_, conf_.host.c_str(), conf_.user_name.c_str(),
+                           conf_.password.c_str(), conf_.data_name.c_str(),
+                           conf_.port, NULL, 0) == nullptr) {
       mysql_ = nullptr;
     }
   }
