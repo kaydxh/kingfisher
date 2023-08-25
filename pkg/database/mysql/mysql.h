@@ -32,6 +32,7 @@ class Mysql {
   MYSQL* Connect();
   void Close();
   MYSQL* GetDatabase();
+  int Execute(const std::string& sql);
 
  private:
   bool inited_ = false;

@@ -1,5 +1,7 @@
 #include "mysql.h"
 
+#include <iostream>
+
 namespace kingfisher {
 namespace db {
 Mysql::Mysql(const MysqlConfig& conf, const MysqlOptions& opts)
@@ -52,6 +54,14 @@ MYSQL* Mysql::GetDatabase() {
     return nullptr;
   }
   return Connect();
+}
+
+int Mysql::Execute(const std::string& sql) {
+  int ret = mysql_query(mysql_, sql.c_str());
+  if (ret != 0) {
+    std::cout << "exec sql err: " << ret << ", msg: " << mysql_error(mysql_);
+  }
+  return ret;
 }
 
 void Mysql::Close() {
