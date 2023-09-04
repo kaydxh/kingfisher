@@ -17,32 +17,35 @@ int UnmarshalProtoMessage(const YAML::Node& yaml_node,
     const google::protobuf::FieldDescriptor* field = descriptor->field(i);
     const std::string& field_name = field->name();
 
-    if (yaml_node[field_name] && yaml_node[field_name].IsMap()) {
-      switch (field->cpp_type()) {
-        case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE: {
-          const YAML::Node& sub_node = yaml_node[field_name];
-          if (sub_node.IsMap()) {
-            google::protobuf::Message* sub_message =
-                reflection->MutableMessage(&message, field);
-            if (sub_message != nullptr) {
-              UnmarshalProtoMessage(sub_node, *sub_message);
+    // 存在该节点
+    if (yaml_node[field_name]) {
+      if (yaml_node[field_name].IsMap()) {
+        switch (field->cpp_type()) {
+          case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE: {
+            const YAML::Node& sub_node = yaml_node[field_name];
+            if (sub_node.IsMap()) {
+              google::protobuf::Message* sub_message =
+                  reflection->MutableMessage(&message, field);
+              if (sub_message != nullptr) {
+                UnmarshalProtoMessage(sub_node, *sub_message);
+              }
             }
+            break;
           }
-          break;
-        }
-        default:
-          break;
-      }
-    } else {
-      if (field->is_repeated()) {
-        // Handle repeated fields
-        if (yaml_node[field_name].IsSequence()) {
-          for (const auto& item : yaml_node[field_name]) {
-            setValue(item, reflection, field, message, true);
-          }
+          default:
+            break;
         }
       } else {
-        setValue(yaml_node[field_name], reflection, field, message, false);
+        if (field->is_repeated()) {
+          // Handle repeated fields
+          if (yaml_node[field_name].IsSequence()) {
+            for (const auto& item : yaml_node[field_name]) {
+              setValue(item, reflection, field, message, true);
+            }
+          }
+        } else {
+          setValue(yaml_node[field_name], reflection, field, message, false);
+        }
       }
     }
   }
@@ -111,6 +114,21 @@ int setValue(const YAML::Node& yaml_node,
         reflection->SetString(&message, field, yaml_node.as<std::string>());
       }
       break;
+
+    case google::protobuf::FieldDescriptor::CPPTYPE_ENUM: {
+      const google::protobuf::EnumDescriptor* enum_desc = field->enum_type();
+      const google::protobuf::EnumValueDescriptor* enum_value =
+          enum_desc->FindValueByName(yaml_node.as<std::string>());
+      if (enum_value) {
+        if (add) {
+          reflection->AddEnum(&message, field, enum_value);
+        } else {
+          reflection->SetEnum(&message, field, enum_value);
+        }
+        break;
+      }
+    }
+
     default:
       break;
   }
