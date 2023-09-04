@@ -42,7 +42,10 @@ int UnmarshalProtoMessage(const YAML::Node& yaml_node,
             for (const auto& item : yaml_node[field_name]) {
               setValue(item, reflection, field, message, true);
             }
+          } else if (field->is_map()) {
+            setMapKey(yaml_node[field_name], reflection, field, message);
           }
+
         } else {
           setValue(yaml_node[field_name], reflection, field, message, false);
         }
@@ -131,6 +134,37 @@ int setValue(const YAML::Node& yaml_node,
 
     default:
       break;
+  }
+
+  return 0;
+}
+
+int setMapKey(const YAML::Node& yaml_node,
+              const google::protobuf::Reflection* reflection,
+              const google::protobuf::FieldDescriptor* field,
+              google::protobuf::Message& message) {
+  if (yaml_node.IsMap()) {
+    for (YAML::const_iterator it = yaml_node.begin(); it != yaml_node.end();
+         ++it) {
+      google::protobuf::MapKey map_key;
+      google::protobuf::MapValueRef map_value;
+      // Get key
+      switch (field->cpp_type()) {
+        case google::protobuf::FieldDescriptor::CPPTYPE_INT32: {
+          int32_t key = it->first.as<int32_t>();
+          int32_t value = it->second.as<int32_t>();
+          map_key.SetInt32Value(key);
+          map_value.SetInt32Value(value);
+          std::cout << "key:" << key << ",value:" << value << std::endl;
+        }
+        // reflection->InsertOrLookupMapValue(&message, field, map_key,
+        //                                   &map_value);
+        //    ->insert({key, value});
+        break;
+        default:
+          break;
+      }
+    }
   }
 
   return 0;
