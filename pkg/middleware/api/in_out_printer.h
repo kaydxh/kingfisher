@@ -8,7 +8,10 @@ namespace middleware {
 
 void Truncate(::google::protobuf::Message *proto);
 
-}
+template <typename T>
+std::string ProtoString(const T *proto);
+
+}  // namespace middleware
 }  // namespace kingfisher
 
 #endif
