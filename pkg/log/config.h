@@ -17,12 +17,13 @@ struct ConfigOptions {
 class Config {
  public:
   static std::shared_ptr<Config> NewConfig(const ConfigOptions& opts);
+
   int LoadYaml();
   std::shared_ptr<CompletedConfig> Complete();
 
  private:
-  api::v1::viper::logs::LogConfig proto;
-  ConfigOptions options;
+  api::v1::viper::logs::LogConfig proto_;
+  ConfigOptions options_;
 };
 
 class CompletedConfig {
@@ -34,7 +35,7 @@ class CompletedConfig {
   int Install();
 
  private:
-  Config* config_ = nullptr;
+  const Config* config_ = nullptr;
   int completed_ret_ = 0;
 };
 
