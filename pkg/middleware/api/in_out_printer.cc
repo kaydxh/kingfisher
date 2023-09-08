@@ -64,18 +64,5 @@ void TruncateProto(::google::protobuf::Message *proto) {
   }
 }
 
-template <typename T>
-std::string ProtoString(const T *proto) {
-  T cloneProto;
-  cloneProto.CopyFrom(*proto);
-  TruncateProto(&cloneProto);
-
-  ::google::protobuf::TextFormat::Printer printer;
-  printer.SetSingleLineMode(true);
-  std::string output;
-  printer.PrintToString(cloneProto, &output);
-  return output;
-}
-
 }  // namespace middleware
 }  // namespace kingfisher
