@@ -30,6 +30,7 @@ class CompletedConfig {
   CompletedConfig(const Config* config, int completed_ret);
   ~CompletedConfig() {}
 
+  int Apply();
   int Install();
 
  private:

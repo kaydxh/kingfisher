@@ -37,6 +37,14 @@ std::shared_ptr<CompletedConfig> Config::Complete() {
 CompletedConfig::CompletedConfig(const Config* config, int completed_ret)
     : config_(const_cast<Config*>(config)), completed_ret_(completed_ret) {}
 
+int CompletedConfig::Apply() {
+  if (completed_ret_ != 0) {
+    return completed_ret_;
+  }
+
+  return Install();
+}
+
 int CompletedConfig::Install() { return 0; }
 
 }  // namespace log
