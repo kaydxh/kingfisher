@@ -40,7 +40,7 @@ namespace protobuf_pkg_2flog_2flog_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[1];
+  static const ::google::protobuf::internal::ParseTable schema[2];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -54,6 +54,9 @@ namespace logs {
 class Log;
 class LogDefaultTypeInternal;
 extern LogDefaultTypeInternal _Log_default_instance_;
+class LogConfig;
+class LogConfigDefaultTypeInternal;
+extern LogConfigDefaultTypeInternal _LogConfig_default_instance_;
 }  // namespace logs
 }  // namespace viper
 }  // namespace v1
@@ -61,6 +64,7 @@ extern LogDefaultTypeInternal _Log_default_instance_;
 namespace google {
 namespace protobuf {
 template<> ::api::v1::viper::logs::Log* Arena::CreateMaybeMessage<::api::v1::viper::logs::Log>(Arena*);
+template<> ::api::v1::viper::logs::LogConfig* Arena::CreateMaybeMessage<::api::v1::viper::logs::LogConfig>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 namespace api {
@@ -139,6 +143,115 @@ inline bool Log_Redirct_Parse(
 }
 // ===================================================================
 
+class LogConfig : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:api.v1.viper.logs.LogConfig) */ {
+ public:
+  LogConfig();
+  virtual ~LogConfig();
+
+  LogConfig(const LogConfig& from);
+
+  inline LogConfig& operator=(const LogConfig& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  LogConfig(LogConfig&& from) noexcept
+    : LogConfig() {
+    *this = ::std::move(from);
+  }
+
+  inline LogConfig& operator=(LogConfig&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LogConfig& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const LogConfig* internal_default_instance() {
+    return reinterpret_cast<const LogConfig*>(
+               &_LogConfig_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  void Swap(LogConfig* other);
+  friend void swap(LogConfig& a, LogConfig& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline LogConfig* New() const final {
+    return CreateMaybeMessage<LogConfig>(NULL);
+  }
+
+  LogConfig* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<LogConfig>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const LogConfig& from);
+  void MergeFrom(const LogConfig& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(LogConfig* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // .api.v1.viper.logs.Log log = 1;
+  bool has_log() const;
+  void clear_log();
+  static const int kLogFieldNumber = 1;
+  private:
+  const ::api::v1::viper::logs::Log& _internal_log() const;
+  public:
+  const ::api::v1::viper::logs::Log& log() const;
+  ::api::v1::viper::logs::Log* release_log();
+  ::api::v1::viper::logs::Log* mutable_log();
+  void set_allocated_log(::api::v1::viper::logs::Log* log);
+
+  // @@protoc_insertion_point(class_scope:api.v1.viper.logs.LogConfig)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::api::v1::viper::logs::Log* log_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_pkg_2flog_2flog_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:api.v1.viper.logs.Log) */ {
  public:
   Log();
@@ -174,7 +287,7 @@ class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class
                &_Log_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    1;
 
   void Swap(Log* other);
   friend void swap(Log& a, Log& b) {
@@ -422,6 +535,64 @@ class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// LogConfig
+
+// .api.v1.viper.logs.Log log = 1;
+inline bool LogConfig::has_log() const {
+  return this != internal_default_instance() && log_ != NULL;
+}
+inline void LogConfig::clear_log() {
+  if (GetArenaNoVirtual() == NULL && log_ != NULL) {
+    delete log_;
+  }
+  log_ = NULL;
+}
+inline const ::api::v1::viper::logs::Log& LogConfig::_internal_log() const {
+  return *log_;
+}
+inline const ::api::v1::viper::logs::Log& LogConfig::log() const {
+  const ::api::v1::viper::logs::Log* p = log_;
+  // @@protoc_insertion_point(field_get:api.v1.viper.logs.LogConfig.log)
+  return p != NULL ? *p : *reinterpret_cast<const ::api::v1::viper::logs::Log*>(
+      &::api::v1::viper::logs::_Log_default_instance_);
+}
+inline ::api::v1::viper::logs::Log* LogConfig::release_log() {
+  // @@protoc_insertion_point(field_release:api.v1.viper.logs.LogConfig.log)
+  
+  ::api::v1::viper::logs::Log* temp = log_;
+  log_ = NULL;
+  return temp;
+}
+inline ::api::v1::viper::logs::Log* LogConfig::mutable_log() {
+  
+  if (log_ == NULL) {
+    auto* p = CreateMaybeMessage<::api::v1::viper::logs::Log>(GetArenaNoVirtual());
+    log_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:api.v1.viper.logs.LogConfig.log)
+  return log_;
+}
+inline void LogConfig::set_allocated_log(::api::v1::viper::logs::Log* log) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete log_;
+  }
+  if (log) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      log = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, log, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  log_ = log;
+  // @@protoc_insertion_point(field_set_allocated:api.v1.viper.logs.LogConfig.log)
+}
+
+// -------------------------------------------------------------------
+
 // Log
 
 // .api.v1.viper.logs.Log.Level level = 1;
@@ -676,6 +847,8 @@ inline void Log::set_redirct(::api::v1::viper::logs::Log_Redirct value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
