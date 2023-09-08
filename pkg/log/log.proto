@@ -6,6 +6,10 @@ import "google/protobuf/duration.proto";
 
 option go_package = "github.com/kaydxh/golang/pkg/logs;logs";
 
+message LogConfig {
+  Log log = 1;
+}
+
 message Log {
   Level level = 1;
   Formatter formatter = 2;

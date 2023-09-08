@@ -21,7 +21,7 @@ class Config {
   std::shared_ptr<CompletedConfig> Complete();
 
  private:
-  api::v1::viper::logs::Log proto;
+  api::v1::viper::logs::LogConfig proto;
   ConfigOptions options;
 };
 

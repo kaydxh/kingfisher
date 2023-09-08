@@ -28,6 +28,7 @@ std::shared_ptr<Config> Config::NewConfig(const ConfigOptions& opts) {
 
 std::shared_ptr<CompletedConfig> Config::Complete() {
   int completed_ret = LoadYaml();
+  std::cout << "log:" << proto.DebugString() << std::endl;
   std::shared_ptr<CompletedConfig> completed_config =
       std::make_shared<CompletedConfig>(this, completed_ret);
   return completed_config;

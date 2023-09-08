@@ -22,10 +22,18 @@
 namespace protobuf_google_2fprotobuf_2fduration_2eproto {
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_google_2fprotobuf_2fduration_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Duration;
 }  // namespace protobuf_google_2fprotobuf_2fduration_2eproto
+namespace protobuf_pkg_2flog_2flog_2eproto {
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_pkg_2flog_2flog_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Log;
+}  // namespace protobuf_pkg_2flog_2flog_2eproto
 namespace api {
 namespace v1 {
 namespace viper {
 namespace logs {
+class LogConfigDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<LogConfig>
+      _instance;
+} _LogConfig_default_instance_;
 class LogDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Log>
@@ -36,6 +44,21 @@ class LogDefaultTypeInternal {
 }  // namespace v1
 }  // namespace api
 namespace protobuf_pkg_2flog_2flog_2eproto {
+static void InitDefaultsLogConfig() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::api::v1::viper::logs::_LogConfig_default_instance_;
+    new (ptr) ::api::v1::viper::logs::LogConfig();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::api::v1::viper::logs::LogConfig::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<1> scc_info_LogConfig =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsLogConfig}, {
+      &protobuf_pkg_2flog_2flog_2eproto::scc_info_Log.base,}};
+
 static void InitDefaultsLog() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -52,13 +75,20 @@ static void InitDefaultsLog() {
       &protobuf_google_2fprotobuf_2fduration_2eproto::scc_info_Duration.base,}};
 
 void InitDefaults() {
+  ::google::protobuf::internal::InitSCC(&scc_info_LogConfig.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Log.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[1];
+::google::protobuf::Metadata file_level_metadata[2];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[3];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, log_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -76,10 +106,12 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, redirct_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::api::v1::viper::logs::Log)},
+  { 0, -1, sizeof(::api::v1::viper::logs::LogConfig)},
+  { 6, -1, sizeof(::api::v1::viper::logs::Log)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::google::protobuf::Message*>(&::api::v1::viper::logs::_LogConfig_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::api::v1::viper::logs::_Log_default_instance_),
 };
 
@@ -98,32 +130,33 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 1);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
 }
 
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\021pkg/log/log.proto\022\021api.v1.viper.logs\032\036"
-      "google/protobuf/duration.proto\"\206\004\n\003Log\022+"
-      "\n\005level\030\001 \001(\0162\034.api.v1.viper.logs.Log.Le"
-      "vel\0223\n\tformatter\030\002 \001(\0162 .api.v1.viper.lo"
-      "gs.Log.Formatter\022\020\n\010filepath\030\003 \001(\t\022*\n\007ma"
-      "x_age\030\004 \001(\0132\031.google.protobuf.Duration\022\021"
-      "\n\tmax_count\030\005 \001(\003\0222\n\017rotate_interval\030\006 \001"
-      "(\0132\031.google.protobuf.Duration\022\023\n\013rotate_"
-      "size\030\007 \001(\003\022\025\n\rreport_caller\030\010 \001(\010\022\033\n\023ena"
-      "ble_goroutine_id\030\t \001(\010\022/\n\007redirct\030\n \001(\0162"
-      "\036.api.v1.viper.logs.Log.Redirct\"R\n\005Level"
-      "\022\t\n\005panic\020\000\022\t\n\005fatal\020\001\022\t\n\005error\020\002\022\010\n\004war"
-      "n\020\003\022\010\n\004info\020\004\022\t\n\005debug\020\005\022\t\n\005trace\020\006\")\n\tF"
-      "ormatter\022\010\n\004text\020\000\022\010\n\004json\020\001\022\010\n\004glog\020\002\"\037"
-      "\n\007Redirct\022\n\n\006stdout\020\000\022\010\n\004file\020\001B(Z&githu"
-      "b.com/kaydxh/golang/pkg/logs;logsb\006proto"
-      "3"
+      "google/protobuf/duration.proto\"0\n\tLogCon"
+      "fig\022#\n\003log\030\001 \001(\0132\026.api.v1.viper.logs.Log"
+      "\"\206\004\n\003Log\022+\n\005level\030\001 \001(\0162\034.api.v1.viper.l"
+      "ogs.Log.Level\0223\n\tformatter\030\002 \001(\0162 .api.v"
+      "1.viper.logs.Log.Formatter\022\020\n\010filepath\030\003"
+      " \001(\t\022*\n\007max_age\030\004 \001(\0132\031.google.protobuf."
+      "Duration\022\021\n\tmax_count\030\005 \001(\003\0222\n\017rotate_in"
+      "terval\030\006 \001(\0132\031.google.protobuf.Duration\022"
+      "\023\n\013rotate_size\030\007 \001(\003\022\025\n\rreport_caller\030\010 "
+      "\001(\010\022\033\n\023enable_goroutine_id\030\t \001(\010\022/\n\007redi"
+      "rct\030\n \001(\0162\036.api.v1.viper.logs.Log.Redirc"
+      "t\"R\n\005Level\022\t\n\005panic\020\000\022\t\n\005fatal\020\001\022\t\n\005erro"
+      "r\020\002\022\010\n\004warn\020\003\022\010\n\004info\020\004\022\t\n\005debug\020\005\022\t\n\005tr"
+      "ace\020\006\")\n\tFormatter\022\010\n\004text\020\000\022\010\n\004json\020\001\022\010"
+      "\n\004glog\020\002\"\037\n\007Redirct\022\n\n\006stdout\020\000\022\010\n\004file\020"
+      "\001B(Z&github.com/kaydxh/golang/pkg/logs;l"
+      "ogsb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 641);
+      descriptor, 691);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "pkg/log/log.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fduration_2eproto::AddDescriptors();
@@ -219,6 +252,240 @@ const Log_Redirct Log::Redirct_MIN;
 const Log_Redirct Log::Redirct_MAX;
 const int Log::Redirct_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+// ===================================================================
+
+void LogConfig::InitAsDefaultInstance() {
+  ::api::v1::viper::logs::_LogConfig_default_instance_._instance.get_mutable()->log_ = const_cast< ::api::v1::viper::logs::Log*>(
+      ::api::v1::viper::logs::Log::internal_default_instance());
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int LogConfig::kLogFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+LogConfig::LogConfig()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_pkg_2flog_2flog_2eproto::scc_info_LogConfig.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:api.v1.viper.logs.LogConfig)
+}
+LogConfig::LogConfig(const LogConfig& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_log()) {
+    log_ = new ::api::v1::viper::logs::Log(*from.log_);
+  } else {
+    log_ = NULL;
+  }
+  // @@protoc_insertion_point(copy_constructor:api.v1.viper.logs.LogConfig)
+}
+
+void LogConfig::SharedCtor() {
+  log_ = NULL;
+}
+
+LogConfig::~LogConfig() {
+  // @@protoc_insertion_point(destructor:api.v1.viper.logs.LogConfig)
+  SharedDtor();
+}
+
+void LogConfig::SharedDtor() {
+  if (this != internal_default_instance()) delete log_;
+}
+
+void LogConfig::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* LogConfig::descriptor() {
+  ::protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const LogConfig& LogConfig::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2flog_2flog_2eproto::scc_info_LogConfig.base);
+  return *internal_default_instance();
+}
+
+
+void LogConfig::Clear() {
+// @@protoc_insertion_point(message_clear_start:api.v1.viper.logs.LogConfig)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (GetArenaNoVirtual() == NULL && log_ != NULL) {
+    delete log_;
+  }
+  log_ = NULL;
+  _internal_metadata_.Clear();
+}
+
+bool LogConfig::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:api.v1.viper.logs.LogConfig)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // .api.v1.viper.logs.Log log = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_log()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:api.v1.viper.logs.LogConfig)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:api.v1.viper.logs.LogConfig)
+  return false;
+#undef DO_
+}
+
+void LogConfig::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:api.v1.viper.logs.LogConfig)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .api.v1.viper.logs.Log log = 1;
+  if (this->has_log()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_log(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:api.v1.viper.logs.LogConfig)
+}
+
+::google::protobuf::uint8* LogConfig::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:api.v1.viper.logs.LogConfig)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .api.v1.viper.logs.Log log = 1;
+  if (this->has_log()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_log(), deterministic, target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:api.v1.viper.logs.LogConfig)
+  return target;
+}
+
+size_t LogConfig::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:api.v1.viper.logs.LogConfig)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // .api.v1.viper.logs.Log log = 1;
+  if (this->has_log()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *log_);
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void LogConfig::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:api.v1.viper.logs.LogConfig)
+  GOOGLE_DCHECK_NE(&from, this);
+  const LogConfig* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const LogConfig>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:api.v1.viper.logs.LogConfig)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:api.v1.viper.logs.LogConfig)
+    MergeFrom(*source);
+  }
+}
+
+void LogConfig::MergeFrom(const LogConfig& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:api.v1.viper.logs.LogConfig)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.has_log()) {
+    mutable_log()->::api::v1::viper::logs::Log::MergeFrom(from.log());
+  }
+}
+
+void LogConfig::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:api.v1.viper.logs.LogConfig)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void LogConfig::CopyFrom(const LogConfig& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:api.v1.viper.logs.LogConfig)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool LogConfig::IsInitialized() const {
+  return true;
+}
+
+void LogConfig::Swap(LogConfig* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void LogConfig::InternalSwap(LogConfig* other) {
+  using std::swap;
+  swap(log_, other->log_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata LogConfig::GetMetadata() const {
+  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
 
 // ===================================================================
 
@@ -842,6 +1109,9 @@ void Log::InternalSwap(Log* other) {
 }  // namespace api
 namespace google {
 namespace protobuf {
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::api::v1::viper::logs::LogConfig* Arena::CreateMaybeMessage< ::api::v1::viper::logs::LogConfig >(Arena* arena) {
+  return Arena::CreateInternal< ::api::v1::viper::logs::LogConfig >(arena);
+}
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::api::v1::viper::logs::Log* Arena::CreateMaybeMessage< ::api::v1::viper::logs::Log >(Arena* arena) {
   return Arena::CreateInternal< ::api::v1::viper::logs::Log >(arena);
 }
