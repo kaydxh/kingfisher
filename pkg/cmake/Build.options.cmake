@@ -63,7 +63,7 @@ if (ENABLE_YAML)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/yaml-cpp-v0.0.8/lib64)
 endif()
 
-option(ENABLE_YAML "ENABLE_GLOG" ON)
+option(ENABLE_GLOG "ENABLE_GLOG" ON)
 if (ENABLE_GLOG)
   message(STATUS "> build with glog lib")
   add_definitions(-DENABLE_GLOG)
