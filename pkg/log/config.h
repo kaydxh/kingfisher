@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_PKG_LOG_CONFIG_H_
 #define KINGFISHER_PKG_LOG_CONFIG_H_
 
+#include <glog/logging.h>
 #include <yaml-cpp/yaml.h>
 
 #include "log.pb.h"
@@ -12,24 +13,26 @@ class CompletedConfig;
 
 struct ConfigOptions {
   YAML::Node* node = nullptr;
+  std::string app = "app";
 };
 
 class Config {
  public:
-  static std::shared_ptr<Config> NewConfig(const ConfigOptions& opts);
+  static Config& NewConfig(const ConfigOptions& opts);
 
   int LoadYaml();
-  std::shared_ptr<CompletedConfig> Complete();
+  CompletedConfig& Complete();
 
- private:
+ public:
   api::v1::viper::logs::LogConfig proto_;
   ConfigOptions options_;
 };
 
 class CompletedConfig {
  public:
-  CompletedConfig(const Config* config, int completed_ret);
-  ~CompletedConfig() {}
+  CompletedConfig();
+  ~CompletedConfig();
+  void Init(const Config* config, int completed_ret);
 
   int Apply();
   int Install();
