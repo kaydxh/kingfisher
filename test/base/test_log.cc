@@ -20,6 +20,7 @@ TEST(test_Log, All) {
 
   kingfisher::log::ConfigOptions opts;
   opts.node = &yaml_data;
-  int ret = kingfisher::log::Config::NewConfig(opts)->Complete()->Install();
+  int ret = kingfisher::log::Config::NewConfig(opts).Complete().Apply();
   EXPECT_EQ(ret, 0);
+  LOG(INFO) << "it is info";
 }
