@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
+
 #include <string>
+
 #include "serializer/djson.h"
 
 using namespace kingfisher;
@@ -16,6 +18,7 @@ class test_DJson : public testing::Test {
 
   virtual void TearDown(void) {}
 };
+
 struct Test1 {
   int a;
   std::string b;
@@ -24,7 +27,7 @@ struct Test1 {
   std::map<std::string, std::string> f;
 };
 
-TEST(test_DJson, All) {
+TEST(test_DJson, Struct) {
   // init
   std::vector<std::pair<std::string, JsonBase *> > vec;
   vec.push_back(std::make_pair("a", new JsonObjector<Test1, int>(&Test1::a)));
@@ -75,8 +78,43 @@ TEST(test_DJson, All) {
   }
 
   // validJson
-  js = "{\"1\"}";
+  // js = "{\"1\"}";
+  js = "eyJhYmMiOiAxfQ==";
   bool validJs = JsonPraser::validJson(js);
   std::cout << js << " is valid json: " << validJs << std::endl;
+}
 
+struct Test2 {
+  std::string id;
+  std::string version;
+};
+
+TEST(test_DJson, Array) {
+  // init
+  std::vector<std::pair<std::string, JsonBase *> > vec;
+  vec.push_back(
+      std::make_pair("id", new JsonObjector<Test2, std::string>(&Test2::id)));
+  vec.push_back(std::make_pair(
+      "version", new JsonObjector<Test2, std::string>(&Test2::version)));
+
+  Singleton<JsonObjsManager>::Instance().put(typeid(Test2).name(), vec);
+
+  // obj2json
+  std::vector<Test2> t2s;
+  t2s.push_back({"id_10", "version1.0"});
+
+  std::string js = JsonPraser::toJson(t2s);
+
+  // print
+  std::cout << js << std::endl;
+
+  // json2Obj
+  std::vector<Test2> t2s_1;
+  if (JsonPraser::toObj(t2s_1, js)) {
+    // print
+    for (auto &e : t2s_1) {
+      std::cout << "id: " << e.id << ",version: " << e.version << std::endl;
+    }
+    std::cout << std::endl;
+  }
 }
