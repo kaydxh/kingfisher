@@ -25,7 +25,7 @@ set(CXX_FLAGS
  # -Wshadow
  -Wwrite-strings
  -march=native
- -std=c++14
+ -std=c++17
  -rdynamic
  )
 
@@ -42,8 +42,9 @@ set (EXECUTABLE_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/bin)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/lib)
 #set_target_properties(kingfisher_base PROPERTIES PUBLIC_HEADER "*.h")
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/pkg/cmake/")
-#message(STATUS "CMAKE_MODULE_PATH = " ${CMAKE_MODULE_PATH})
+# 查找find_package
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+message(STATUS "CMAKE_MODULE_PATH = " ${CMAKE_MODULE_PATH})
 
 string (TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
@@ -52,7 +53,8 @@ include_directories (.)
 include_directories (base)
 include_directories (pkg)
 include_directories (third_party)
-include(pkg/cmake/Build.options.cmake)
+include(cmake/Build.options.cmake)
+
 
 add_subdirectory (base)
 add_subdirectory (pkg)
