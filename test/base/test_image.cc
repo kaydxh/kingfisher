@@ -12,7 +12,8 @@
 using namespace kingfisher;
 using namespace kingfisher::kcv;
 
-//./kingfisher_base_test  --gtest_filter=test_Image.*
+//./kingfisher_base_test --gtest_filter=test_Image.*
+//./kingfisher_base_test --gtest_filter=test_Image.DecodeImage
 class test_Image : public testing::Test {
  public:
   test_Image() {}
