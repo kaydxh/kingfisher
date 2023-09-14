@@ -139,24 +139,23 @@ void AddDescriptorsImpl() {
       "\n\021pkg/log/log.proto\022\021api.v1.viper.logs\032\036"
       "google/protobuf/duration.proto\"0\n\tLogCon"
       "fig\022#\n\003log\030\001 \001(\0132\026.api.v1.viper.logs.Log"
-      "\"\206\004\n\003Log\022+\n\005level\030\001 \001(\0162\034.api.v1.viper.l"
+      "\"\353\003\n\003Log\022+\n\005level\030\001 \001(\0162\034.api.v1.viper.l"
       "ogs.Log.Level\0223\n\tformatter\030\002 \001(\0162 .api.v"
       "1.viper.logs.Log.Formatter\022\020\n\010filepath\030\003"
-      " \001(\t\022*\n\007max_age\030\004 \001(\0132\031.google.protobuf."
-      "Duration\022\021\n\tmax_count\030\005 \001(\003\0222\n\017rotate_in"
-      "terval\030\006 \001(\0132\031.google.protobuf.Duration\022"
-      "\023\n\013rotate_size\030\007 \001(\003\022\025\n\rreport_caller\030\010 "
-      "\001(\010\022\033\n\023enable_goroutine_id\030\t \001(\010\022/\n\007redi"
-      "rct\030\n \001(\0162\036.api.v1.viper.logs.Log.Redirc"
-      "t\"R\n\005Level\022\t\n\005panic\020\000\022\t\n\005fatal\020\001\022\t\n\005erro"
-      "r\020\002\022\010\n\004warn\020\003\022\010\n\004info\020\004\022\t\n\005debug\020\005\022\t\n\005tr"
-      "ace\020\006\")\n\tFormatter\022\010\n\004text\020\000\022\010\n\004json\020\001\022\010"
-      "\n\004glog\020\002\"\037\n\007Redirct\022\n\n\006stdout\020\000\022\010\n\004file\020"
-      "\001B(Z&github.com/kaydxh/golang/pkg/logs;l"
-      "ogsb\006proto3"
+      " \001(\t\022\017\n\007max_age\030\004 \001(\003\022\021\n\tmax_count\030\005 \001(\003"
+      "\0222\n\017rotate_interval\030\006 \001(\0132\031.google.proto"
+      "buf.Duration\022\023\n\013rotate_size\030\007 \001(\003\022\025\n\rrep"
+      "ort_caller\030\010 \001(\010\022\033\n\023enable_goroutine_id\030"
+      "\t \001(\010\022/\n\007redirct\030\n \001(\0162\036.api.v1.viper.lo"
+      "gs.Log.Redirct\"R\n\005Level\022\t\n\005panic\020\000\022\t\n\005fa"
+      "tal\020\001\022\t\n\005error\020\002\022\010\n\004warn\020\003\022\010\n\004info\020\004\022\t\n\005"
+      "debug\020\005\022\t\n\005trace\020\006\")\n\tFormatter\022\010\n\004text\020"
+      "\000\022\010\n\004json\020\001\022\010\n\004glog\020\002\"\037\n\007Redirct\022\n\n\006stdo"
+      "ut\020\000\022\010\n\004file\020\001B(Z&github.com/kaydxh/gola"
+      "ng/pkg/logs;logsb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 691);
+      descriptor, 664);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "pkg/log/log.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fduration_2eproto::AddDescriptors();
@@ -490,16 +489,8 @@ void LogConfig::InternalSwap(LogConfig* other) {
 // ===================================================================
 
 void Log::InitAsDefaultInstance() {
-  ::api::v1::viper::logs::_Log_default_instance_._instance.get_mutable()->max_age_ = const_cast< ::google::protobuf::Duration*>(
-      ::google::protobuf::Duration::internal_default_instance());
   ::api::v1::viper::logs::_Log_default_instance_._instance.get_mutable()->rotate_interval_ = const_cast< ::google::protobuf::Duration*>(
       ::google::protobuf::Duration::internal_default_instance());
-}
-void Log::clear_max_age() {
-  if (GetArenaNoVirtual() == NULL && max_age_ != NULL) {
-    delete max_age_;
-  }
-  max_age_ = NULL;
 }
 void Log::clear_rotate_interval() {
   if (GetArenaNoVirtual() == NULL && rotate_interval_ != NULL) {
@@ -535,11 +526,6 @@ Log::Log(const Log& from)
   if (from.filepath().size() > 0) {
     filepath_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filepath_);
   }
-  if (from.has_max_age()) {
-    max_age_ = new ::google::protobuf::Duration(*from.max_age_);
-  } else {
-    max_age_ = NULL;
-  }
   if (from.has_rotate_interval()) {
     rotate_interval_ = new ::google::protobuf::Duration(*from.rotate_interval_);
   } else {
@@ -553,9 +539,9 @@ Log::Log(const Log& from)
 
 void Log::SharedCtor() {
   filepath_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&max_age_, 0, static_cast<size_t>(
+  ::memset(&rotate_interval_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&redirct_) -
-      reinterpret_cast<char*>(&max_age_)) + sizeof(redirct_));
+      reinterpret_cast<char*>(&rotate_interval_)) + sizeof(redirct_));
 }
 
 Log::~Log() {
@@ -565,7 +551,6 @@ Log::~Log() {
 
 void Log::SharedDtor() {
   filepath_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (this != internal_default_instance()) delete max_age_;
   if (this != internal_default_instance()) delete rotate_interval_;
 }
 
@@ -590,10 +575,6 @@ void Log::Clear() {
   (void) cached_has_bits;
 
   filepath_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (GetArenaNoVirtual() == NULL && max_age_ != NULL) {
-    delete max_age_;
-  }
-  max_age_ = NULL;
   if (GetArenaNoVirtual() == NULL && rotate_interval_ != NULL) {
     delete rotate_interval_;
   }
@@ -660,12 +641,14 @@ bool Log::MergePartialFromCodedStream(
         break;
       }
 
-      // .google.protobuf.Duration max_age = 4;
+      // int64 max_age = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-               input, mutable_max_age()));
+            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &max_age_)));
         } else {
           goto handle_unusual;
         }
@@ -803,10 +786,9 @@ void Log::SerializeWithCachedSizes(
       3, this->filepath(), output);
   }
 
-  // .google.protobuf.Duration max_age = 4;
-  if (this->has_max_age()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->_internal_max_age(), output);
+  // int64 max_age = 4;
+  if (this->max_age() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(4, this->max_age(), output);
   }
 
   // int64 max_count = 5;
@@ -878,11 +860,9 @@ void Log::SerializeWithCachedSizes(
         3, this->filepath(), target);
   }
 
-  // .google.protobuf.Duration max_age = 4;
-  if (this->has_max_age()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        4, this->_internal_max_age(), deterministic, target);
+  // int64 max_age = 4;
+  if (this->max_age() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(4, this->max_age(), target);
   }
 
   // int64 max_count = 5;
@@ -942,13 +922,6 @@ size_t Log::ByteSizeLong() const {
         this->filepath());
   }
 
-  // .google.protobuf.Duration max_age = 4;
-  if (this->has_max_age()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
-        *max_age_);
-  }
-
   // .google.protobuf.Duration rotate_interval = 6;
   if (this->has_rotate_interval()) {
     total_size += 1 +
@@ -966,6 +939,13 @@ size_t Log::ByteSizeLong() const {
   if (this->formatter() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->formatter());
+  }
+
+  // int64 max_age = 4;
+  if (this->max_age() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->max_age());
   }
 
   // int64 max_count = 5;
@@ -1029,9 +1009,6 @@ void Log::MergeFrom(const Log& from) {
 
     filepath_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filepath_);
   }
-  if (from.has_max_age()) {
-    mutable_max_age()->::google::protobuf::Duration::MergeFrom(from.max_age());
-  }
   if (from.has_rotate_interval()) {
     mutable_rotate_interval()->::google::protobuf::Duration::MergeFrom(from.rotate_interval());
   }
@@ -1040,6 +1017,9 @@ void Log::MergeFrom(const Log& from) {
   }
   if (from.formatter() != 0) {
     set_formatter(from.formatter());
+  }
+  if (from.max_age() != 0) {
+    set_max_age(from.max_age());
   }
   if (from.max_count() != 0) {
     set_max_count(from.max_count());
@@ -1084,10 +1064,10 @@ void Log::InternalSwap(Log* other) {
   using std::swap;
   filepath_.Swap(&other->filepath_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
-  swap(max_age_, other->max_age_);
   swap(rotate_interval_, other->rotate_interval_);
   swap(level_, other->level_);
   swap(formatter_, other->formatter_);
+  swap(max_age_, other->max_age_);
   swap(max_count_, other->max_count_);
   swap(rotate_size_, other->rotate_size_);
   swap(report_caller_, other->report_caller_);

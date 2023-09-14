@@ -443,18 +443,6 @@ class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class
   ::std::string* release_filepath();
   void set_allocated_filepath(::std::string* filepath);
 
-  // .google.protobuf.Duration max_age = 4;
-  bool has_max_age() const;
-  void clear_max_age();
-  static const int kMaxAgeFieldNumber = 4;
-  private:
-  const ::google::protobuf::Duration& _internal_max_age() const;
-  public:
-  const ::google::protobuf::Duration& max_age() const;
-  ::google::protobuf::Duration* release_max_age();
-  ::google::protobuf::Duration* mutable_max_age();
-  void set_allocated_max_age(::google::protobuf::Duration* max_age);
-
   // .google.protobuf.Duration rotate_interval = 6;
   bool has_rotate_interval() const;
   void clear_rotate_interval();
@@ -478,6 +466,12 @@ class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class
   static const int kFormatterFieldNumber = 2;
   ::api::v1::viper::logs::Log_Formatter formatter() const;
   void set_formatter(::api::v1::viper::logs::Log_Formatter value);
+
+  // int64 max_age = 4;
+  void clear_max_age();
+  static const int kMaxAgeFieldNumber = 4;
+  ::google::protobuf::int64 max_age() const;
+  void set_max_age(::google::protobuf::int64 value);
 
   // int64 max_count = 5;
   void clear_max_count();
@@ -514,10 +508,10 @@ class Log : public ::google::protobuf::Message /* @@protoc_insertion_point(class
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr filepath_;
-  ::google::protobuf::Duration* max_age_;
   ::google::protobuf::Duration* rotate_interval_;
   int level_;
   int formatter_;
+  ::google::protobuf::int64 max_age_;
   ::google::protobuf::int64 max_count_;
   ::google::protobuf::int64 rotate_size_;
   bool report_caller_;
@@ -676,53 +670,18 @@ inline void Log::set_allocated_filepath(::std::string* filepath) {
   // @@protoc_insertion_point(field_set_allocated:api.v1.viper.logs.Log.filepath)
 }
 
-// .google.protobuf.Duration max_age = 4;
-inline bool Log::has_max_age() const {
-  return this != internal_default_instance() && max_age_ != NULL;
+// int64 max_age = 4;
+inline void Log::clear_max_age() {
+  max_age_ = GOOGLE_LONGLONG(0);
 }
-inline const ::google::protobuf::Duration& Log::_internal_max_age() const {
-  return *max_age_;
-}
-inline const ::google::protobuf::Duration& Log::max_age() const {
-  const ::google::protobuf::Duration* p = max_age_;
+inline ::google::protobuf::int64 Log::max_age() const {
   // @@protoc_insertion_point(field_get:api.v1.viper.logs.Log.max_age)
-  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
-      &::google::protobuf::_Duration_default_instance_);
-}
-inline ::google::protobuf::Duration* Log::release_max_age() {
-  // @@protoc_insertion_point(field_release:api.v1.viper.logs.Log.max_age)
-  
-  ::google::protobuf::Duration* temp = max_age_;
-  max_age_ = NULL;
-  return temp;
-}
-inline ::google::protobuf::Duration* Log::mutable_max_age() {
-  
-  if (max_age_ == NULL) {
-    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
-    max_age_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:api.v1.viper.logs.Log.max_age)
   return max_age_;
 }
-inline void Log::set_allocated_max_age(::google::protobuf::Duration* max_age) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete reinterpret_cast< ::google::protobuf::MessageLite*>(max_age_);
-  }
-  if (max_age) {
-    ::google::protobuf::Arena* submessage_arena =
-      reinterpret_cast<::google::protobuf::MessageLite*>(max_age)->GetArena();
-    if (message_arena != submessage_arena) {
-      max_age = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, max_age, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  max_age_ = max_age;
-  // @@protoc_insertion_point(field_set_allocated:api.v1.viper.logs.Log.max_age)
+inline void Log::set_max_age(::google::protobuf::int64 value) {
+  
+  max_age_ = value;
+  // @@protoc_insertion_point(field_set:api.v1.viper.logs.Log.max_age)
 }
 
 // int64 max_count = 5;
