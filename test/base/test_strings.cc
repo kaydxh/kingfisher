@@ -124,3 +124,15 @@ TEST_F(test_Strings, SplitToInt64) {
     std::cout << v << std::endl;
   }
 }
+
+TEST_F(test_Strings, ToNumbers) {
+  std::string str(
+      "\x00\x00\x80\x3F\x00\x00\xC0\x40\x00\x00\x00\x00\x00\x00\xF0\x41", 16);
+  std::vector<float> values = ToNumbers<float>(str);
+
+  std::cout << "values: " << std::endl;
+  for (auto &v : values) {
+    std::cout << v << " ";
+  }
+  std::cout << endl;
+}
