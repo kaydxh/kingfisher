@@ -134,5 +134,5 @@ TEST_F(test_Strings, ToNumbers) {
   for (auto &v : values) {
     std::cout << v << " ";
   }
-  std::cout << endl;
+  std::cout << std::endl;
 }

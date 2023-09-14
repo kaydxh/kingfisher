@@ -5,6 +5,10 @@ import "google/protobuf/descriptor.proto";
 
 option go_package = "github.com/kaydxh/sea/api/protoapi-spec/seadate/v1;v1";
 
+/**
+cd kingfisher
+third_party/protobuf/bin/protoc -I . --cpp_out=.  test/proto/api_date.proto
+**/
 service SeaDateService {
   // 生成当前时间
   rpc Now(NowRequest) returns (NowResponse) {};

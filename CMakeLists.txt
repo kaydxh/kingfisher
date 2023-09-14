@@ -25,7 +25,7 @@ set(CXX_FLAGS
  # -Wshadow
  -Wwrite-strings
  -march=native
- -std=c++17
+ -std=c++14
  -rdynamic
  )
 
@@ -60,7 +60,7 @@ add_subdirectory (base)
 add_subdirectory (pkg)
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-add_subdirectory (test/base)
+add_subdirectory (test)
 
 install(TARGETS kingfisher_base LIBRARY DESTINATION ${LIBRARY_OUTPUT_PATH})
 message(STATUS "> install lib target ${LIBRARY_OUTPUT_PATH}")

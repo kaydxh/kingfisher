@@ -5,7 +5,7 @@
 
 #include "config/yaml/yaml.h"
 #include "core/scope_guard.h"
-#include "example/webserver.pb.h"
+#include "proto/webserver.pb.h"
 
 class test_YAML : public testing::Test {
  public:
