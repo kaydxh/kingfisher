@@ -4,6 +4,7 @@
 
 #include "config/yaml/yaml.h"
 #include "core/singleton.hpp"
+#include "glog-v0.0.6/include/glog/logging.h"
 
 namespace kingfisher {
 namespace log {
@@ -63,6 +64,14 @@ int CompletedConfig::Install() {
   using namespace api::v1::viper::logs;
   FLAGS_log_dir = proto.filepath();
   FLAGS_max_log_size = proto.rotate_size();
+  if (FLAGS_max_log_size <= 0) {
+    FLAGS_max_log_size = 100;  // default 100MB
+  }
+
+  auto max_day = proto.max_age();
+  if (max_day > 0) {
+    google::EnableLogCleaner(max_day);
+  }
 
   switch (proto.level()) {
     case Log_Level::Log_Level_trace:

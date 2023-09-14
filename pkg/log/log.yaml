@@ -2,10 +2,10 @@ log:
   formatter: glog
   level: info
   filepath: ./log
-  max_age: 604800s #168h
+  max_age: 7 #7 day
   max_count: 200
   rotate_interval: 3600s #1h
-  rotate_size: 104857600 #100M
+  rotate_size: 100 #100M
   report_caller: true
   enable_goroutine_id: false
   redirct: file #file, stdout
