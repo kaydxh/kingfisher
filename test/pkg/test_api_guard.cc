@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "example/api_date.pb.h"
 #include "middleware/api/api_guard.hpp"
+#include "proto/api_date.pb.h"
 
 class test_Api_Guid : public testing::Test {
  public:
