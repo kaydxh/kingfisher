@@ -46,3 +46,8 @@ TEST_F(test_Path, Split) {
   std::cout << "dir: " << dir << ", file:" << filename << std::endl;
 }
 
+TEST_F(test_Path, Base) {
+  std::string filepath = "/data/home/";
+  auto base = Base(filepath);
+  std::cout << "base: " << base << std::endl;
+}
