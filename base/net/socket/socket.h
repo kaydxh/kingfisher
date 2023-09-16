@@ -23,7 +23,7 @@ class Socket {
  private:
   const int sockfd_;
 };
-}
-}
+}  // namespace net
+}  // namespace kingfisher
 
 #endif
