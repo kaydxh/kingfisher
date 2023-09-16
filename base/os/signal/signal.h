@@ -4,6 +4,7 @@
 #include <functional>
 #include <mutex>
 #include <unordered_map>
+#include <vector>
 
 namespace kingfisher {
 namespace os {
@@ -15,6 +16,7 @@ class SignalHandler {
 
   static int SetSignal(int signum, const std::function<void(int)>& cb);
   static int SetCoreDump(bool effect, int coreFileSize);
+  static std::vector<int> StopSignals();
 
  private:
   static void exitHandler(int signum);
