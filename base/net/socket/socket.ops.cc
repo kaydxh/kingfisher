@@ -1,8 +1,8 @@
 #include "socket.ops.h"
 // close
 #include <unistd.h>
-#include <iostream>
 
+#include <iostream>
 #include <sstream>
 
 namespace kingfisher {
@@ -114,10 +114,9 @@ void Close(int sockfd) {
   }
 }
 
-std::string ToIpPort(const struct sockaddr* addr) {
-
+std::string ToIPPort(const struct sockaddr* addr) {
   std::stringstream result;
-  std::string ip = ToIp(addr);
+  std::string ip = ToIP(addr);
   result << ip;
   uint16_t port = 0;
   if (addr->sa_family == AF_INET6) {
@@ -131,7 +130,7 @@ std::string ToIpPort(const struct sockaddr* addr) {
   return result.str();
 }
 
-std::string ToIp(const struct sockaddr* addr) {
+std::string ToIP(const struct sockaddr* addr) {
   if (addr->sa_family == AF_INET) {
     char buf[INET_ADDRSTRLEN] = {0};
     const struct sockaddr_in* addr4 = sockaddr_in_cast(addr);
@@ -149,6 +148,6 @@ std::string ToIp(const struct sockaddr* addr) {
 
   return "";
 }
-}
-}
-}
+}  // namespace sockets
+}  // namespace net
+}  // namespace kingfisher
