@@ -54,6 +54,10 @@ int SignalHandler::SetSignal(int signum, const std::function<void(int)>& cb) {
   return 0;
 }
 
+std::vector<int> SignalHandler::StopSignals() {
+  return std::vector<int>{SIGINT, SIGTERM, SIGHUP, SIGUSR1};
+}
+
 int SignalHandler::SetCoreDump(bool effect, int coreFileSize) {
   if (effect) {
     struct rlimit rlim;
