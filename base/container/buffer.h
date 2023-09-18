@@ -19,10 +19,14 @@ class Buffer : public noncopyable_::noncopyable {
   size_t WriteableBytes() const;
 
   const char* Peek() const;
+
+  char* Begin() { return &*buffer_.begin(); }
+  const char* Begin() const { return &*buffer_.begin(); }
   char* BeginWrite();
   const char* BeginWrite() const;
 
   void Append(const std::string& data);
+  void Append(const char* data, int len);
 
   template <typename T>
   T PeekInt(bool from_network) {
@@ -34,15 +38,16 @@ class Buffer : public noncopyable_::noncopyable {
     return v;
   }
 
- private:
-  char* begin() { return &*buffer_.begin(); }
-  const char* begin() const { return &*buffer_.begin(); }
-  void ensureWriteSize(size_t len);
+  virtual int Read();
 
  private:
-  std::vector<char> buffer_;
+  void ensureWriteSize(size_t len);
+
+ protected:
   size_t reader_index_ = 0;
   size_t writer_index_ = 0;
+  int fd_;
+  std::vector<char> buffer_;
 };
 
 }  // namespace container

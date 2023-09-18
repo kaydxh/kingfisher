@@ -12,11 +12,11 @@ size_t Buffer::ReadableBytes() const { return writer_index_ - reader_index_; }
 
 size_t Buffer::WriteableBytes() const { return buffer_.size() - writer_index_; }
 
-const char* Buffer::Peek() const { return begin() + reader_index_; }
+const char* Buffer::Peek() const { return Begin() + reader_index_; }
 
-char* Buffer::BeginWrite() { return begin() + writer_index_; }
+char* Buffer::BeginWrite() { return Begin() + writer_index_; }
 
-const char* Buffer::BeginWrite() const { return begin() + writer_index_; }
+const char* Buffer::BeginWrite() const { return Begin() + writer_index_; }
 
 void Buffer::Append(const std::string& data) {
   ensureWriteSize(data.size());
@@ -24,11 +24,18 @@ void Buffer::Append(const std::string& data) {
   // std::memcpy(BeginWrite(), data.c_str(), data.size());
 }
 
+void Buffer::Append(const char* data, int len) {
+  ensureWriteSize(len);
+  std::copy(data, data + len, BeginWrite());
+}
+
 void Buffer::ensureWriteSize(size_t len) {
   if (WriteableBytes() < len) {
     buffer_.resize(writer_index_ + len);
   }
 }
+
+int Buffer::Read() { return 0; }
 
 }  // namespace container
 }  // namespace kingfisher

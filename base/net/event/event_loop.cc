@@ -1,14 +1,17 @@
 #include "event_loop.h"
+
+#include <assert.h>
+#include <poll.h>
 #include <sys/eventfd.h>
-#include "net/socket/socket.ops.h"
-#include "channel.h"
+#include <unistd.h>
+
 #include <iostream>
 #include <memory>
+
+#include "channel.h"
 #include "net/poller/epoll_poller.h"
+#include "net/socket/socket.ops.h"
 #include "thread/thread.h"
-#include <poll.h>
-#include <assert.h>
-#include <unistd.h>
 
 namespace kingfisher {
 namespace net {
@@ -28,7 +31,6 @@ EventLoop::EventLoop()
       wakeup_fd_(createEventfdOrDie()),
       wakeup_channel_(new Channel(this, wakeup_fd_)),
       thread_id_(thread::GetTid()) {
-
   wakeup_channel_->SetReadEvent(std::bind(&EventLoop::handleRead, this));
   poller_->Add(wakeup_channel_, 0);
   std::cout << "init channel: " << wakeup_channel_.get() << std::endl;
@@ -45,7 +47,7 @@ EventLoop::~EventLoop() {
 void EventLoop::handleRead() {
   std::cout << "handleRead in" << std::endl;
   uint64_t one = 1;
-  ssize_t n = sockets::read(wakeup_fd_, &one, sizeof(one));
+  ssize_t n = sockets::Read(wakeup_fd_, &one, sizeof(one));
   std::cout << "EventLoop::handleRead() reads " << n << " bytes" << std::endl;
   if (n != sizeof one) {
     std::cout << "EventLoop::handleRead() reads " << n << " bytes instead of 8"
@@ -55,7 +57,7 @@ void EventLoop::handleRead() {
 
 void EventLoop::Wakeup() {
   uint64_t one = 1;
-  ssize_t n = sockets::write(wakeup_fd_, &one, sizeof(one));
+  ssize_t n = sockets::Write(wakeup_fd_, &one, sizeof(one));
   std::cout << "EventLoop::wakeup() writes " << n << " bytes" << std::endl;
   if (n != sizeof(one)) {
     std::cout << "EventLoop::wakeup() writes " << n << " bytes instead of 8"
@@ -108,5 +110,5 @@ void EventLoop::QueueInLoop(Functor&& cb) {
   }
 }
 //
-}
-}
+}  // namespace net
+}  // namespace kingfisher
