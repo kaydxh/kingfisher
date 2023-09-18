@@ -1,5 +1,6 @@
 #include "socket.ops.h"
 // close
+#include <sys/uio.h>  // readv
 #include <unistd.h>
 
 #include <iostream>
@@ -100,11 +101,15 @@ int Accept(int sockfd, struct sockaddr_in6* addr) {
   return connfd;
 }
 
-ssize_t read(int sockfd, void* buf, size_t count) {
+ssize_t Read(int sockfd, void* buf, size_t count) {
   return ::read(sockfd, buf, count);
 }
 
-ssize_t write(int sockfd, const void* buf, size_t count) {
+ssize_t Readv(int sockfd, const struct iovec* iov, int iovcnt) {
+  return ::readv(sockfd, iov, iovcnt);
+}
+
+ssize_t Write(int sockfd, const void* buf, size_t count) {
   return ::write(sockfd, buf, count);
 }
 

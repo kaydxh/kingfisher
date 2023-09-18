@@ -11,13 +11,13 @@ namespace kingfisher {
 namespace net {
 namespace sockets {
 
-uint64_t hton64(uint64_t h) { return htobe64(h); }
-uint32_t hton32(uint32_t h) { return htobe32(h); }
-uint16_t hton16(uint16_t h) { return htobe16(h); }
+inline uint64_t hton64(uint64_t h) { return htobe64(h); }
+inline uint32_t hton32(uint32_t h) { return htobe32(h); }
+inline uint16_t hton16(uint16_t h) { return htobe16(h); }
 
-uint64_t ntoh64(uint64_t n) { return be64toh(n); }
-uint32_t ntoh32(uint32_t n) { return be32toh(n); }
-uint16_t ntoh16(uint16_t n) { return be16toh(n); }
+inline uint64_t ntoh64(uint64_t n) { return be64toh(n); }
+inline uint32_t ntoh32(uint32_t n) { return be32toh(n); }
+inline uint16_t ntoh16(uint16_t n) { return be16toh(n); }
 
 template <typename T>
 T Hton(T h) {
