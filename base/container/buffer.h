@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "core/noncopyable.hpp"
+#include "net/socket/endian.h"
+#include "strings/strings.h"
 
 namespace kingfisher {
 namespace container {
@@ -21,6 +23,16 @@ class Buffer : public noncopyable_::noncopyable {
   const char* BeginWrite() const;
 
   void Append(const std::string& data);
+
+  template <typename T>
+  T PeekInt(bool from_network) {
+    auto v = strings::ToNumber<T>(std::string(buffer_.data(), sizeof(T)));
+    if (from_network) {
+      return net::sockets::Hton<T>(v);
+    }
+
+    return v;
+  }
 
  private:
   char* begin() { return &*buffer_.begin(); }

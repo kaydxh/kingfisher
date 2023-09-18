@@ -28,6 +28,15 @@ std::string TrimLeft(const std::string &s, const std::string &prefix);
 std::string TrimRight(const std::string &s, const std::string &suffix);
 
 template <typename T>
+T ToNumber(std::string s) {
+  T t;
+  const char *data = s.data();
+  std::memcpy(&t, data, sizeof(T));
+
+  return t;
+}
+
+template <typename T>
 std::vector<T> ToNumbers(std::string s) {
   std::vector<T> results;
   const char *data = s.data();
