@@ -28,7 +28,7 @@ class Buffer : public noncopyable_::noncopyable {
   T PeekInt(bool from_network) {
     auto v = strings::ToNumber<T>(std::string(buffer_.data(), sizeof(T)));
     if (from_network) {
-      return net::sockets::Hton<T>(v);
+      return net::sockets::Ntoh<T>(v);
     }
 
     return v;

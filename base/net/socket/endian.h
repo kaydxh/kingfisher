@@ -43,6 +43,30 @@ T Hton(T h) {
   }
 }
 
+template <typename T>
+T Ntoh(T n) {
+  static_assert(std::is_integral<T>::value, "must be integer");
+  auto sz = sizeof(T);
+  switch (sz) {
+    case sizeof(uint8_t): {
+      return n;
+    }
+    case sizeof(uint16_t): {
+      return ntoh16(n);
+    }
+    case sizeof(uint32_t): {
+      return ntoh32(n);
+    }
+    case sizeof(uint64_t): {
+      return ntoh64(n);
+    }
+
+    default:
+      // must not arrived this
+      return n;
+  }
+}
+
 }  // namespace sockets
 }  // namespace net
 }  // namespace kingfisher

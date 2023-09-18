@@ -14,18 +14,6 @@ size_t Buffer::WriteableBytes() const { return buffer_.size() - writer_index_; }
 
 const char* Buffer::Peek() const { return begin() + reader_index_; }
 
-#if 0
-int16_t Buffer::PeekInt16(bool from_network) {
-  auto v =
-      strings::ToNumber<int16_t>(std::string(buffer_.data(), sizeof(int16_t)));
-
-  if (from_network) {
-    return net::sockets::ntoh16(v);
-  }
-  return v;
-}
-#endif
-
 char* Buffer::BeginWrite() { return begin() + writer_index_; }
 
 const char* Buffer::BeginWrite() const { return begin() + writer_index_; }
