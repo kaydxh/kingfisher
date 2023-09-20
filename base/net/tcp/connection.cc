@@ -15,6 +15,7 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name,
                              const sockets::SockAddress& peer_addr,
                              bool keep_alive)
     : loop_(loop),
+      name_(name),
       channel_(std::make_unique<Channel>(loop, sockfd)),
       local_addr_(local_addr),
       peer_addr_(peer_addr),
@@ -72,12 +73,17 @@ void TcpConnection::handleClose() {
   loop_->AssertInLoopThread();
   // TcpConnectionPtr guardThis(shared_from_this());
   // closeCallback_(guardThis);
-  closeCallback_(shared_from_this());
+  close_cb_(shared_from_this());
 }
 
 void TcpConnection::handleError() {
   int err = sockets::GetSocketError(channel_->Fd());
   LOG(INFO) << "tcp connnection handel err:" << err;
+}
+
+void TcpConnection::DestoryConnection() {
+  loop_->AssertInLoopThread();
+  channel_->Remove();
 }
 
 }  // namespace net

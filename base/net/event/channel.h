@@ -11,6 +11,7 @@ namespace net {
 
 class EventLoop;
 
+// Channel的生命周期由TcpConnection管理
 class Channel {
  public:
   using EventCallback = std::function<void()>;
@@ -34,6 +35,7 @@ class Channel {
   int Events() const;
   int Fd() const;
   void HandleEvent();
+  void Remove();
 
  private:
   void update();

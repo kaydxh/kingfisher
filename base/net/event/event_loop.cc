@@ -35,7 +35,7 @@ EventLoop::EventLoop()
       wakeup_channel_(new Channel(this, wakeup_fd_)),
       thread_id_(thread::GetTid()) {
   wakeup_channel_->SetReadEvent(std::bind(&EventLoop::handleRead, this));
-  poller_->Add(wakeup_channel_, 0);
+  poller_->Add(wakeup_channel_.get());
   LOG(INFO) << "init channel: " << wakeup_channel_.get();
 }
 
@@ -71,10 +71,10 @@ void EventLoop::Run() {
   quit_ = false;
 
   while (!quit_) {
-    std::vector<std::shared_ptr<Channel>> channels;
+    std::vector<Channel*> channels;
     poller_->Poll(channels, kPollTimeoutMs);
     for (auto channel : channels) {
-      LOG(INFO) << "channel: " << channel.get();
+      LOG(INFO) << "channel: " << channel;
       channel->HandleEvent();
     }
   }
@@ -117,6 +117,11 @@ void EventLoop::AssertInLoopThread() {
     LOG(FATAL) << "EventLoop was created in threaid:" << thread_id_
                << ", current thread_id:" << thread ::GetTid();
   }
+}
+
+void EventLoop::RemoveChannel(Channel* channel) {
+  AssertInLoopThread();
+  poller_->Delete(channel);
 }
 
 //

@@ -25,6 +25,16 @@ class TcpConnection : public noncopyable_::noncopyable,
                 const sockets::SockAddress& peer_addr, bool keep_alive = true);
 
   void Send(const void* data, size_t len);
+  void SetConnectionCallback(const ConnectionCallback& cb) {
+    connection_cb_ = cb;
+  }
+  void SetMessageCallback(const MessageCallback& cb) { message_cb_ = cb; }
+  void SetCLoseCallback(const CloseCallback& cb) { close_cb_ = cb; }
+
+  const std::string& Name() const { return name_; }
+  EventLoop* GetEventLoop() const { return loop_; }
+
+  void DestoryConnection();
 
  private:
   void handleRead();
@@ -36,13 +46,15 @@ class TcpConnection : public noncopyable_::noncopyable,
 
  private:
   EventLoop* loop_;
+  std::string name_;
   std::unique_ptr<Socket> socket_;
   std::unique_ptr<Channel> channel_;
   const sockets::SockAddress local_addr_;
   const sockets::SockAddress peer_addr_;
 
+  ConnectionCallback connection_cb_;
   MessageCallback message_cb_;
-  CloseCallback closeCallback_;
+  CloseCallback close_cb_;
 
   NetBuffer input_buffer_;
   NetBuffer output_buffer_;
