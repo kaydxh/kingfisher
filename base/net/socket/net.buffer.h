@@ -8,7 +8,7 @@ namespace net {
 
 class NetBuffer : public container::Buffer {
  public:
-  NetBuffer(int n);
+  NetBuffer(int n = 1024);
   ~NetBuffer();
 
   virtual int Read();
