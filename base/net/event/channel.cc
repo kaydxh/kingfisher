@@ -1,8 +1,10 @@
 #include "channel.h"
+
 #include <poll.h>
+
+#include <iostream>
 #include <memory>
 #include <sstream>
-#include <iostream>
 
 namespace kingfisher {
 namespace net {
@@ -17,6 +19,10 @@ void Channel::SetReadCallback(EventCallback cb) {
 
 void Channel::SetWriteCallback(EventCallback cb) {
   writeCallback_ = std::move(cb);
+}
+
+void Channel::SetCloseCallback(EventCallback cb) {
+  closeCallback_ = std::move(cb);
 }
 
 void Channel::SetReadEvent(EventCallback cb) {
@@ -105,5 +111,5 @@ std::string Channel::eventsToString(int events) {
   }
   return result.str();
 }
-}
-}
+}  // namespace net
+}  // namespace kingfisher

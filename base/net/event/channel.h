@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+
 #include "time/timestamp.h"
 
 namespace kingfisher {
@@ -13,12 +14,14 @@ class EventLoop;
 class Channel {
  public:
   using EventCallback = std::function<void()>;
+  // using ReadEventCallback = std::function<void(time::Timestamp)>;
 
   Channel(EventLoop* loop, int fd);
   ~Channel();
 
   void SetReadCallback(EventCallback cb);
   void SetWriteCallback(EventCallback cb);
+  void SetCloseCallback(EventCallback cb);
   void SetRevents(int revents);
 
   void SetReadEvent(EventCallback cb);
@@ -39,6 +42,7 @@ class Channel {
 
   EventCallback readCallback_;
   EventCallback writeCallback_;
+  EventCallback closeCallback_;
 
   EventLoop* loop_ = nullptr;
   const int fd_;
@@ -46,7 +50,7 @@ class Channel {
   // received event type of epoller
   int revents_;
 };
-}
-}
+}  // namespace net
+}  // namespace kingfisher
 
 #endif

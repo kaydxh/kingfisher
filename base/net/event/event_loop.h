@@ -1,10 +1,11 @@
 #ifndef KINGFISHER_BASE_NET_EVENT_EVENT_LOOP_H_
 #define KINGFISHER_BASE_NET_EVENT_EVENT_LOOP_H_
 
-#include <memory>
 #include <functional>
-#include "net/poller/poller.h"
+#include <memory>
 #include <mutex>
+
+#include "net/poller/poller.h"
 
 namespace kingfisher {
 namespace net {
@@ -23,6 +24,8 @@ class EventLoop {
   void RunInLoop(Functor&& cb);
   void QueueInLoop(Functor&& cb);
 
+  void AssertInLoopThread();
+
  private:
   void handleRead();
 
@@ -35,7 +38,7 @@ class EventLoop {
   std::vector<Functor> pending_functors_;
   std::mutex mutex_;
 };
-}
-}
+}  // namespace net
+}  // namespace kingfisher
 
 #endif
