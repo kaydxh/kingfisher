@@ -1,5 +1,6 @@
 #include "socket.ops.h"
 // close
+#include <sys/socket.h>
 #include <sys/uio.h>  // readv
 #include <unistd.h>
 
@@ -113,11 +114,9 @@ ssize_t Write(int sockfd, const void* buf, size_t count) {
   return ::write(sockfd, buf, count);
 }
 
-void Close(int sockfd) {
-  if (::close(sockfd) < 0) {
-    std::cout << "sockets::close";
-  }
-}
+int Close(int sockfd) { return ::close(sockfd); }
+
+int ShutdownWrite(int sockfd) { return ::shutdown(sockfd, SHUT_WR); }
 
 std::string ToIPPort(const struct sockaddr* addr) {
   std::stringstream result;
@@ -153,6 +152,17 @@ std::string ToIP(const struct sockaddr* addr) {
 
   return "";
 }
+
+int GetSocketError(int sockfd) {
+  int optval;
+  socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+
+  if (::getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
+    return errno;
+  }
+  return optval;
+}
+
 }  // namespace sockets
 }  // namespace net
 }  // namespace kingfisher

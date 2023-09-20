@@ -14,12 +14,15 @@ int Connect(int sockfd, const struct sockaddr* addr);
 void BindOrDie(int sockfd, const struct sockaddr* addr);
 void ListenOrDie(int sockfd);
 int Accept(int sockfd, struct sockaddr_in6* addr);
+int GetSocketError(int sockfd);
 
 ssize_t Read(int sockfd, void* buf, size_t count);
 ssize_t Readv(int sockfd, const struct iovec* iov, int iovcnt);
 ssize_t Write(int sockfd, const void* buf, size_t count);
 
-void Close(int sockfd);
+int Close(int sockfd);
+
+int ShutdownWrite(int sockfd);
 
 std::string ToIPPort(const struct sockaddr* addr);
 std::string ToIP(const struct sockaddr* addr);
