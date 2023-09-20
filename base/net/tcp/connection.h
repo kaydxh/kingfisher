@@ -29,7 +29,7 @@ class TcpConnection : public noncopyable_::noncopyable,
     connection_cb_ = cb;
   }
   void SetMessageCallback(const MessageCallback& cb) { message_cb_ = cb; }
-  void SetCLoseCallback(const CloseCallback& cb) { close_cb_ = cb; }
+  void SetCloseCallback(const CloseCallback& cb) { close_cb_ = cb; }
 
   const std::string& Name() const { return name_; }
   EventLoop* GetEventLoop() const { return loop_; }
