@@ -1,12 +1,15 @@
 #include "epoll_poller.h"
-#include <sys/epoll.h>
+
 #include <assert.h>
+#include <sys/epoll.h>
 #include <unistd.h>
+
 #include <cstring>
-#include "net/event/channel.h"
 #include <iostream>
 #include <memory>
-//#include "timestamp.h"
+
+#include "net/event/channel.h"
+// #include "timestamp.h"
 
 namespace kingfisher {
 namespace net {
@@ -29,8 +32,7 @@ EPoller::~EPoller() {
 
 bool EPoller::Validate() const { return epoll_fd_ >= 0; }
 
-int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
-                  int timeout_ms) {
+int EPoller::Poll(std::vector<Channel*>& channels_reutrn, int timeout_ms) {
   int events_cout = ::epoll_wait(epoll_fd_, &*events_.begin(),
                                  static_cast<int>(events_.size()), timeout_ms);
   std::cout << "epoll fd: " << epoll_fd_ << " events cout:" << events_cout
@@ -39,11 +41,13 @@ int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
     std::cout << errno << std::endl;
   }
 
-  std::vector<std::shared_ptr<Channel>> result;
   // time::Timestamp::Now();
   for (int i = 0; i < events_cout; ++i) {
+#if 0
     std::shared_ptr<Channel> channel =
         *reinterpret_cast<std::shared_ptr<Channel>*>(events_[i].data.ptr);
+#endif
+    Channel* channel = static_cast<Channel*>(events_[i].data.ptr);
     channel->SetRevents(events_[i].events);
     channels_reutrn.push_back(channel);
   }
@@ -51,26 +55,25 @@ int EPoller::Poll(std::vector<std::shared_ptr<Channel>>& channels_reutrn,
   return 0;
 }
 
-int EPoller::Add(std::shared_ptr<Channel> channel, int timeout_ms) {
-  return operate(EPOLL_CTL_ADD, channel);
-}
+int EPoller::Add(Channel* channel) { return operate(EPOLL_CTL_ADD, channel); }
 
-int EPoller::Update(std::shared_ptr<Channel> channel, int timeout_ms) {
+int EPoller::Update(Channel* channel) {
   return operate(EPOLL_CTL_MOD, channel);
 }
 
-int EPoller::Delete(std::shared_ptr<Channel> channel, int timeout_ms) {
+int EPoller::Delete(Channel* channel) {
   return operate(EPOLL_CTL_DEL, channel);
 }
 
-int EPoller::operate(int operation, std::shared_ptr<Channel> channel) {
+int EPoller::operate(int operation, Channel* channel) {
   struct epoll_event event;
   memset(&event, 0, sizeof(event));
   event.events = channel->Events();
   event.data.fd = channel->Fd();
   // void = shared_ptr, note: need new shared_ptr
   // https://stackoverflow.com/questions/31063055/passing-a-shared-ptr-through-a-c-interface-that-takes-void#:~:text=evt.user.data1%20%3D%20new%20MessagePtr%20(msg)%3B
-  event.data.ptr = new std::shared_ptr<Channel>(channel);
+  // event.data.ptr = new std::shared_ptr<Channel>(channel);
+  event.data.ptr = channel;
 
   // fd target file descriptor
   int ret = ::epoll_ctl(epoll_fd_, operation, channel->Fd(), &event);
@@ -80,5 +83,5 @@ int EPoller::operate(int operation, std::shared_ptr<Channel> channel) {
 
   return 0;
 }
-}
-}
+}  // namespace net
+}  // namespace kingfisher

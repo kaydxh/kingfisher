@@ -29,6 +29,10 @@ std::string ToIP(const struct sockaddr* addr);
 
 void FromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr);
 void FromIpPort(const char* ip, uint16_t port, struct sockaddr_in6* addr);
+
+struct sockaddr_in6 GetLocalSockAddrFromSocket(int sockfd);
+struct sockaddr_in6 GetPeerSockAddrFromSocket(int sockfd);
+
 }  // namespace sockets
 }  // namespace net
 }  // namespace kingfisher

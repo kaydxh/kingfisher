@@ -6,6 +6,8 @@
 #include <memory>
 #include <sstream>
 
+#include "net/event/event_loop.h"
+
 namespace kingfisher {
 namespace net {
 
@@ -111,5 +113,7 @@ std::string Channel::eventsToString(int events) {
   }
   return result.str();
 }
+void Channel::Remove() { loop_->RemoveChannel(this); }
+
 }  // namespace net
 }  // namespace kingfisher

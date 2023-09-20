@@ -13,7 +13,7 @@ namespace net {
 class Acceptor : public noncopyable_::noncopyable {
  public:
   using NewConnectionCallback =
-      std::function<void(int sockfd, const sockets::SockAddress&)>;
+      std::function<void(int sockfd, const sockets::SockAddress& peer_addr)>;
 
   Acceptor(EventLoop* loop, const sockets::SockAddress& listen_addr,
            bool reuse_port = true);

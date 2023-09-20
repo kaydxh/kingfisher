@@ -2,8 +2,10 @@
 #define KINGFISHER_BASE_NET_EVENT_EPOLL_POLLER_H_
 
 #include <sys/epoll.h>
+
 #include <memory>
 #include <vector>
+
 #include "poller.h"
 
 namespace kingfisher {
@@ -15,20 +17,20 @@ class EPoller : public IPoller {
  public:
   EPoller(int maxevents = 16);
   ~EPoller();
-  int Poll(std::vector<std::shared_ptr<Channel>> &channels, int timeout_ms);
-  int Add(std::shared_ptr<Channel> channel, int timeout_ms);
-  int Update(std::shared_ptr<Channel> channel, int timeout_ms);
-  int Delete(std::shared_ptr<Channel> channel, int timeout_ms);
+  int Poll(std::vector<Channel*>& channels, int timeout_ms);
+  int Add(Channel* channel);
+  int Update(Channel* channel);
+  int Delete(Channel* channel);
 
   bool Validate() const;
 
  private:
-  int operate(int operation, std::shared_ptr<Channel> channel);
+  int operate(int operation, Channel* channel);
 
   int epoll_fd_ = -1;
   std::vector<epoll_event> events_;
 };
-}
-}
+}  // namespace net
+}  // namespace kingfisher
 
 #endif

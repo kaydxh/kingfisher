@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 
+#include "net/event/channel.h"
 #include "net/poller/poller.h"
 
 namespace kingfisher {
@@ -26,6 +27,8 @@ class EventLoop {
 
   void AssertInLoopThread();
 
+  void RemoveChannel(Channel* channel);
+
  private:
   void handleRead();
 
@@ -33,7 +36,8 @@ class EventLoop {
   bool quit_ = false;
 
   int wakeup_fd_ = -1;
-  std::shared_ptr<Channel> wakeup_channel_;
+
+  std::unique_ptr<Channel> wakeup_channel_;
   const pid_t thread_id_ = -1;
   std::vector<Functor> pending_functors_;
   std::mutex mutex_;

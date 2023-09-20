@@ -1,11 +1,15 @@
 #include "socket.ops.h"
 // close
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/uio.h>  // readv
 #include <unistd.h>
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
+
+#include "log/config.h"
 
 namespace kingfisher {
 namespace net {
@@ -151,6 +155,30 @@ std::string ToIP(const struct sockaddr* addr) {
   }
 
   return "";
+}
+
+struct sockaddr_in6 GetLocalSockAddrFromSocket(int sockfd) {
+  struct sockaddr_in6 local_addr;
+  memset(&local_addr, 0, sizeof(local_addr));
+  socklen_t addr_len = static_cast<socklen_t>(sizeof(local_addr));
+  int ret = ::getsockname(sockfd, sockaddr_cast(&local_addr), &addr_len);
+  if (ret < 0) {
+    LOG(ERROR) << "get local addr from socket err:" << ret;
+  }
+
+  return local_addr;
+}
+
+struct sockaddr_in6 GetPeerSockAddrFromSocket(int sockfd) {
+  struct sockaddr_in6 peer_addr;
+  memset(&peer_addr, 0, sizeof(peer_addr));
+  socklen_t addr_len = static_cast<socklen_t>(sizeof(peer_addr));
+  int ret = ::getpeername(sockfd, sockaddr_cast(&peer_addr), &addr_len);
+  if (ret < 0) {
+    LOG(ERROR) << "get peer addr from socket err:" << ret;
+  }
+
+  return peer_addr;
 }
 
 int GetSocketError(int sockfd) {
