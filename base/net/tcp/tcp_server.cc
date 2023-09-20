@@ -14,8 +14,11 @@
 namespace kingfisher {
 namespace net {
 
-TcpServer::TcpServer(EventLoop* loop, const sockets::SockAddress& listen_addr)
-    : loop_(loop), acceptor_(std::make_unique<Acceptor>(loop, listen_addr)) {}
+TcpServer::TcpServer(EventLoop* loop, const sockets::SockAddress& listen_addr,
+                     int thread_num)
+    : loop_(loop),
+      acceptor_(std::make_unique<Acceptor>(loop, listen_addr)),
+      thread_pool_(std::make_shared<EventLoopThreadPool>(loop, thread_num)) {}
 
 TcpServer::~TcpServer() { loop_->AssertInLoopThread(); }
 
@@ -35,6 +38,7 @@ void TcpServer::newConnection(int sockfd,
   conns_[name] = conn;
   conn->SetConnectionCallback(connection_cb_);
   conn->SetMessageCallback(message_cb_);
+  conn->SetCloseCallback(std::bind(&TcpServer::removeConnection, this, conn));
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& conn) {

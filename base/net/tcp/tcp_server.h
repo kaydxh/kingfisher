@@ -17,7 +17,8 @@ namespace net {
 
 class TcpServer : public noncopyable_::noncopyable {
  public:
-  TcpServer(EventLoop *loop, const sockets::SockAddress &listen_addr);
+  TcpServer(EventLoop *loop, const sockets::SockAddress &listen_addr,
+            int thread_num);
   ~TcpServer();
 
   void Start();
