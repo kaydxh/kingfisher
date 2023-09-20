@@ -1,5 +1,9 @@
 #include "socket.h"
+
+#include <netinet/in.h>
 #include <netinet/tcp.h>
+
+#include <cstring>
 
 #include "socket.ops.h"
 
@@ -31,5 +35,22 @@ int Socket::SetKeepAlive(bool flag) {
   return ::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE, &optval,
                       static_cast<socklen_t>(sizeof optval));
 }
+
+void Socket::BindOrDie(const sockets::SockAddress& addr) {
+  sockets::BindOrDie(sockfd_, addr.SockAddr());
 }
+
+void Socket::ListenOrDie() { sockets::ListenOrDie(sockfd_); }
+
+int Socket::Accept(sockets::SockAddress* peer_addr) {
+  struct sockaddr_in6 addr;
+  memset(&addr, 0, sizeof(addr));
+  int connfd = sockets::Accept(sockfd_, &addr);
+  if (connfd >= 0) {
+    peer_addr->SetSockAddr(addr);
+  }
+  return connfd;
 }
+
+}  // namespace net
+}  // namespace kingfisher
