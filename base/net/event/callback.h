@@ -2,6 +2,7 @@
 #define KINGFISHER_BASE_NET_EVENT_CALLBACK_H_
 
 #include <functional>
+#include <memory>
 
 #include "time/timestamp.h"
 

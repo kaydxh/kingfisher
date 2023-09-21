@@ -11,6 +11,7 @@
 #include "net/event/event_loop.h"
 #include "net/event/event_loop_thread_pool.h"
 #include "net/socket/socket_addr.h"
+#include "net/tcp/connection.h"
 
 namespace kingfisher {
 namespace net {
@@ -23,9 +24,16 @@ class TcpServer : public noncopyable_::noncopyable {
 
   void Start();
 
+  void SetConnectionCallback(const ConnectionCallback &cb) {
+    connection_cb_ = cb;
+  }
+
+  void SetMessageCallback(const MessageCallback &cb) { message_cb_ = cb; }
+
  private:
   void newConnection(int sockfd, const sockets::SockAddress &peer_addr);
   void removeConnection(const TcpConnectionPtr &conn);
+  void removeConnectionInLoop(const TcpConnectionPtr &conn);
 
  private:
   EventLoop *loop_;

@@ -1,5 +1,7 @@
 #include "acceptor.h"
 
+#include <iostream>
+
 #include "net/event/channel.h"
 #include "net/socket/socket.ops.h"
 #include "net/socket/socket_addr.h"
@@ -14,14 +16,15 @@ Acceptor::Acceptor(EventLoop* loop, const sockets::SockAddress& listen_addr,
       channel_(loop, socket_.Fd()) {
   socket_.SetReusePort(reuse_port);
   socket_.BindOrDie(listen_addr);
-  // channel_.SetReadCallback();
+  channel_.SetReadCallback(std::bind(&Acceptor::handleRead, this));
 }
 
-Acceptor::~Acceptor() {}
+Acceptor::~Acceptor() { channel_.Remove(); }
 
 void Acceptor::Listen() {
   loop_->AssertInLoopThread();
   socket_.ListenOrDie();
+  channel_.EnableReading();
 }
 
 void Acceptor::handleRead() {

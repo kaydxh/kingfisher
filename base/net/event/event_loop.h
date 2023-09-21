@@ -3,10 +3,10 @@
 
 #include <functional>
 #include <memory>
-#include <mutex>
 
 #include "net/event/channel.h"
 #include "net/poller/poller.h"
+#include "sync/mutex.h"
 
 namespace kingfisher {
 namespace net {
@@ -29,8 +29,11 @@ class EventLoop {
 
   void RemoveChannel(Channel* channel);
 
+  void UpdateChannel(Channel* channel);
+
  private:
   void handleRead();
+  void doPendingFunctions();
 
   std::unique_ptr<IPoller> poller_;
   bool quit_ = false;
@@ -40,7 +43,8 @@ class EventLoop {
   std::unique_ptr<Channel> wakeup_channel_;
   const pid_t thread_id_ = -1;
   std::vector<Functor> pending_functors_;
-  std::mutex mutex_;
+  sync::Mutex mutex_;
+  // sync::MutexGuard mutex_gurad_;
 };
 }  // namespace net
 }  // namespace kingfisher

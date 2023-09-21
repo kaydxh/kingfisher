@@ -23,6 +23,7 @@ class EPoller : public IPoller {
   int Delete(Channel* channel);
 
   bool Validate() const;
+  void AutoUpdateChannel(Channel* channel);
 
  private:
   int operate(int operation, Channel* channel);
