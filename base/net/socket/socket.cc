@@ -52,5 +52,7 @@ int Socket::Accept(sockets::SockAddress* peer_addr) {
   return connfd;
 }
 
+void Socket::ShutdownWrite() { sockets::ShutdownWrite(sockfd_); }
+
 }  // namespace net
 }  // namespace kingfisher

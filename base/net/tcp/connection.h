@@ -24,7 +24,11 @@ class TcpConnection : public noncopyable_::noncopyable,
                 const sockets::SockAddress& local_addr,
                 const sockets::SockAddress& peer_addr, bool keep_alive = true);
 
+  ~TcpConnection();
+
   void Send(const void* data, size_t len);
+  void Send(const std::string& data);
+
   void SetConnectionCallback(const ConnectionCallback& cb) {
     connection_cb_ = cb;
   }
@@ -36,6 +40,9 @@ class TcpConnection : public noncopyable_::noncopyable,
 
   void DestoryConnection();
 
+  void ConnectEstablished();
+  void Shutdown();
+
  private:
   void handleRead();
   void handleWrite();
@@ -43,6 +50,7 @@ class TcpConnection : public noncopyable_::noncopyable,
   void handleError();
 
   void sendInLoop(const void* data, size_t len);
+  void shutdownInLoop();
 
  private:
   EventLoop* loop_;

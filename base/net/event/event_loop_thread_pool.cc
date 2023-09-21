@@ -29,7 +29,7 @@ EventLoop* EventLoopThreadPool::GetNextLoop() {
     loop = loops_[next_index_];
     ++next_index_;
 
-    if (next_index_ > loops_.size()) {
+    if (next_index_ >= loops_.size()) {
       next_index_ = 0;
     }
   }

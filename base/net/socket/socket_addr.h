@@ -14,7 +14,7 @@ const struct sockaddr* sockaddr_cast(const struct sockaddr_in6* addr);
 
 class SockAddress {
  public:
-  explicit SockAddress(bool loopback_only = false);
+  explicit SockAddress(uint16_t port = 0, bool loopback_only = false);
   explicit SockAddress(const struct sockaddr_in& addr) : addr_(addr) {}
   explicit SockAddress(const struct sockaddr_in6& addr) : addr6_(addr) {}
 

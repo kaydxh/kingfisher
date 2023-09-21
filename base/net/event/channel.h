@@ -11,6 +11,14 @@ namespace net {
 
 class EventLoop;
 
+const int kNoneEvent = 0;
+
+enum EventStatus {
+  kEventNew = -1,
+  kEventAdded = 1,
+  kEventDeleted = 2,
+};
+
 // Channel的生命周期由TcpConnection管理
 class Channel {
  public:
@@ -25,9 +33,17 @@ class Channel {
   void SetCloseCallback(EventCallback cb);
   void SetRevents(int revents);
 
-  void SetReadEvent(EventCallback cb);
-
   void EnableEvent(int event);
+  void EnableReading();
+  void EnableWriting();
+
+  void DisableEvent(int event);
+  void DisableReading();
+  void DisableWriting();
+  void DisableAll();
+
+  EventStatus GetEventStatus() const { return event_status_; }
+  void SetEventStatus(EventStatus es) { event_status_ = es; }
 
   /// Tie this channel to the owner object managed by shared_ptr,
   /// prevent the owner object being destroyed in handleEvent.
@@ -36,6 +52,7 @@ class Channel {
   int Fd() const;
   void HandleEvent();
   void Remove();
+  void Update();
 
  private:
   void update();
@@ -47,10 +64,11 @@ class Channel {
   EventCallback closeCallback_;
 
   EventLoop* loop_ = nullptr;
+  EventStatus event_status_ = kEventNew;
   const int fd_;
-  int events_;
+  int events_ = 0;
   // received event type of epoller
-  int revents_;
+  int revents_ = 0;
 };
 }  // namespace net
 }  // namespace kingfisher

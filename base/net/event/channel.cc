@@ -6,6 +6,7 @@
 #include <memory>
 #include <sstream>
 
+#include "log/config.h"
 #include "net/event/event_loop.h"
 
 namespace kingfisher {
@@ -27,29 +28,46 @@ void Channel::SetCloseCallback(EventCallback cb) {
   closeCallback_ = std::move(cb);
 }
 
-void Channel::SetReadEvent(EventCallback cb) {
-  SetReadCallback(cb);
-  EnableEvent(POLLIN | POLLPRI);
+void Channel::EnableEvent(int event) {
+  events_ |= event;
+  Update();
 }
 
-void Channel::EnableEvent(int event) { events_ |= event; }
+void Channel::DisableEvent(int event) {
+  events_ &= ~event;
+  Update();
+}
+
+void Channel::EnableReading() { EnableEvent(POLLIN | POLLPRI); }
 
 void Channel::SetRevents(int revents) { revents_ = revents; }
 
+void Channel::EnableWriting() { EnableEvent(POLLOUT); }
+
 int Channel::Events() const { return events_; }
+
+void Channel::DisableReading() { DisableEvent(POLLIN); }
+
+void Channel::DisableWriting() { DisableEvent(POLLOUT); }
+
+void Channel::DisableAll() {
+  events_ = kNoneEvent;
+  Update();
+}
 
 int Channel::Fd() const { return fd_; }
 
-void Channel::update() {
-  //    loop_->OperateChannel(0, this);
-}
+void Channel::Update() { loop_->UpdateChannel(this); }
 
 void Channel::HandleEvent() {
-  std::cout << "HandleEvent: " << reventsToString() << std::endl;
+  LOG(INFO) << ">>> HandleEvent: " << reventsToString() << std::endl;
   // close event
   // POLLHUP: Hang up (output only)
   // POLLIN: There is data to read
   if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
+    if (closeCallback_) {
+      closeCallback_();
+    }
   }
 
   // error event

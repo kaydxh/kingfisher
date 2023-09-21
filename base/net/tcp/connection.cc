@@ -16,6 +16,7 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name,
                              bool keep_alive)
     : loop_(loop),
       name_(name),
+      socket_(std::make_unique<Socket>(sockfd)),
       channel_(std::make_unique<Channel>(loop, sockfd)),
       local_addr_(local_addr),
       peer_addr_(peer_addr),
@@ -27,8 +28,18 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name,
   socket_->SetKeepAlive(keep_alive);
 }
 
+TcpConnection::~TcpConnection() { LOG(INFO) << "~TcpConnection"; }
+
 void TcpConnection::Send(const void* data, size_t len) {
-  sendInLoop(data, len);
+  if (loop_->IsInLoopThread()) {
+    sendInLoop(data, len);
+  } else {
+    loop_->RunInLoop(std::bind(&TcpConnection::sendInLoop, this, data, len));
+  }
+}
+
+void TcpConnection::Send(const std::string& data) {
+  Send(data.c_str(), data.size());
 }
 
 void TcpConnection::sendInLoop(const void* data, size_t len) {
@@ -46,6 +57,7 @@ void TcpConnection::sendInLoop(const void* data, size_t len) {
 void TcpConnection::handleRead() {
   loop_->AssertInLoopThread();
   ssize_t n = input_buffer_.Read();
+  LOG(INFO) << ">> handleRead " << n << "bytes";
   if (n == 0) {
     return;
   }
@@ -56,11 +68,19 @@ void TcpConnection::handleRead() {
   handleError();
 }
 
+void TcpConnection::ConnectEstablished() {
+  LOG(INFO) << ">>> TcpConnection ConnectEstablishe";
+  channel_->EnableReading();
+  connection_cb_(shared_from_this());
+}
+
 void TcpConnection::handleWrite() {
+  LOG(INFO) << ">>> TcpConnection handleWrite";
   loop_->AssertInLoopThread();
   ssize_t n = sockets::Write(channel_->Fd(), output_buffer_.Peek(),
                              output_buffer_.ReadableBytes());
 
+  LOG(INFO) << "============ Write " << n << " bytes";
   if (n > 0) {
     // todo
     return;
@@ -70,9 +90,11 @@ void TcpConnection::handleWrite() {
 }
 
 void TcpConnection::handleClose() {
+  LOG(INFO) << ">>> TcpConnection handleClose";
   loop_->AssertInLoopThread();
   // TcpConnectionPtr guardThis(shared_from_this());
   // closeCallback_(guardThis);
+  channel_->DisableAll();
   close_cb_(shared_from_this());
 }
 
@@ -86,5 +108,15 @@ void TcpConnection::DestoryConnection() {
   channel_->Remove();
 }
 
+void TcpConnection::Shutdown() {
+  loop_->RunInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+}
+
+void TcpConnection::shutdownInLoop() {
+  loop_->AssertInLoopThread();
+  socket_->ShutdownWrite();
+}
+
 }  // namespace net
+   //
 }  // namespace kingfisher

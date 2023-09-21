@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 
+#include "log/config.h"
 #include "net/event/channel.h"
 // #include "timestamp.h"
 
@@ -35,8 +36,11 @@ bool EPoller::Validate() const { return epoll_fd_ >= 0; }
 int EPoller::Poll(std::vector<Channel*>& channels_reutrn, int timeout_ms) {
   int events_cout = ::epoll_wait(epoll_fd_, &*events_.begin(),
                                  static_cast<int>(events_.size()), timeout_ms);
-  std::cout << "epoll fd: " << epoll_fd_ << " events cout:" << events_cout
-            << std::endl;
+  if (events_cout > 0) {
+    std::cout << "epoll fd: " << epoll_fd_ << " events cout:" << events_cout
+              << std::endl;
+  }
+
   if (events_cout < 0) {
     std::cout << errno << std::endl;
   }
@@ -83,5 +87,26 @@ int EPoller::operate(int operation, Channel* channel) {
 
   return 0;
 }
+
+void EPoller::AutoUpdateChannel(Channel* channel) {
+  EventStatus event_status = channel->GetEventStatus();
+  int fd = channel->Fd();
+  switch (event_status) {
+    case kEventDeleted:
+    case kEventNew:
+      fd_channels_[fd] = channel;
+      channel->SetEventStatus(event_status);
+      Add(channel);
+      break;
+
+    case kEventAdded:
+      Update(channel);
+      break;
+
+    default:
+      LOG(ERROR) << "nerver arrived this line";
+  }
+}
+
 }  // namespace net
 }  // namespace kingfisher
