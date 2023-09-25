@@ -42,6 +42,8 @@ class Channel {
   void DisableWriting();
   void DisableAll();
 
+  void Tie(const std::shared_ptr<void>&);
+
   EventStatus GetEventStatus() const { return event_status_; }
   void SetEventStatus(EventStatus es) { event_status_ = es; }
 
@@ -53,6 +55,7 @@ class Channel {
   void HandleEvent();
   void Remove();
   void Update();
+  void HandleEventWithGuard();
 
  private:
   void update();
@@ -69,6 +72,9 @@ class Channel {
   int events_ = 0;
   // received event type of epoller
   int revents_ = 0;
+
+  std::weak_ptr<void> tie_;
+  bool tied_ = false;
 };
 }  // namespace net
 }  // namespace kingfisher
