@@ -55,12 +55,29 @@ void Channel::DisableAll() {
   Update();
 }
 
+void Channel::Tie(const std::shared_ptr<void>& obj) {
+  tie_ = obj;
+  tied_ = true;
+}
+
 int Channel::Fd() const { return fd_; }
 
 void Channel::Update() { loop_->UpdateChannel(this); }
 
 void Channel::HandleEvent() {
-  LOG(INFO) << ">>> HandleEvent: " << reventsToString() << std::endl;
+  std::shared_ptr<void> guard;
+  if (tied_) {
+    guard = tie_.lock();
+    if (guard) {
+      HandleEventWithGuard();
+    }
+  } else {
+    HandleEventWithGuard();
+  }
+}
+
+void Channel::HandleEventWithGuard() {
+  LOG(INFO) << ">>> HandleEventWithGuard: " << reventsToString() << std::endl;
   // close event
   // POLLHUP: Hang up (output only)
   // POLLIN: There is data to read
