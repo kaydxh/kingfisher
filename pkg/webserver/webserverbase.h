@@ -6,18 +6,18 @@
 namespace kingfisher {
 namespace web {
 
-    class WebServerBase {
-    public:
-        WebServerBase() {};
-        virtual ~WebServerBase() {};
-        virtual std::string ServerName() = 0;
+class WebServerBase {
+ public:
+  WebServerBase(){};
+  virtual ~WebServerBase(){};
+  virtual std::string ServerName() = 0;
 
-        virtual void Run();
-        virtual void BeforrRun(void *args);
-        virtual void AfterRun(void *args);
-    };
+  virtual void Run();
+  virtual void BeforrRun(void *args);
+  virtual void AfterRun(void *args);
+};
 
-}
-}
+}  // namespace web
+}  // namespace kingfisher
 
 #endif
