@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package go.pkg.webserver;
+
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/kaydxh/golang/pkg/webserver;webserver";
+
+message WebConfig {
+  Web web = 1;
+}
+
+message Web {
+  Net bind_address = 1;
+  message Net {
+    string host = 1;
+    int32 port = 2;
+  }
+
+  Grpc grpc = 3;
+  message Grpc {
+    int32 max_concurrency_unary = 1;
+    int32 max_concurrency_stream = 2;
+    int32 max_receive_message_size = 3;
+    int32 max_send_message_size = 4;
+    google.protobuf.Duration timeout = 5;
+  }
+
+  Http http = 4;
+  message Http {
+    ApiFormatter api_formatter = 1;
+    int32 max_concurrency = 2;
+    // timeout 0 is not unlimited
+    google.protobuf.Duration timeout = 3;
+
+    enum ApiFormatter {
+      api_noop = 0;
+      tcloud_api_v30 = 1;
+      trivial_api_v10 = 2;
+      trivial_api_v20 = 3;
+    }
+  }
+
+  Debug debug = 10;
+  message Debug {
+    bool enable_profiling = 1;
+    repeated string disable_print_inoutput_methods = 2;
+    map<int32, int32> test_map = 3;
+  }
+
+  Monitor monitor = 11;
+  message Monitor {
+    Prometheus prometheus = 1;
+
+    message Prometheus {
+      bool enabled_metric_timer_cost = 1;
+      bool enabled_metric_code_message = 2;
+    }
+  }
+}
