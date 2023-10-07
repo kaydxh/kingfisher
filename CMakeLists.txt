@@ -17,15 +17,16 @@ set(CXX_FLAGS
  -Wextra
  -Werror
  # -Wconversion
-  -Wno-unused-parameter
+ -Wno-unused-parameter
  # -Wold-style-cast
  # -Woverloaded-virtual
  -Wpointer-arith
  -Wno-noexcept-type
+ -Waligned-new
  # -Wshadow
  -Wwrite-strings
  -march=native
- -std=c++14
+ -std=c++17
  -rdynamic
  )
 
