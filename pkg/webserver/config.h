@@ -27,6 +27,9 @@ class Config {
  public:
   go::pkg::webserver::WebConfig proto_;
   ConfigOptions options_;
+
+ private:
+  int parseViper();
 };
 
 class CompletedConfig {

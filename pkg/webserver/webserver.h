@@ -7,14 +7,17 @@
 namespace kingfisher {
 namespace web {
 
-struct WebServerOptions {};
+struct WebServerOptions {
+  int max_concurrency = 0;    // Default: 0 unlimited
+  int idle_timeout_sec = -1;  // Default: -1 (disabled)
+};
 
 class WebServer {
  public:
   WebServer();
   ~WebServer();
 
-  int Init(const std::string& port);
+  int Init(const std::string& port, const WebServerOptions& opts);
 
   WebServer& AddServiceOrDie(google::protobuf::Service* service);
   int Run();
