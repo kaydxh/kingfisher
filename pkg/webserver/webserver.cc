@@ -8,8 +8,10 @@ namespace web {
 WebServer::WebServer() {}
 WebServer::~WebServer() {}
 
-int WebServer::Init(const std::string& port) {
+int WebServer::Init(const std::string& port, const WebServerOptions& opts) {
   port_ = port;
+  options_.idle_timeout_sec = opts.idle_timeout_sec;
+  options_.max_concurrency = opts.max_concurrency;
   return 0;
 }
 

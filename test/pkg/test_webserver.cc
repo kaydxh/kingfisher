@@ -24,8 +24,8 @@ TEST_F(test_Webserver, ALL) {
   YAML::Node yaml_data = kingfisher::yaml::GetYaml(path);
   kingfisher::web::ConfigOptions opts;
   opts.node = &yaml_data;
+
   auto &ws = kingfisher::web::Config::NewConfig(opts).Complete().ApplyOrDie();
-  ws.Init("0.0.0.0:10000");
   ws.Run();
 }
 

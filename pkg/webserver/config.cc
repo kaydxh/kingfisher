@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include <sstream>
+
 #include "config/yaml/yaml.h"
 #include "core/singleton.hpp"
 #include "log/config.h"
@@ -27,11 +29,23 @@ Config& Config::NewConfig(const ConfigOptions& opts) {
   return config;
 }
 
+int Config::parseViper() {
+  auto& web_proto = proto_.web();
+  std::ostringstream oss;
+  oss << web_proto.bind_address().host() << ":"
+      << web_proto.bind_address().port();
+  options_.bind_address = oss.str();
+
+  return 0;
+}
+
 CompletedConfig& Config::Complete() {
   int completed_ret = LoadYaml();
   auto& completed_config =
       kingfisher::core::Singleton<CompletedConfig>::Instance();
   completed_config.Init(this, completed_ret);
+
+  parseViper();
   return completed_config;
 }
 
@@ -56,7 +70,12 @@ WebServer& CompletedConfig::ApplyOrDie() {
 
 WebServer& CompletedConfig::InstallOrDie() {
   auto& ws = kingfisher::core::Singleton<WebServer>::Instance();
-  int ret = ws.Init(config_->options_.bind_address);
+
+  auto& http_proto = config_->proto_.web().http();
+  WebServerOptions opts;
+  opts.idle_timeout_sec = -1;
+  opts.max_concurrency = http_proto.max_concurrency();
+  int ret = ws.Init(config_->options_.bind_address, opts);
   if (ret != 0) {
     LOG(FATAL) << "failed to init webserver on"
                << config_->options_.bind_address << ", err:" << ret;
