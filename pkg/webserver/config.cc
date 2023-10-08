@@ -2,6 +2,8 @@
 
 #include "config/yaml/yaml.h"
 #include "core/singleton.hpp"
+#include "log/config.h"
+#include "webserver.h"
 
 namespace kingfisher {
 namespace web {
@@ -42,15 +44,26 @@ void CompletedConfig::Init(const Config* config, int completed_ret) {
   completed_ret_ = completed_ret;
 }
 
-int CompletedConfig::Apply() {
+WebServer& CompletedConfig::ApplyOrDie() {
   if (completed_ret_ != 0) {
-    return completed_ret_;
+    // return completed_ret_;
+    LOG(FATAL) << "failed to init webserver on"
+               << config_->options_.bind_address << ", err:" << completed_ret_;
   }
 
-  return Install();
+  return InstallOrDie();
 }
 
-int CompletedConfig::Install() { return 0; }
+WebServer& CompletedConfig::InstallOrDie() {
+  auto& ws = kingfisher::core::Singleton<WebServer>::Instance();
+  int ret = ws.Init(config_->options_.bind_address);
+  if (ret != 0) {
+    LOG(FATAL) << "failed to init webserver on"
+               << config_->options_.bind_address << ", err:" << ret;
+  }
+
+  return ws;
+}
 
 }  // namespace web
 }  // namespace kingfisher
