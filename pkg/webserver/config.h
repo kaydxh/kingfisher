@@ -9,6 +9,7 @@ namespace kingfisher {
 namespace web {
 
 class CompletedConfig;
+class WebServer;
 
 struct ConfigOptions {
   YAML::Node* node = nullptr;
@@ -34,8 +35,8 @@ class CompletedConfig {
   ~CompletedConfig();
   void Init(const Config* config, int completed_ret);
 
-  int Apply();
-  int Install();
+  WebServer& ApplyOrDie();
+  WebServer& InstallOrDie();
 
  private:
   const Config* config_ = nullptr;

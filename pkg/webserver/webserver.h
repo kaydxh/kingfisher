@@ -14,12 +14,15 @@ class WebServer {
   WebServer();
   ~WebServer();
 
-  WebServer& AddServiceOrDie(google::protobuf::Service* service);
+  int Init(const std::string& port);
 
+  WebServer& AddServiceOrDie(google::protobuf::Service* service);
   int Run();
 
  private:
+  std::string port_;
   brpc::Server server_;
+  brpc::ServerOptions options_;
 };
 
 }  // namespace web
