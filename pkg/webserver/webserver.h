@@ -20,7 +20,10 @@ class WebServer {
   int Init(const std::string& port, const WebServerOptions& opts);
 
   WebServer& AddServiceOrDie(google::protobuf::Service* service);
+
   int Run();
+
+  brpc::Server& GetBrpcServer() { return server_; }
 
  private:
   std::string port_;

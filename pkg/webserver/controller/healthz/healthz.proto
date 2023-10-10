@@ -1,0 +1,12 @@
+syntax = "proto3";
+package healthz;
+
+option cc_generic_services = true;
+
+message HealthCheckRequest {};
+message HealthCheckResponse {};
+
+service HealthCheckService {
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+};
+
