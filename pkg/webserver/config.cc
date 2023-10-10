@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "config/yaml/yaml.h"
+#include "controller/healthz/healthz.h"
 #include "core/singleton.hpp"
 #include "log/config.h"
 #include "webserver.h"
@@ -80,6 +81,9 @@ WebServer& CompletedConfig::InstallOrDie() {
     LOG(FATAL) << "failed to init webserver on"
                << config_->options_.bind_address << ", err:" << ret;
   }
+
+  static HealthCheckServiceImpl health_service;
+  health_service.InstallRoutes(ws.GetBrpcServer());
 
   return ws;
 }
