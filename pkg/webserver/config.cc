@@ -83,7 +83,7 @@ WebServer& CompletedConfig::InstallOrDie() {
   }
 
   static HealthCheckServiceImpl health_service;
-  health_service.InstallRoutes(ws.GetBrpcServer());
+  ws.AddServiceOrDie(&health_service);
 
   return ws;
 }

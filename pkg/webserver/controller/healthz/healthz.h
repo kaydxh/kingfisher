@@ -25,10 +25,6 @@ class HealthCheckServiceImpl : public healthz::HealthCheckService {
     os << "healthz Ok\n";
     os.move_to(cntl->response_attachment());
   }
-
-  int InstallRoutes(brpc::Server& server) {
-    return server.AddService(this, brpc::SERVER_OWNS_SERVICE);
-  }
 };
 
 }  // namespace web
