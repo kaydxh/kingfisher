@@ -1,7 +1,12 @@
 #ifndef KINGFISHER_PKG_LOG_CONFIG_H_
 #define KINGFISHER_PKG_LOG_CONFIG_H_
 
+// #ifdef ENABLE_BRPC
+// #include <butil/logging.h>
+// #else
 #include <glog/logging.h>
+// #endif
+
 #include <yaml-cpp/yaml.h>
 
 #include "log.pb.h"
@@ -36,6 +41,10 @@ class CompletedConfig {
 
   int Apply();
   int Install();
+
+ private:
+  int installGLog();
+  //  int installBLog();
 
  private:
   const Config* config_ = nullptr;
