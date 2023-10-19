@@ -44,7 +44,6 @@ class CompletedConfig {
 
  private:
   int installGLog();
-  //  int installBLog();
 
  private:
   const Config* config_ = nullptr;
