@@ -30,5 +30,10 @@ class ApiGuard {
 
 }  // namespace middleware
 }  // namespace kingfisher
+   //
+#define API_GUARD \
+  using REQ_TYPE = std::decay<decltype(*req)>::type;   \
+  using RESP_TYPE = std::decay<decltype(*resp)>::type; \
+  kingfisher::middleware::ApiGuard<REQ_TYPE, RESP_TYPE> api_guard(req, resp);
 
 #endif

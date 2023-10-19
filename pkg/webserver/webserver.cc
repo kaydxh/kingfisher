@@ -12,6 +12,7 @@ int WebServer::Init(const std::string& port, const WebServerOptions& opts) {
   port_ = port;
   options_.idle_timeout_sec = opts.idle_timeout_sec;
   options_.max_concurrency = opts.max_concurrency;
+
   return 0;
 }
 
@@ -21,6 +22,13 @@ WebServer& WebServer::AddServiceOrDie(google::protobuf::Service* service) {
     LOG(FATAL) << "failed to add service, ret: " << ret;
   }
 
+  return *this;
+}
+
+WebServer& WebServer::AddInterceptor(const brpc::Interceptor& interceptor) {
+  //  options_.interceptors.push_back(interceptor);
+  // server_.AddInterceptor(&interceptor);
+  options_.interceptor = &interceptor;
   return *this;
 }
 
