@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_PKG_WEB_SERVER_H_
 #define KINGFISHER_PKG_WEB_SERVER_H_
 
+#include "brpc/controller.h"
 #include "brpc/server.h"
 #include "webserver/webserverbase.h"
 
@@ -20,6 +21,7 @@ class WebServer {
   int Init(const std::string& port, const WebServerOptions& opts);
 
   WebServer& AddServiceOrDie(google::protobuf::Service* service);
+  WebServer& AddInterceptor(const brpc::Interceptor& interceptor);
 
   int Run();
 

@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "config/yaml/yaml.h"
+#include "controller/date/date.h"
 #include "controller/healthz/healthz.h"
 #include "core/singleton.hpp"
 #include "log/config.h"
@@ -84,6 +85,9 @@ WebServer& CompletedConfig::InstallOrDie() {
 
   static HealthCheckServiceImpl health_service;
   ws.AddServiceOrDie(&health_service);
+
+  static DateServiceImpl date_service;
+  ws.AddServiceOrDie(&date_service);
 
   return ws;
 }
