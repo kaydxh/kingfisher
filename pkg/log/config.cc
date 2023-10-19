@@ -40,10 +40,7 @@ CompletedConfig::CompletedConfig() {}
 
 CompletedConfig::~CompletedConfig() {
   if (completed_ret_ == 0) {
-#ifdef ENABLE_BRPC
-#else
     google::ShutdownGoogleLogging();
-#endif
   }
 }
 
@@ -60,17 +57,9 @@ int CompletedConfig::Apply() {
   return Install();
 }
 
-int CompletedConfig::Install() {
-#ifdef ENABLE_BRPC
-#else
-  return InstallGLog();
-#endif
-
-  return 0;
-}
+int CompletedConfig::Install() { return installGLog(); }
 
 int CompletedConfig::installGLog() {
-#ifdef ENABLE_BRPC
   google::InitGoogleLogging(config_->options_.app.c_str());
 
   auto& proto = config_->proto_.log();
@@ -114,54 +103,7 @@ int CompletedConfig::installGLog() {
   }
 
   return 0;
-#else
-  return -1;
-#endif
 }
-
-#if 0
-int CompletedConfig::installBLog() {
-#ifdef ENABLE_BRPC
-  auto& proto = config_->proto_.log();
-  logging::LoggingSettings log_setting;
-  log_setting.log_file = proto.filepath().c_str();
-  log_setting.logging_dest = logging::LOG_TO_FILE;
-  logging::InitLogging(log_setting);
-
-  using namespace api::v1::viper::logs;
-
-  switch (proto.level()) {
-    case Log_Level::Log_Level_trace:
-    case Log_Level::Log_Level_debug:
-    case Log_Level::Log_Level_info: {
-      logging::SetMinLogLevel(logging::BLOG_INFO);
-      break;
-    }
-    case Log_Level::Log_Level_warn: {
-      logging::SetMinLogLevel(logging::BLOG_WARNING);
-      break;
-    }
-    case Log_Level::Log_Level_error: {
-      logging::SetMinLogLevel(logging::BLOG_ERROR);
-      break;
-    }
-    case Log_Level::Log_Level_fatal:
-    case Log_Level::Log_Level_panic: {
-      logging::SetMinLogLevel(logging::BLOG_FATAL);
-      break;
-    }
-
-    default:
-      logging::SetMinLogLevel(logging::BLOG_INFO);
-      break;
-  }
-
-  return 0;
-#else
-  return -1;
-#endif
-}
-#endif
 
 }  // namespace log
 }  // namespace kingfisher
