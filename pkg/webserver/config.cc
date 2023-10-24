@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include <memory>
 #include <sstream>
 
 #include "config/yaml/yaml.h"
@@ -55,7 +56,7 @@ CompletedConfig::CompletedConfig() {}
 
 CompletedConfig::~CompletedConfig() {}
 
-void CompletedConfig::Init(const Config* config, int completed_ret) {
+void CompletedConfig::Init(Config* config, int completed_ret) {
   config_ = config;
   completed_ret_ = completed_ret;
 }
@@ -68,6 +69,26 @@ WebServer& CompletedConfig::ApplyOrDie() {
   }
 
   return InstallOrDie();
+}
+
+std::vector<std::shared_ptr<::google::protobuf::Service>>
+CompletedConfig::installDefaultService() {
+  auto& services = config_->options_.services;
+
+  std::shared_ptr<::google::protobuf::Service> health_service =
+      std::make_shared<HealthCheckServiceImpl>();
+  services.push_back(std::move(health_service));
+  std::shared_ptr<::google::protobuf::Service> date_service =
+      std::make_shared<DateServiceImpl>();
+  services.push_back(std::move(date_service));
+
+  auto& ws = kingfisher::core::Singleton<WebServer>::Instance();
+
+  for (auto& s : services) {
+    ws.AddServiceOrDie(s.get());
+  }
+
+  return services;
 }
 
 WebServer& CompletedConfig::InstallOrDie() {
@@ -83,11 +104,7 @@ WebServer& CompletedConfig::InstallOrDie() {
                << config_->options_.bind_address << ", err:" << ret;
   }
 
-  static HealthCheckServiceImpl health_service;
-  ws.AddServiceOrDie(&health_service);
-
-  static DateServiceImpl date_service;
-  ws.AddServiceOrDie(&date_service);
+  installDefaultService();
 
   return ws;
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "in_out_printer.h"
+#include "log/config.h"
 #include "time/time_counter.h"
 
 namespace kingfisher {
@@ -13,13 +14,12 @@ template <typename REQ, typename RESP>
 class ApiGuard {
  public:
   ApiGuard(const REQ* req, RESP* resp) : req_(req), resp_(resp) {
-    std::cout << "recv req: " << ProtoString(req_) << std::endl;
+    LOG(INFO) << "recv req: " << ProtoString(req_);
   }
   ~ApiGuard() {
     tc_.Tick("api");
-    std::cout << tc_.String() << std::endl;
-    std::cout << "send resp: " << kingfisher::middleware::ProtoString(resp_)
-              << std::endl;
+    LOG(INFO) << tc_.String();
+    LOG(INFO) << "send resp: " << kingfisher::middleware::ProtoString(resp_);
   }
 
  private:
@@ -31,7 +31,7 @@ class ApiGuard {
 }  // namespace middleware
 }  // namespace kingfisher
    //
-#define API_GUARD \
+#define API_GUARD                                      \
   using REQ_TYPE = std::decay<decltype(*req)>::type;   \
   using RESP_TYPE = std::decay<decltype(*resp)>::type; \
   kingfisher::middleware::ApiGuard<REQ_TYPE, RESP_TYPE> api_guard(req, resp);

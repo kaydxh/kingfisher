@@ -9,7 +9,7 @@ namespace middleware {
 void TruncateProto(::google::protobuf::Message *proto);
 
 template <typename T>
-std::string ProtoString(const T *proto) {
+std::string ProtoString(const T * proto){
   T cloneProto;
   cloneProto.CopyFrom(*proto);
   TruncateProto(&cloneProto);
