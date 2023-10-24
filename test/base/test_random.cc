@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+
 #include <algorithm>
 #include <iostream>
 #include <thread>
 #include <vector>
+
 #include "random/random.h"
 
 class test_Random : public testing::Test {
@@ -49,4 +51,19 @@ TEST(test_Random, RandUInt32) {
     EXPECT_LE(values[i], values[i + 1]);
     EXPECT_LE(values[i], 1000);
   }
+}
+
+TEST(test_Random, RandRange) {
+  // srand(time(0));
+  unsigned int seed = static_cast<unsigned int>(time(0));
+  int count = 0;
+  for (int i = 0; i < 100; ++i) {
+    float random_value =
+        static_cast<float>(rand_r(&seed)) / static_cast<float>(RAND_MAX);
+
+    if (random_value < 0.6) {
+      count++;
+    }
+  }
+  std::cout << "count: " << count << std::endl;
 }
