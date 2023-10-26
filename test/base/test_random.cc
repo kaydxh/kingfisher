@@ -67,3 +67,14 @@ TEST(test_Random, RandRange) {
   }
   std::cout << "count: " << count << std::endl;
 }
+
+TEST(test_Random, GetRandomPercentage) {
+  int count = 0;
+  for (int i = 0; i < 1000; i++) {
+    float r = kingfisher::random::Random::GetRandomPercentage();
+    if (r < 0.3) {
+      count++;
+    }
+  }
+  std::cout << "count: " << count << std::endl;
+}
