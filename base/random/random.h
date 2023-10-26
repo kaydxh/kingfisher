@@ -36,6 +36,11 @@ class DefaultGenerator {
   std::shared_ptr<std::mt19937> m_sp_rand_num;
 };
 
+struct RandomSeed {
+  bool init = false;
+  unsigned int seed = 0;
+};
+
 class Random {
  private:
   template <typename RandomNumberGenerator>
@@ -118,6 +123,16 @@ class Random {
 
     return std::uniform_int_distribution<uint64_t>(min, max - 1)(rrng);
   }
+
+  static unsigned int GetRandom();
+  static unsigned int GetRandomRange(unsigned int min_val,
+                                     unsigned int max_val);
+  static float GetRandomPercentage();
+
+ private:
+  static void initRandomSeedAtFork();
+  static void initRandomSeed();
+  static void initRandomSeedOnce();
 };
 
 }  // namespace random
