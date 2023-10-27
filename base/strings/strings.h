@@ -27,6 +27,8 @@ std::string ToLower(const std::string &s);
 std::string TrimLeft(const std::string &s, const std::string &prefix);
 std::string TrimRight(const std::string &s, const std::string &suffix);
 
+std::string FormatString(const char *fmt, ...);
+
 template <typename T>
 T ToNumber(std::string s) {
   T t;

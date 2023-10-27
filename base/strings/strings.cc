@@ -1,10 +1,12 @@
 
 #include "strings/strings.h"
 
+#include <stdarg.h>  //va_start
+
 #include <algorithm>
 #include <cctype>
-#include <sstream>
 #include <cstring>
+#include <sstream>
 
 namespace kingfisher {
 namespace strings {
@@ -155,6 +157,30 @@ std::string TrimRight(const std::string &s, const std::string &suffix) {
   if (HasSuffix(s, suffix)) {
     return TrimRight(s.substr(0, s.length() - suffix.length()), suffix);
   }
+  return s;
+}
+
+std::string FormatString(const char *fmt, ...) {
+  if (fmt == nullptr) {
+    return "";
+  }
+
+  std::string s;
+  va_list va;
+  va_start(va, fmt);
+  size_t len = vsnprintf(nullptr, 0, fmt, va);
+  if (len > 0) {
+    va_list va2;
+    va_start(va2, fmt);
+
+    s.resize(len);
+    char *tmp = (char *)s.c_str();
+    vsnprintf(tmp, len + 1, fmt, va2);
+
+    va_end(va2);
+  }
+  va_end(va);
+
   return s;
 }
 
