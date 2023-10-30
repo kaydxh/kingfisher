@@ -21,8 +21,9 @@ class ApiGuard {
   }
   ~ApiGuard() {
     tc_.Tick("api");
-    LOG(INFO) << tc_.String();
-    LOG(INFO) << "send resp: " << kingfisher::middleware::ProtoString(resp_);
+    LOG(INFO) << "send resp: " << kingfisher::middleware::ProtoString(resp_)
+              << tc_.String();
+    ;
   }
 
  private:
