@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 
 #include "core/scope_guard.h"
+#include "log/config.h"
 
 namespace kingfisher {
 namespace fileutil {
@@ -43,7 +44,7 @@ ssize_t WriteFile(const std::string &filename, const std::string &content,
 
   SCOPE_EXIT {
     if (fd != -1) {
-      std::cout << "close fd: " << fd << std::endl;
+      LOG(INFO) << "close fd: " << fd;
       close(fd);
     }
   };
@@ -57,11 +58,11 @@ bool CopyFile(const char *from_path, const char *to_path) {
 
   SCOPE_EXIT {
     if (in_fd != -1) {
-      std::cout << "close in_fd: " << in_fd << std::endl;
+      LOG(INFO) << "close in_fd: " << in_fd;
       close(in_fd);
     }
     if (out_fd != -1) {
-      std::cout << "close out_fd: " << out_fd << std::endl;
+      LOG(INFO) << "close out_fd: " << out_fd;
       close(out_fd);
     }
   };
