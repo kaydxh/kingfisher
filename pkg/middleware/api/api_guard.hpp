@@ -2,9 +2,11 @@
 #define KINGFISHER_PKG_MIDDLEWARE_API_API_GUARD_H_
 
 #include <iostream>
+#include <type_traits>
 
 #include "in_out_printer.h"
 #include "log/config.h"
+#include "middleware/api/request_id.h"
 #include "time/time_counter.h"
 
 namespace kingfisher {
@@ -14,6 +16,7 @@ template <typename REQ, typename RESP>
 class ApiGuard {
  public:
   ApiGuard(const REQ* req, RESP* resp) : req_(req), resp_(resp) {
+    RequestID(const_cast<REQ*>(req));
     LOG(INFO) << "recv req: " << ProtoString(req_);
   }
   ~ApiGuard() {
@@ -24,7 +27,7 @@ class ApiGuard {
 
  private:
   kingfisher::time::TimeCounter tc_;
-  REQ const* req_;
+  const REQ* req_;
   RESP* resp_;
 };
 
