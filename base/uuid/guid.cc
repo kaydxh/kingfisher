@@ -3,12 +3,14 @@
 //
 
 #include "guid.h"
+
 #include <iomanip>
 #include <sstream>
+
 #include "random/random.h"
 
 namespace kingfisher {
-namespace utils {
+namespace uuid {
 
 std::string Guid::GuidString() {
   uint64_t most_sign = kingfisher::random::Random::RandUInt64();
@@ -25,5 +27,5 @@ std::string Guid::GuidString() {
   return stream.str();
 }
 
-}  // namespace utils
+}  // namespace uuid
 }  // namespace kingfisher

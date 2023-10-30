@@ -11,7 +11,7 @@
 #include <string>
 
 namespace kingfisher {
-namespace utils {
+namespace uuid {
 
 class Guid {
  public:
@@ -32,7 +32,7 @@ class Guid {
       m_sp_distribution;
 };
 
-}  // namespace utils
+}  // namespace uuid
 }  // namespace kingfisher
 
 #endif

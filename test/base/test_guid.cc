@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
+
 #include "uuid/guid.h"
 
 using namespace kingfisher;
-using namespace kingfisher::utils;
+using namespace kingfisher::uuid;
 
 class test_Guid : public testing::Test {
  public:
