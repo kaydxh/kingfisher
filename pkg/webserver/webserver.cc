@@ -1,6 +1,7 @@
 #include "webserver.h"
 
 #include "log/config.h"
+#include "os/signal/signal.h"
 
 namespace kingfisher {
 namespace web {
@@ -34,6 +35,11 @@ WebServer& WebServer::AddInterceptor(const brpc::Interceptor& interceptor) {
 
 int WebServer::Run() {
   LOG(INFO) << "install server on " << port_;
+
+  os::SignalHandler::InstallStopHandler(
+      std::bind(&WebServer::OnSignalStop, this, std::placeholders::_1));
+  os::SignalHandler::SetCoreDump(true, -1);
+
   int ret = server_.Start(port_.c_str(), &options_);
   if (ret != 0) {
     LOG(ERROR) << "failec to run server on " << port_ << ", ret: " << ret;
@@ -43,6 +49,8 @@ int WebServer::Run() {
   server_.RunUntilAskedToQuit();
   return 0;
 }
+
+void WebServer::OnSignalStop(int sig) {}
 
 }  // namespace web
 }  // namespace kingfisher

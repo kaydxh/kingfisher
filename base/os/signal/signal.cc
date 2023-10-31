@@ -9,6 +9,8 @@
 #include <csignal>
 #include <iostream>
 
+#include "log/config.h"
+
 namespace kingfisher {
 namespace os {
 
@@ -26,7 +28,7 @@ void SignalHandler::exitHandler(int signum) {
   }
 #endif
 
-  std::cout << "exit handler for signal: " << signum << std::endl;
+  LOG(INFO) << "exit handler for signal: " << signum;
   auto it = SignalHandler::sigHandlers_.find(signum);
   if (it != SignalHandler::sigHandlers_.end()) {
     it->second(signum);
@@ -36,7 +38,7 @@ void SignalHandler::exitHandler(int signum) {
 void SignalHandler::registerHandler(int signum,
                                     const std::function<void(int)>& handler) {
   // std::lock_guard<std::timed_mutex> lock(sigMutex_);
-  std::cout << "register hanlder for signum: " << signum << std::endl;
+  LOG(INFO) << "register hanlder for signum: " << signum;
   sigHandlers_.emplace(signum, handler);
 }
 
@@ -51,6 +53,15 @@ int SignalHandler::SetSignal(int signum, const std::function<void(int)>& cb) {
   }
 
   registerHandler(signum, cb);
+  return 0;
+}
+
+int SignalHandler::InstallStopHandler(const std::function<void(int)>& handler) {
+  auto signals = StopSignals();
+  for (size_t i = 0; i < signals.size(); ++i) {
+    SetSignal(signals[i], handler);
+  }
+
   return 0;
 }
 
