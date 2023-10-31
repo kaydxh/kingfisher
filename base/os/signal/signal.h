@@ -18,6 +18,8 @@ class SignalHandler {
   static int SetCoreDump(bool effect, int coreFileSize);
   static std::vector<int> StopSignals();
 
+  static int InstallStopHandler(const std::function<void(int)>& handler);
+
  private:
   static void exitHandler(int signum);
   static void registerHandler(int signum,

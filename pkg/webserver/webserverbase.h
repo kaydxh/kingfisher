@@ -13,8 +13,8 @@ class WebServerBase {
   virtual std::string ServerName() = 0;
 
   virtual void Run();
-  virtual void BeforrRun(void *args);
-  virtual void AfterRun(void *args);
+  virtual void PreRun(void *args);
+  virtual void PostRun(void *args);
 };
 
 }  // namespace web

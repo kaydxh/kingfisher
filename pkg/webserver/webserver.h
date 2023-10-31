@@ -28,6 +28,9 @@ class WebServer {
   brpc::Server& GetBrpcServer() { return server_; }
 
  private:
+  void OnSignalStop(int sig);
+
+ private:
   std::string port_;
   brpc::Server server_;
   brpc::ServerOptions options_;
