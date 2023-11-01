@@ -60,9 +60,9 @@ void TimerWheel::Start() {
 
 void TimerWheel::runLoop() {
   while (running_) {
+    MsSleep(precision_);
     if (!process_current_slot()) {
     }
-    MsSleep(1);
   }
 }
 
@@ -71,14 +71,15 @@ void TimerWheel::Join() { thread_pool_.join(); }
 bool TimerWheel::process_current_slot() {
   auto slot = &slots_[cur_slot_index_];
   while (slot->events()) {
-    // while ((&slots_[cur_slot_index_])->events()) {
     if (slot->events()->rotation_at_ > 0) {
       --slot->events()->rotation_at_;
-      std::cout << "process rotation: " << slot->events()->rotation_at_
-                << std::endl;
+      // std::cout << "process rotation: " << slot->events()->rotation_at_
+      //          << std::endl;
+      break;
     } else {
       auto event = slot->popEvent();
-      event->run();
+      thread_pool_.AddTask(&TimerEventBase::run, event);
+      // event->run();
       now_ = GetJiffies();
       if (event->repeated_times_ == 1) {
         ;  // do nothing
@@ -92,7 +93,7 @@ bool TimerWheel::process_current_slot() {
     }
   }
 
-  cur_slot_index_ = (cur_slot_index_ + 1) % NUM_SLOTS;
+  cur_slot_index_ = (cur_slot_index_ + 1) % num_slots_;
 
   return true;
 }
@@ -105,8 +106,8 @@ void TimerWheel::Stop() {
 void TimerWheel::Schedule(TimerEventBase* event, Tick interval,
                           int32_t repeated_times) {
   auto tm = GetJiffies() - now_ + interval;
-  int rotation = tm / NUM_SLOTS;
-  size_t slot_index = (tm + cur_slot_index_) % NUM_SLOTS;
+  int rotation = (tm / num_slots_ + tm % num_slots_) / precision_;
+  size_t slot_index = (tm + cur_slot_index_) % num_slots_;
   event->set_rotation_at(rotation);
   event->interval_ = interval;
   event->repeated_times_ = repeated_times;

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "time/timer.h"
+#include "time/timestamp.h"
 
 using namespace kingfisher;
 using namespace kingfisher::time;
@@ -58,23 +59,25 @@ TEST_F(test_Timer, Multi) {
 TEST_F(test_Timer, Mix) {
   using Callback = std::function<void()>;
   TimerWheel timers;
-  std::atomic<int> count(0);
+  // std::atomic<int> count(0);
+  int count = 0;
   TimerEvent<Callback> event([&count]() {
     ++count;
-    // std::cout << "callback event at time: " << GetJiffies()
-    //         << ", count: " << count << std::endl;
+    std::cout << "callback event1 at time: "
+              << Timestamp::Now().ToFormattedString() << ", count: " << count
+              << std::endl;
   });
 
   TimerEvent<Callback> event2([&count]() {
     ++count;
-    //    std::cout << "callback event2 at time: " << GetJiffies()
-    //             << ", count: " << count << std::endl;
+    std::cout << "callback event2 at time: " << GetJiffies()
+              << ", count: " << count << std::endl;
   });
 
-  timers.Schedule(&event, 100, 10);
-  timers.Schedule(&event2, 10, 20);
+  timers.Schedule(&event, 10000, 10);
+  // timers.Schedule(&event2, 100, 20);
   timers.Start();
-  sleep(3);
+  sleep(50);
   EXPECT_EQ(count, 30);
   timers.Stop();
 }

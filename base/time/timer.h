@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <limits>
-//#include <thread>
+// #include <thread>
 #include "core/disable.h"
 #include "thread/thread_pool.h"
 
@@ -75,7 +75,7 @@ class TimerWheelSlot {
   ~TimerWheelSlot() {}
 
  private:
-  DISABLE_COPY_AND_ASSIGN(TimerWheelSlot);
+  // DISABLE_COPY_AND_ASSIGN(TimerWheelSlot);
   friend TimerEventBase;
   friend TimerWheel;
 
@@ -101,7 +101,15 @@ class TimerWheelSlot {
 
 class TimerWheel {
  public:
-  TimerWheel() : now_(GetJiffies()), ticks_pending_(0) {}
+  // default max time 3600000s = 1day
+  // 最大时间间隔num_slots * precision
+  TimerWheel(uint64_t num_slots = 100, Tick precision = 1)
+      : num_slots_(num_slots),
+        now_(GetJiffies()),
+        precision_(precision),
+        ticks_pending_(0) {
+    slots_.resize(num_slots);
+  }
 
   ~TimerWheel() { thread_pool_.stop(); }
 
@@ -120,16 +128,15 @@ class TimerWheel {
 
  private:
   static const int WIDTH_BITS = 8;
-  static const int NUM_LEVELS = (64 + WIDTH_BITS - 1) / WIDTH_BITS;
-  static const int MAX_LEVELS = NUM_LEVELS - 1;
   // 256
-  static const int NUM_SLOTS = 1 << WIDTH_BITS;
+  uint64_t num_slots_;  // 1 << WIDTH_BITS;
 
   // 255 01111111
-  static const int MASK = (NUM_SLOTS - 1);
   Tick now_;
+  Tick precision_;  // ms
   Tick ticks_pending_;
-  TimerWheelSlot slots_[NUM_SLOTS];
+  // TimerWheelSlot slots_[num_slots_];
+  std::vector<TimerWheelSlot> slots_;
 
   kingfisher::thread::ThreadPool thread_pool_;
 
