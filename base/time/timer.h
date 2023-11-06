@@ -141,7 +141,7 @@ class TimerWheel {
   kingfisher::thread::ThreadPool thread_pool_;
 
   // std::thread thread_;
-  bool running_ = true;
+  std::atomic<bool> running_ = true;
   size_t cur_slot_index_ = 0;
   std::mutex lock_;
 };
