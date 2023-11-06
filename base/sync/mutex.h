@@ -35,5 +35,7 @@ class MutexGuard : public noncopyable_::noncopyable {
 
 }  // namespace sync
 }  // namespace kingfisher
+   //
+#define LOCK_GUARD(lock) std::lock_guard<decltype(lock)> __guard__(lock);
 
 #endif
