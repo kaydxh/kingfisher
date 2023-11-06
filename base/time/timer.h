@@ -38,7 +38,6 @@ class TimerEventBase {
   virtual void run() = 0;
   virtual void relink(TimerWheelSlot* slot);
 
-  void set_rotation_at(size_t rotation_at) { rotation_at_ = rotation_at; }
   void set_scheduled_at(Tick ts) { scheduled_at_ = ts; }
 
  private:
@@ -47,8 +46,6 @@ class TimerEventBase {
   TimerEventBase* next_ = nullptr;
 
   int32_t repeated_times_ = 1;
-  size_t org_rotation_at_ = 0;
-  size_t rotation_at_ = 0;
 
   Tick interval_ = 0;
 
@@ -81,6 +78,8 @@ class TimerWheelSlot {
 
   // return the fist event queued in slot
   TimerEventBase* events() const { return events_; }
+  TimerEventBase* setEvents(TimerEventBase* event) { return events_ = event; }
+  TimerEventBase* nextEvents() { return events_ = events_->next_; }
 
   // deque the first event from the slot, and return it
   TimerEventBase* popEvent() {
@@ -103,7 +102,7 @@ class TimerWheel {
  public:
   // default max time 3600000s = 1day
   // 最大时间间隔num_slots * precision
-  TimerWheel(uint64_t num_slots = 100, Tick precision = 1)
+  TimerWheel(uint64_t num_slots = 360000, Tick precision = 10)
       : num_slots_(num_slots),
         now_(GetJiffies()),
         precision_(precision),
@@ -116,15 +115,16 @@ class TimerWheel {
   void Start();
 
   // a repeating timeout event that will fire every "interval" time
-  void Schedule(TimerEventBase* event, Tick interval,
-                int32_t repeated_times = 1);
+  int Add(TimerEventBase* event, Tick interval, int32_t repeated_times = 1);
 
   void Join();
   void Stop();
 
  private:
   void runLoop();
-  bool process_current_slot();
+  bool schedule();
+  int addNolock(TimerEventBase* event, Tick interval,
+                int32_t repeated_times = 1);
 
  private:
   static const int WIDTH_BITS = 8;
@@ -143,6 +143,7 @@ class TimerWheel {
   // std::thread thread_;
   bool running_ = true;
   size_t cur_slot_index_ = 0;
+  std::mutex lock_;
 };
 
 }  // namespace time
