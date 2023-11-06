@@ -66,7 +66,7 @@ void TimerWheel::Start() {
 
 void TimerWheel::runLoop() {
   // uint64_t remain = precision_;
-  while (running_) {
+  while (running_.load()) {
     MsSleep(precision_);
     schedule();
   }
@@ -98,7 +98,8 @@ bool TimerWheel::schedule() {
 }
 
 void TimerWheel::Stop() {
-  running_ = false;
+  // running_ = false;
+  running_.store(false);
   thread_pool_.stop();
 }
 
