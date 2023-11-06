@@ -136,3 +136,10 @@ TEST_F(test_Strings, ToNumbers) {
   }
   std::cout << std::endl;
 }
+
+TEST_F(test_Strings, FormatString) {
+  std::string filepath = "10,20,30,40";
+  auto result = FormatString("%d-%s", 1, "2");
+
+  std::cout << "result: " << result << std::endl;
+}
