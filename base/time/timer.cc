@@ -1,6 +1,12 @@
 
 #include "time/timer.h"
 
+#include <cmath>
+
+#include "log/config.h"
+#include "strings/strings.h"
+#include "sync/mutex.h"
+
 namespace kingfisher {
 namespace time {
 
@@ -59,41 +65,34 @@ void TimerWheel::Start() {
 }
 
 void TimerWheel::runLoop() {
+  // uint64_t remain = precision_;
   while (running_) {
     MsSleep(precision_);
-    if (!process_current_slot()) {
-    }
+    schedule();
   }
 }
 
 void TimerWheel::Join() { thread_pool_.join(); }
 
-bool TimerWheel::process_current_slot() {
+bool TimerWheel::schedule() {
+  LOCK_GUARD(lock_);
   auto slot = &slots_[cur_slot_index_];
+  cur_slot_index_ = (cur_slot_index_ + 1) % num_slots_;
+
   while (slot->events()) {
-    if (slot->events()->rotation_at_ > 0) {
-      --slot->events()->rotation_at_;
-      // std::cout << "process rotation: " << slot->events()->rotation_at_
-      //          << std::endl;
-      break;
-    } else {
-      auto event = slot->popEvent();
-      thread_pool_.AddTask(&TimerEventBase::run, event);
-      // event->run();
-      now_ = GetJiffies();
-      if (event->repeated_times_ == 1) {
-        ;  // do nothing
+    auto event = slot->popEvent();
+    thread_pool_.AddTask(&TimerEventBase::run, event);
+    now_ = GetJiffies();
+    if (event->repeated_times_ == 1) {
+      ;  // do nothing
 
-      } else if (event->repeated_times_ > 1) {
-        Schedule(event, event->interval_, --event->repeated_times_);
+    } else if (event->repeated_times_ > 1) {
+      addNolock(event, event->interval_, --event->repeated_times_);
 
-      } else {  // (event->repeated_times_ <= 0)
-        Schedule(event, event->interval_, -1);
-      }
+    } else {  // (event->repeated_times_ <= 0)
+      addNolock(event, event->interval_, -1);
     }
   }
-
-  cur_slot_index_ = (cur_slot_index_ + 1) % num_slots_;
 
   return true;
 }
@@ -103,19 +102,58 @@ void TimerWheel::Stop() {
   thread_pool_.stop();
 }
 
-void TimerWheel::Schedule(TimerEventBase* event, Tick interval,
+int TimerWheel::Add(TimerEventBase* event, Tick interval,
+                    int32_t repeated_times) {
+  size_t idx = std::ceil(static_cast<float>(interval) / precision_);
+  if (idx == 0) {
+    // 向上取整,往后一格
+    idx = 1;
+  }
+  if (idx >= num_slots_) {
+    LOG(ERROR) << strings::FormatString("interval: %d should be <= %d",
+                                        interval,
+                                        precision_ * (num_slots_ - 1));
+    return -1;
+  }
+
+  {
+    LOCK_GUARD(lock_);
+    size_t slot_index = (cur_slot_index_ + idx) % num_slots_;
+
+    event->interval_ = interval;
+    event->repeated_times_ = repeated_times;
+    LOG(INFO) << strings::FormatString("add event: %p on slot_index %d", event,
+                                       slot_index);
+    auto slot = &slots_[slot_index];
+    event->relink(slot);
+  }
+
+  return 0;
+}
+
+int TimerWheel::addNolock(TimerEventBase* event, Tick interval,
                           int32_t repeated_times) {
-  auto tm = GetJiffies() - now_ + interval;
-  int rotation = (tm / num_slots_ + tm % num_slots_) / precision_;
-  size_t slot_index = (tm + cur_slot_index_) % num_slots_;
-  event->set_rotation_at(rotation);
+  size_t idx = std::ceil(static_cast<float>(interval) / precision_);
+  if (idx == 0) {
+    // 向上取整,往后一格
+    idx = 1;
+  }
+  if (idx >= num_slots_) {
+    LOG(ERROR) << strings::FormatString("interval: %d should be <= %d",
+                                        interval,
+                                        precision_ * (num_slots_ - 1));
+    return -1;
+  }
+
+  size_t slot_index = (cur_slot_index_ + idx) % num_slots_;
+
   event->interval_ = interval;
   event->repeated_times_ = repeated_times;
-  //  std::cout << "rotation: " << rotation << ", slot_index: " << slot_index
-  //           << std::endl;
+  std::cout << "slot_index: " << slot_index << std::endl;
   auto slot = &slots_[slot_index];
-
   event->relink(slot);
+
+  return 0;
 }
 
 uint64_t GetJiffies() {
