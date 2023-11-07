@@ -19,6 +19,7 @@ class SockAddress {
   explicit SockAddress(const struct sockaddr_in6& addr) : addr6_(addr) {}
 
   const struct sockaddr* SockAddr() const { return sockaddr_cast(&addr6_); }
+  int Len() { return sizeof(addr_); }
   std::string ToIP() const;
 
   void SetSockAddr(const struct sockaddr_in6& addr) { addr6_ = addr; }
