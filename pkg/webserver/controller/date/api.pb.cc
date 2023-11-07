@@ -19,6 +19,8 @@
 #endif
 // @@protoc_insertion_point(includes)
 
+namespace sea {
+namespace api {
 namespace date {
 class NowRequestDefaultTypeInternal {
  public:
@@ -41,16 +43,18 @@ class NowErrorResponseDefaultTypeInternal {
       _instance;
 } _NowErrorResponse_default_instance_;
 }  // namespace date
+}  // namespace api
+}  // namespace sea
 namespace protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto {
 static void InitDefaultsNowRequest() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::date::_NowRequest_default_instance_;
-    new (ptr) ::date::NowRequest();
+    void* ptr = &::sea::api::date::_NowRequest_default_instance_;
+    new (ptr) ::sea::api::date::NowRequest();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::date::NowRequest::InitAsDefaultInstance();
+  ::sea::api::date::NowRequest::InitAsDefaultInstance();
 }
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_NowRequest =
@@ -60,11 +64,11 @@ static void InitDefaultsNowResponse() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::date::_NowResponse_default_instance_;
-    new (ptr) ::date::NowResponse();
+    void* ptr = &::sea::api::date::_NowResponse_default_instance_;
+    new (ptr) ::sea::api::date::NowResponse();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::date::NowResponse::InitAsDefaultInstance();
+  ::sea::api::date::NowResponse::InitAsDefaultInstance();
 }
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_NowResponse =
@@ -74,11 +78,11 @@ static void InitDefaultsNowErrorRequest() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::date::_NowErrorRequest_default_instance_;
-    new (ptr) ::date::NowErrorRequest();
+    void* ptr = &::sea::api::date::_NowErrorRequest_default_instance_;
+    new (ptr) ::sea::api::date::NowErrorRequest();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::date::NowErrorRequest::InitAsDefaultInstance();
+  ::sea::api::date::NowErrorRequest::InitAsDefaultInstance();
 }
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_NowErrorRequest =
@@ -88,11 +92,11 @@ static void InitDefaultsNowErrorResponse() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::date::_NowErrorResponse_default_instance_;
-    new (ptr) ::date::NowErrorResponse();
+    void* ptr = &::sea::api::date::_NowErrorResponse_default_instance_;
+    new (ptr) ::sea::api::date::NowErrorResponse();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::date::NowErrorResponse::InitAsDefaultInstance();
+  ::sea::api::date::NowErrorResponse::InitAsDefaultInstance();
 }
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_NowErrorResponse =
@@ -110,44 +114,44 @@ const ::google::protobuf::ServiceDescriptor* file_level_service_descriptors[1];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowRequest, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowRequest, request_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowRequest, request_id_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowResponse, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowResponse, request_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowResponse, date_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, request_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, date_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowErrorRequest, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowErrorRequest, request_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorRequest, request_id_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowErrorResponse, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowErrorResponse, request_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::date::NowErrorResponse, date_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, request_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, date_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::date::NowRequest)},
-  { 6, -1, sizeof(::date::NowResponse)},
-  { 13, -1, sizeof(::date::NowErrorRequest)},
-  { 19, -1, sizeof(::date::NowErrorResponse)},
+  { 0, -1, sizeof(::sea::api::date::NowRequest)},
+  { 6, -1, sizeof(::sea::api::date::NowResponse)},
+  { 13, -1, sizeof(::sea::api::date::NowErrorRequest)},
+  { 19, -1, sizeof(::sea::api::date::NowErrorResponse)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::date::_NowRequest_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::date::_NowResponse_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::date::_NowErrorRequest_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::date::_NowErrorResponse_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowRequest_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowResponse_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowErrorRequest_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowErrorResponse_default_instance_),
 };
 
 void protobuf_AssignDescriptors() {
@@ -172,20 +176,21 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\'pkg/webserver/controller/date/api.prot"
-      "o\022\004date\032 google/protobuf/descriptor.prot"
-      "o\"+\n\nNowRequest\022\035\n\nrequest_id\030\001 \001(\tR\tReq"
-      "uestId\"@\n\013NowResponse\022\035\n\nrequest_id\030\001 \001("
-      "\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Date\"0\n\017NowE"
-      "rrorRequest\022\035\n\nrequest_id\030\001 \001(\tR\tRequest"
-      "Id\"E\n\020NowErrorResponse\022\035\n\nrequest_id\030\001 \001"
-      "(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Date2{\n\016Sea"
-      "DateService\022,\n\003Now\022\020.date.NowRequest\032\021.d"
-      "ate.NowResponse\"\000\022;\n\010NowError\022\025.date.Now"
-      "ErrorRequest\032\026.date.NowErrorResponse\"\000B\003"
-      "\200\001\001b\006proto3"
+      "o\022\014sea.api.date\032 google/protobuf/descrip"
+      "tor.proto\"+\n\nNowRequest\022\035\n\nrequest_id\030\001 "
+      "\001(\tR\tRequestId\"@\n\013NowResponse\022\035\n\nrequest"
+      "_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Date"
+      "\"0\n\017NowErrorRequest\022\035\n\nrequest_id\030\001 \001(\tR"
+      "\tRequestId\"E\n\020NowErrorResponse\022\035\n\nreques"
+      "t_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Dat"
+      "e2\230\001\n\013DateService\022<\n\003Now\022\030.sea.api.date."
+      "NowRequest\032\031.sea.api.date.NowResponse\"\000\022"
+      "K\n\010NowError\022\035.sea.api.date.NowErrorReque"
+      "st\032\036.sea.api.date.NowErrorResponse\"\000B\003\200\001"
+      "\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 451);
+      descriptor, 489);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "pkg/webserver/controller/date/api.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fdescriptor_2eproto::AddDescriptors();
@@ -202,6 +207,8 @@ struct StaticDescriptorInitializer {
   }
 } static_descriptor_initializer;
 }  // namespace protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto
+namespace sea {
+namespace api {
 namespace date {
 
 // ===================================================================
@@ -217,7 +224,7 @@ NowRequest::NowRequest()
   ::google::protobuf::internal::InitSCC(
       &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowRequest.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:date.NowRequest)
+  // @@protoc_insertion_point(constructor:sea.api.date.NowRequest)
 }
 NowRequest::NowRequest(const NowRequest& from)
   : ::google::protobuf::Message(),
@@ -227,7 +234,7 @@ NowRequest::NowRequest(const NowRequest& from)
   if (from.request_id().size() > 0) {
     request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
   }
-  // @@protoc_insertion_point(copy_constructor:date.NowRequest)
+  // @@protoc_insertion_point(copy_constructor:sea.api.date.NowRequest)
 }
 
 void NowRequest::SharedCtor() {
@@ -235,7 +242,7 @@ void NowRequest::SharedCtor() {
 }
 
 NowRequest::~NowRequest() {
-  // @@protoc_insertion_point(destructor:date.NowRequest)
+  // @@protoc_insertion_point(destructor:sea.api.date.NowRequest)
   SharedDtor();
 }
 
@@ -258,7 +265,7 @@ const NowRequest& NowRequest::default_instance() {
 
 
 void NowRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:date.NowRequest)
+// @@protoc_insertion_point(message_clear_start:sea.api.date.NowRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -271,7 +278,7 @@ bool NowRequest::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:date.NowRequest)
+  // @@protoc_insertion_point(parse_start:sea.api.date.NowRequest)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -286,7 +293,7 @@ bool NowRequest::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->request_id().data(), static_cast<int>(this->request_id().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowRequest.request_id"));
+            "sea.api.date.NowRequest.request_id"));
         } else {
           goto handle_unusual;
         }
@@ -305,17 +312,17 @@ bool NowRequest::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:date.NowRequest)
+  // @@protoc_insertion_point(parse_success:sea.api.date.NowRequest)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:date.NowRequest)
+  // @@protoc_insertion_point(parse_failure:sea.api.date.NowRequest)
   return false;
 #undef DO_
 }
 
 void NowRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:date.NowRequest)
+  // @@protoc_insertion_point(serialize_start:sea.api.date.NowRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -324,7 +331,7 @@ void NowRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowRequest.request_id");
+      "sea.api.date.NowRequest.request_id");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->request_id(), output);
   }
@@ -333,13 +340,13 @@ void NowRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:date.NowRequest)
+  // @@protoc_insertion_point(serialize_end:sea.api.date.NowRequest)
 }
 
 ::google::protobuf::uint8* NowRequest::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:date.NowRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -348,7 +355,7 @@ void NowRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowRequest.request_id");
+      "sea.api.date.NowRequest.request_id");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->request_id(), target);
@@ -358,12 +365,12 @@ void NowRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:date.NowRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowRequest)
   return target;
 }
 
 size_t NowRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:date.NowRequest)
+// @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowRequest)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -384,22 +391,22 @@ size_t NowRequest::ByteSizeLong() const {
 }
 
 void NowRequest::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:date.NowRequest)
+// @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowRequest)
   GOOGLE_DCHECK_NE(&from, this);
   const NowRequest* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const NowRequest>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:date.NowRequest)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowRequest)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:date.NowRequest)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowRequest)
     MergeFrom(*source);
   }
 }
 
 void NowRequest::MergeFrom(const NowRequest& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:date.NowRequest)
+// @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowRequest)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -412,14 +419,14 @@ void NowRequest::MergeFrom(const NowRequest& from) {
 }
 
 void NowRequest::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:date.NowRequest)
+// @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void NowRequest::CopyFrom(const NowRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:date.NowRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:sea.api.date.NowRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -460,7 +467,7 @@ NowResponse::NowResponse()
   ::google::protobuf::internal::InitSCC(
       &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowResponse.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:date.NowResponse)
+  // @@protoc_insertion_point(constructor:sea.api.date.NowResponse)
 }
 NowResponse::NowResponse(const NowResponse& from)
   : ::google::protobuf::Message(),
@@ -474,7 +481,7 @@ NowResponse::NowResponse(const NowResponse& from)
   if (from.date().size() > 0) {
     date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
   }
-  // @@protoc_insertion_point(copy_constructor:date.NowResponse)
+  // @@protoc_insertion_point(copy_constructor:sea.api.date.NowResponse)
 }
 
 void NowResponse::SharedCtor() {
@@ -483,7 +490,7 @@ void NowResponse::SharedCtor() {
 }
 
 NowResponse::~NowResponse() {
-  // @@protoc_insertion_point(destructor:date.NowResponse)
+  // @@protoc_insertion_point(destructor:sea.api.date.NowResponse)
   SharedDtor();
 }
 
@@ -507,7 +514,7 @@ const NowResponse& NowResponse::default_instance() {
 
 
 void NowResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:date.NowResponse)
+// @@protoc_insertion_point(message_clear_start:sea.api.date.NowResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -521,7 +528,7 @@ bool NowResponse::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:date.NowResponse)
+  // @@protoc_insertion_point(parse_start:sea.api.date.NowResponse)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -536,7 +543,7 @@ bool NowResponse::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->request_id().data(), static_cast<int>(this->request_id().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowResponse.request_id"));
+            "sea.api.date.NowResponse.request_id"));
         } else {
           goto handle_unusual;
         }
@@ -552,7 +559,7 @@ bool NowResponse::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->date().data(), static_cast<int>(this->date().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowResponse.date"));
+            "sea.api.date.NowResponse.date"));
         } else {
           goto handle_unusual;
         }
@@ -571,17 +578,17 @@ bool NowResponse::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:date.NowResponse)
+  // @@protoc_insertion_point(parse_success:sea.api.date.NowResponse)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:date.NowResponse)
+  // @@protoc_insertion_point(parse_failure:sea.api.date.NowResponse)
   return false;
 #undef DO_
 }
 
 void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:date.NowResponse)
+  // @@protoc_insertion_point(serialize_start:sea.api.date.NowResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -590,7 +597,7 @@ void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowResponse.request_id");
+      "sea.api.date.NowResponse.request_id");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->request_id(), output);
   }
@@ -600,7 +607,7 @@ void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->date().data(), static_cast<int>(this->date().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowResponse.date");
+      "sea.api.date.NowResponse.date");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       2, this->date(), output);
   }
@@ -609,13 +616,13 @@ void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:date.NowResponse)
+  // @@protoc_insertion_point(serialize_end:sea.api.date.NowResponse)
 }
 
 ::google::protobuf::uint8* NowResponse::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:date.NowResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -624,7 +631,7 @@ void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowResponse.request_id");
+      "sea.api.date.NowResponse.request_id");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->request_id(), target);
@@ -635,7 +642,7 @@ void NowResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->date().data(), static_cast<int>(this->date().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowResponse.date");
+      "sea.api.date.NowResponse.date");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         2, this->date(), target);
@@ -645,12 +652,12 @@ void NowResponse::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:date.NowResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowResponse)
   return target;
 }
 
 size_t NowResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:date.NowResponse)
+// @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowResponse)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -678,22 +685,22 @@ size_t NowResponse::ByteSizeLong() const {
 }
 
 void NowResponse::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:date.NowResponse)
+// @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const NowResponse* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const NowResponse>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:date.NowResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowResponse)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:date.NowResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowResponse)
     MergeFrom(*source);
   }
 }
 
 void NowResponse::MergeFrom(const NowResponse& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:date.NowResponse)
+// @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowResponse)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -710,14 +717,14 @@ void NowResponse::MergeFrom(const NowResponse& from) {
 }
 
 void NowResponse::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:date.NowResponse)
+// @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void NowResponse::CopyFrom(const NowResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:date.NowResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:sea.api.date.NowResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -759,7 +766,7 @@ NowErrorRequest::NowErrorRequest()
   ::google::protobuf::internal::InitSCC(
       &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorRequest.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:date.NowErrorRequest)
+  // @@protoc_insertion_point(constructor:sea.api.date.NowErrorRequest)
 }
 NowErrorRequest::NowErrorRequest(const NowErrorRequest& from)
   : ::google::protobuf::Message(),
@@ -769,7 +776,7 @@ NowErrorRequest::NowErrorRequest(const NowErrorRequest& from)
   if (from.request_id().size() > 0) {
     request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
   }
-  // @@protoc_insertion_point(copy_constructor:date.NowErrorRequest)
+  // @@protoc_insertion_point(copy_constructor:sea.api.date.NowErrorRequest)
 }
 
 void NowErrorRequest::SharedCtor() {
@@ -777,7 +784,7 @@ void NowErrorRequest::SharedCtor() {
 }
 
 NowErrorRequest::~NowErrorRequest() {
-  // @@protoc_insertion_point(destructor:date.NowErrorRequest)
+  // @@protoc_insertion_point(destructor:sea.api.date.NowErrorRequest)
   SharedDtor();
 }
 
@@ -800,7 +807,7 @@ const NowErrorRequest& NowErrorRequest::default_instance() {
 
 
 void NowErrorRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:date.NowErrorRequest)
+// @@protoc_insertion_point(message_clear_start:sea.api.date.NowErrorRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -813,7 +820,7 @@ bool NowErrorRequest::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:date.NowErrorRequest)
+  // @@protoc_insertion_point(parse_start:sea.api.date.NowErrorRequest)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -828,7 +835,7 @@ bool NowErrorRequest::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->request_id().data(), static_cast<int>(this->request_id().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowErrorRequest.request_id"));
+            "sea.api.date.NowErrorRequest.request_id"));
         } else {
           goto handle_unusual;
         }
@@ -847,17 +854,17 @@ bool NowErrorRequest::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:date.NowErrorRequest)
+  // @@protoc_insertion_point(parse_success:sea.api.date.NowErrorRequest)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:date.NowErrorRequest)
+  // @@protoc_insertion_point(parse_failure:sea.api.date.NowErrorRequest)
   return false;
 #undef DO_
 }
 
 void NowErrorRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:date.NowErrorRequest)
+  // @@protoc_insertion_point(serialize_start:sea.api.date.NowErrorRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -866,7 +873,7 @@ void NowErrorRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorRequest.request_id");
+      "sea.api.date.NowErrorRequest.request_id");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->request_id(), output);
   }
@@ -875,13 +882,13 @@ void NowErrorRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:date.NowErrorRequest)
+  // @@protoc_insertion_point(serialize_end:sea.api.date.NowErrorRequest)
 }
 
 ::google::protobuf::uint8* NowErrorRequest::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:date.NowErrorRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowErrorRequest)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -890,7 +897,7 @@ void NowErrorRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorRequest.request_id");
+      "sea.api.date.NowErrorRequest.request_id");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->request_id(), target);
@@ -900,12 +907,12 @@ void NowErrorRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:date.NowErrorRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowErrorRequest)
   return target;
 }
 
 size_t NowErrorRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:date.NowErrorRequest)
+// @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowErrorRequest)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -926,22 +933,22 @@ size_t NowErrorRequest::ByteSizeLong() const {
 }
 
 void NowErrorRequest::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:date.NowErrorRequest)
+// @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowErrorRequest)
   GOOGLE_DCHECK_NE(&from, this);
   const NowErrorRequest* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const NowErrorRequest>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:date.NowErrorRequest)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowErrorRequest)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:date.NowErrorRequest)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowErrorRequest)
     MergeFrom(*source);
   }
 }
 
 void NowErrorRequest::MergeFrom(const NowErrorRequest& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:date.NowErrorRequest)
+// @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowErrorRequest)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -954,14 +961,14 @@ void NowErrorRequest::MergeFrom(const NowErrorRequest& from) {
 }
 
 void NowErrorRequest::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:date.NowErrorRequest)
+// @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowErrorRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void NowErrorRequest::CopyFrom(const NowErrorRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:date.NowErrorRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:sea.api.date.NowErrorRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1002,7 +1009,7 @@ NowErrorResponse::NowErrorResponse()
   ::google::protobuf::internal::InitSCC(
       &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorResponse.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:date.NowErrorResponse)
+  // @@protoc_insertion_point(constructor:sea.api.date.NowErrorResponse)
 }
 NowErrorResponse::NowErrorResponse(const NowErrorResponse& from)
   : ::google::protobuf::Message(),
@@ -1016,7 +1023,7 @@ NowErrorResponse::NowErrorResponse(const NowErrorResponse& from)
   if (from.date().size() > 0) {
     date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
   }
-  // @@protoc_insertion_point(copy_constructor:date.NowErrorResponse)
+  // @@protoc_insertion_point(copy_constructor:sea.api.date.NowErrorResponse)
 }
 
 void NowErrorResponse::SharedCtor() {
@@ -1025,7 +1032,7 @@ void NowErrorResponse::SharedCtor() {
 }
 
 NowErrorResponse::~NowErrorResponse() {
-  // @@protoc_insertion_point(destructor:date.NowErrorResponse)
+  // @@protoc_insertion_point(destructor:sea.api.date.NowErrorResponse)
   SharedDtor();
 }
 
@@ -1049,7 +1056,7 @@ const NowErrorResponse& NowErrorResponse::default_instance() {
 
 
 void NowErrorResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:date.NowErrorResponse)
+// @@protoc_insertion_point(message_clear_start:sea.api.date.NowErrorResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1063,7 +1070,7 @@ bool NowErrorResponse::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:date.NowErrorResponse)
+  // @@protoc_insertion_point(parse_start:sea.api.date.NowErrorResponse)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -1078,7 +1085,7 @@ bool NowErrorResponse::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->request_id().data(), static_cast<int>(this->request_id().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowErrorResponse.request_id"));
+            "sea.api.date.NowErrorResponse.request_id"));
         } else {
           goto handle_unusual;
         }
@@ -1094,7 +1101,7 @@ bool NowErrorResponse::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->date().data(), static_cast<int>(this->date().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "date.NowErrorResponse.date"));
+            "sea.api.date.NowErrorResponse.date"));
         } else {
           goto handle_unusual;
         }
@@ -1113,17 +1120,17 @@ bool NowErrorResponse::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:date.NowErrorResponse)
+  // @@protoc_insertion_point(parse_success:sea.api.date.NowErrorResponse)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:date.NowErrorResponse)
+  // @@protoc_insertion_point(parse_failure:sea.api.date.NowErrorResponse)
   return false;
 #undef DO_
 }
 
 void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:date.NowErrorResponse)
+  // @@protoc_insertion_point(serialize_start:sea.api.date.NowErrorResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1132,7 +1139,7 @@ void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorResponse.request_id");
+      "sea.api.date.NowErrorResponse.request_id");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->request_id(), output);
   }
@@ -1142,7 +1149,7 @@ void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->date().data(), static_cast<int>(this->date().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorResponse.date");
+      "sea.api.date.NowErrorResponse.date");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       2, this->date(), output);
   }
@@ -1151,13 +1158,13 @@ void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:date.NowErrorResponse)
+  // @@protoc_insertion_point(serialize_end:sea.api.date.NowErrorResponse)
 }
 
 ::google::protobuf::uint8* NowErrorResponse::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:date.NowErrorResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowErrorResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1166,7 +1173,7 @@ void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->request_id().data(), static_cast<int>(this->request_id().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorResponse.request_id");
+      "sea.api.date.NowErrorResponse.request_id");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->request_id(), target);
@@ -1177,7 +1184,7 @@ void NowErrorResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->date().data(), static_cast<int>(this->date().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "date.NowErrorResponse.date");
+      "sea.api.date.NowErrorResponse.date");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         2, this->date(), target);
@@ -1187,12 +1194,12 @@ void NowErrorResponse::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:date.NowErrorResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowErrorResponse)
   return target;
 }
 
 size_t NowErrorResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:date.NowErrorResponse)
+// @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowErrorResponse)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1220,22 +1227,22 @@ size_t NowErrorResponse::ByteSizeLong() const {
 }
 
 void NowErrorResponse::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:date.NowErrorResponse)
+// @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowErrorResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const NowErrorResponse* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const NowErrorResponse>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:date.NowErrorResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowErrorResponse)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:date.NowErrorResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowErrorResponse)
     MergeFrom(*source);
   }
 }
 
 void NowErrorResponse::MergeFrom(const NowErrorResponse& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:date.NowErrorResponse)
+// @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowErrorResponse)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -1252,14 +1259,14 @@ void NowErrorResponse::MergeFrom(const NowErrorResponse& from) {
 }
 
 void NowErrorResponse::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:date.NowErrorResponse)
+// @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowErrorResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void NowErrorResponse::CopyFrom(const NowErrorResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:date.NowErrorResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:sea.api.date.NowErrorResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1290,34 +1297,34 @@ void NowErrorResponse::InternalSwap(NowErrorResponse* other) {
 
 // ===================================================================
 
-SeaDateService::~SeaDateService() {}
+DateService::~DateService() {}
 
-const ::google::protobuf::ServiceDescriptor* SeaDateService::descriptor() {
+const ::google::protobuf::ServiceDescriptor* DateService::descriptor() {
   protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
   return protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_service_descriptors[0];
 }
 
-const ::google::protobuf::ServiceDescriptor* SeaDateService::GetDescriptor() {
+const ::google::protobuf::ServiceDescriptor* DateService::GetDescriptor() {
   return descriptor();
 }
 
-void SeaDateService::Now(::google::protobuf::RpcController* controller,
-                         const ::date::NowRequest*,
-                         ::date::NowResponse*,
+void DateService::Now(::google::protobuf::RpcController* controller,
+                         const ::sea::api::date::NowRequest*,
+                         ::sea::api::date::NowResponse*,
                          ::google::protobuf::Closure* done) {
   controller->SetFailed("Method Now() not implemented.");
   done->Run();
 }
 
-void SeaDateService::NowError(::google::protobuf::RpcController* controller,
-                         const ::date::NowErrorRequest*,
-                         ::date::NowErrorResponse*,
+void DateService::NowError(::google::protobuf::RpcController* controller,
+                         const ::sea::api::date::NowErrorRequest*,
+                         ::sea::api::date::NowErrorResponse*,
                          ::google::protobuf::Closure* done) {
   controller->SetFailed("Method NowError() not implemented.");
   done->Run();
 }
 
-void SeaDateService::CallMethod(const ::google::protobuf::MethodDescriptor* method,
+void DateService::CallMethod(const ::google::protobuf::MethodDescriptor* method,
                              ::google::protobuf::RpcController* controller,
                              const ::google::protobuf::Message* request,
                              ::google::protobuf::Message* response,
@@ -1326,14 +1333,14 @@ void SeaDateService::CallMethod(const ::google::protobuf::MethodDescriptor* meth
   switch(method->index()) {
     case 0:
       Now(controller,
-             ::google::protobuf::down_cast<const ::date::NowRequest*>(request),
-             ::google::protobuf::down_cast< ::date::NowResponse*>(response),
+             ::google::protobuf::down_cast<const ::sea::api::date::NowRequest*>(request),
+             ::google::protobuf::down_cast< ::sea::api::date::NowResponse*>(response),
              done);
       break;
     case 1:
       NowError(controller,
-             ::google::protobuf::down_cast<const ::date::NowErrorRequest*>(request),
-             ::google::protobuf::down_cast< ::date::NowErrorResponse*>(response),
+             ::google::protobuf::down_cast<const ::sea::api::date::NowErrorRequest*>(request),
+             ::google::protobuf::down_cast< ::sea::api::date::NowErrorResponse*>(response),
              done);
       break;
     default:
@@ -1342,14 +1349,14 @@ void SeaDateService::CallMethod(const ::google::protobuf::MethodDescriptor* meth
   }
 }
 
-const ::google::protobuf::Message& SeaDateService::GetRequestPrototype(
+const ::google::protobuf::Message& DateService::GetRequestPrototype(
     const ::google::protobuf::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
-      return ::date::NowRequest::default_instance();
+      return ::sea::api::date::NowRequest::default_instance();
     case 1:
-      return ::date::NowErrorRequest::default_instance();
+      return ::sea::api::date::NowErrorRequest::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
       return *::google::protobuf::MessageFactory::generated_factory()
@@ -1357,14 +1364,14 @@ const ::google::protobuf::Message& SeaDateService::GetRequestPrototype(
   }
 }
 
-const ::google::protobuf::Message& SeaDateService::GetResponsePrototype(
+const ::google::protobuf::Message& DateService::GetResponsePrototype(
     const ::google::protobuf::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
-      return ::date::NowResponse::default_instance();
+      return ::sea::api::date::NowResponse::default_instance();
     case 1:
-      return ::date::NowErrorResponse::default_instance();
+      return ::sea::api::date::NowErrorResponse::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
       return *::google::protobuf::MessageFactory::generated_factory()
@@ -1372,27 +1379,27 @@ const ::google::protobuf::Message& SeaDateService::GetResponsePrototype(
   }
 }
 
-SeaDateService_Stub::SeaDateService_Stub(::google::protobuf::RpcChannel* channel)
+DateService_Stub::DateService_Stub(::google::protobuf::RpcChannel* channel)
   : channel_(channel), owns_channel_(false) {}
-SeaDateService_Stub::SeaDateService_Stub(
+DateService_Stub::DateService_Stub(
     ::google::protobuf::RpcChannel* channel,
     ::google::protobuf::Service::ChannelOwnership ownership)
   : channel_(channel),
     owns_channel_(ownership == ::google::protobuf::Service::STUB_OWNS_CHANNEL) {}
-SeaDateService_Stub::~SeaDateService_Stub() {
+DateService_Stub::~DateService_Stub() {
   if (owns_channel_) delete channel_;
 }
 
-void SeaDateService_Stub::Now(::google::protobuf::RpcController* controller,
-                              const ::date::NowRequest* request,
-                              ::date::NowResponse* response,
+void DateService_Stub::Now(::google::protobuf::RpcController* controller,
+                              const ::sea::api::date::NowRequest* request,
+                              ::sea::api::date::NowResponse* response,
                               ::google::protobuf::Closure* done) {
   channel_->CallMethod(descriptor()->method(0),
                        controller, request, response, done);
 }
-void SeaDateService_Stub::NowError(::google::protobuf::RpcController* controller,
-                              const ::date::NowErrorRequest* request,
-                              ::date::NowErrorResponse* response,
+void DateService_Stub::NowError(::google::protobuf::RpcController* controller,
+                              const ::sea::api::date::NowErrorRequest* request,
+                              ::sea::api::date::NowErrorResponse* response,
                               ::google::protobuf::Closure* done) {
   channel_->CallMethod(descriptor()->method(1),
                        controller, request, response, done);
@@ -1400,19 +1407,21 @@ void SeaDateService_Stub::NowError(::google::protobuf::RpcController* controller
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace date
+}  // namespace api
+}  // namespace sea
 namespace google {
 namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::date::NowRequest* Arena::CreateMaybeMessage< ::date::NowRequest >(Arena* arena) {
-  return Arena::CreateInternal< ::date::NowRequest >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowRequest >(Arena* arena) {
+  return Arena::CreateInternal< ::sea::api::date::NowRequest >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::date::NowResponse* Arena::CreateMaybeMessage< ::date::NowResponse >(Arena* arena) {
-  return Arena::CreateInternal< ::date::NowResponse >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowResponse >(Arena* arena) {
+  return Arena::CreateInternal< ::sea::api::date::NowResponse >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::date::NowErrorRequest* Arena::CreateMaybeMessage< ::date::NowErrorRequest >(Arena* arena) {
-  return Arena::CreateInternal< ::date::NowErrorRequest >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowErrorRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorRequest >(Arena* arena) {
+  return Arena::CreateInternal< ::sea::api::date::NowErrorRequest >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::date::NowErrorResponse* Arena::CreateMaybeMessage< ::date::NowErrorResponse >(Arena* arena) {
-  return Arena::CreateInternal< ::date::NowErrorResponse >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowErrorResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorResponse >(Arena* arena) {
+  return Arena::CreateInternal< ::sea::api::date::NowErrorResponse >(arena);
 }
 }  // namespace protobuf
 }  // namespace google
