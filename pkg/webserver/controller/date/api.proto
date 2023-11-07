@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package date;
+package sea.api.date;
 import "google/protobuf/descriptor.proto";
 
 // 生成服务
 option cc_generic_services = true;
 
-service SeaDateService {
+service DateService {
   // 生成当前时间
   rpc Now(NowRequest) returns (NowResponse) {};
   rpc NowError(NowErrorRequest) returns (NowErrorResponse) {};

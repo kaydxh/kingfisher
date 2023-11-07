@@ -47,6 +47,8 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto
+namespace sea {
+namespace api {
 namespace date {
 class NowErrorRequest;
 class NowErrorRequestDefaultTypeInternal;
@@ -61,19 +63,23 @@ class NowResponse;
 class NowResponseDefaultTypeInternal;
 extern NowResponseDefaultTypeInternal _NowResponse_default_instance_;
 }  // namespace date
+}  // namespace api
+}  // namespace sea
 namespace google {
 namespace protobuf {
-template<> ::date::NowErrorRequest* Arena::CreateMaybeMessage<::date::NowErrorRequest>(Arena*);
-template<> ::date::NowErrorResponse* Arena::CreateMaybeMessage<::date::NowErrorResponse>(Arena*);
-template<> ::date::NowRequest* Arena::CreateMaybeMessage<::date::NowRequest>(Arena*);
-template<> ::date::NowResponse* Arena::CreateMaybeMessage<::date::NowResponse>(Arena*);
+template<> ::sea::api::date::NowErrorRequest* Arena::CreateMaybeMessage<::sea::api::date::NowErrorRequest>(Arena*);
+template<> ::sea::api::date::NowErrorResponse* Arena::CreateMaybeMessage<::sea::api::date::NowErrorResponse>(Arena*);
+template<> ::sea::api::date::NowRequest* Arena::CreateMaybeMessage<::sea::api::date::NowRequest>(Arena*);
+template<> ::sea::api::date::NowResponse* Arena::CreateMaybeMessage<::sea::api::date::NowResponse>(Arena*);
 }  // namespace protobuf
 }  // namespace google
+namespace sea {
+namespace api {
 namespace date {
 
 // ===================================================================
 
-class NowRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:date.NowRequest) */ {
+class NowRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:sea.api.date.NowRequest) */ {
  public:
   NowRequest();
   virtual ~NowRequest();
@@ -174,7 +180,7 @@ class NowRequest : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::std::string* release_request_id();
   void set_allocated_request_id(::std::string* request_id);
 
-  // @@protoc_insertion_point(class_scope:date.NowRequest)
+  // @@protoc_insertion_point(class_scope:sea.api.date.NowRequest)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -184,7 +190,7 @@ class NowRequest : public ::google::protobuf::Message /* @@protoc_insertion_poin
 };
 // -------------------------------------------------------------------
 
-class NowResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:date.NowResponse) */ {
+class NowResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:sea.api.date.NowResponse) */ {
  public:
   NowResponse();
   virtual ~NowResponse();
@@ -299,7 +305,7 @@ class NowResponse : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* release_date();
   void set_allocated_date(::std::string* date);
 
-  // @@protoc_insertion_point(class_scope:date.NowResponse)
+  // @@protoc_insertion_point(class_scope:sea.api.date.NowResponse)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -310,7 +316,7 @@ class NowResponse : public ::google::protobuf::Message /* @@protoc_insertion_poi
 };
 // -------------------------------------------------------------------
 
-class NowErrorRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:date.NowErrorRequest) */ {
+class NowErrorRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:sea.api.date.NowErrorRequest) */ {
  public:
   NowErrorRequest();
   virtual ~NowErrorRequest();
@@ -411,7 +417,7 @@ class NowErrorRequest : public ::google::protobuf::Message /* @@protoc_insertion
   ::std::string* release_request_id();
   void set_allocated_request_id(::std::string* request_id);
 
-  // @@protoc_insertion_point(class_scope:date.NowErrorRequest)
+  // @@protoc_insertion_point(class_scope:sea.api.date.NowErrorRequest)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -421,7 +427,7 @@ class NowErrorRequest : public ::google::protobuf::Message /* @@protoc_insertion
 };
 // -------------------------------------------------------------------
 
-class NowErrorResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:date.NowErrorResponse) */ {
+class NowErrorResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:sea.api.date.NowErrorResponse) */ {
  public:
   NowErrorResponse();
   virtual ~NowErrorResponse();
@@ -536,7 +542,7 @@ class NowErrorResponse : public ::google::protobuf::Message /* @@protoc_insertio
   ::std::string* release_date();
   void set_allocated_date(::std::string* date);
 
-  // @@protoc_insertion_point(class_scope:date.NowErrorResponse)
+  // @@protoc_insertion_point(class_scope:sea.api.date.NowErrorResponse)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -547,26 +553,26 @@ class NowErrorResponse : public ::google::protobuf::Message /* @@protoc_insertio
 };
 // ===================================================================
 
-class SeaDateService_Stub;
+class DateService_Stub;
 
-class SeaDateService : public ::google::protobuf::Service {
+class DateService : public ::google::protobuf::Service {
  protected:
   // This class should be treated as an abstract interface.
-  inline SeaDateService() {};
+  inline DateService() {};
  public:
-  virtual ~SeaDateService();
+  virtual ~DateService();
 
-  typedef SeaDateService_Stub Stub;
+  typedef DateService_Stub Stub;
 
   static const ::google::protobuf::ServiceDescriptor* descriptor();
 
   virtual void Now(::google::protobuf::RpcController* controller,
-                       const ::date::NowRequest* request,
-                       ::date::NowResponse* response,
+                       const ::sea::api::date::NowRequest* request,
+                       ::sea::api::date::NowResponse* response,
                        ::google::protobuf::Closure* done);
   virtual void NowError(::google::protobuf::RpcController* controller,
-                       const ::date::NowErrorRequest* request,
-                       ::date::NowErrorResponse* response,
+                       const ::sea::api::date::NowErrorRequest* request,
+                       ::sea::api::date::NowErrorResponse* response,
                        ::google::protobuf::Closure* done);
 
   // implements Service ----------------------------------------------
@@ -583,32 +589,32 @@ class SeaDateService : public ::google::protobuf::Service {
     const ::google::protobuf::MethodDescriptor* method) const;
 
  private:
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(SeaDateService);
+  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(DateService);
 };
 
-class SeaDateService_Stub : public SeaDateService {
+class DateService_Stub : public DateService {
  public:
-  SeaDateService_Stub(::google::protobuf::RpcChannel* channel);
-  SeaDateService_Stub(::google::protobuf::RpcChannel* channel,
+  DateService_Stub(::google::protobuf::RpcChannel* channel);
+  DateService_Stub(::google::protobuf::RpcChannel* channel,
                    ::google::protobuf::Service::ChannelOwnership ownership);
-  ~SeaDateService_Stub();
+  ~DateService_Stub();
 
   inline ::google::protobuf::RpcChannel* channel() { return channel_; }
 
-  // implements SeaDateService ------------------------------------------
+  // implements DateService ------------------------------------------
 
   void Now(::google::protobuf::RpcController* controller,
-                       const ::date::NowRequest* request,
-                       ::date::NowResponse* response,
+                       const ::sea::api::date::NowRequest* request,
+                       ::sea::api::date::NowResponse* response,
                        ::google::protobuf::Closure* done);
   void NowError(::google::protobuf::RpcController* controller,
-                       const ::date::NowErrorRequest* request,
-                       ::date::NowErrorResponse* response,
+                       const ::sea::api::date::NowErrorRequest* request,
+                       ::sea::api::date::NowErrorResponse* response,
                        ::google::protobuf::Closure* done);
  private:
   ::google::protobuf::RpcChannel* channel_;
   bool owns_channel_;
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(SeaDateService_Stub);
+  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(DateService_Stub);
 };
 
 
@@ -628,41 +634,41 @@ inline void NowRequest::clear_request_id() {
   request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowRequest::request_id() const {
-  // @@protoc_insertion_point(field_get:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowRequest.request_id)
   return request_id_.GetNoArena();
 }
 inline void NowRequest::set_request_id(const ::std::string& value) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowRequest.request_id)
 }
 #if LANG_CXX11
 inline void NowRequest::set_request_id(::std::string&& value) {
   
   request_id_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowRequest.request_id)
 }
 #endif
 inline void NowRequest::set_request_id(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowRequest.request_id)
 }
 inline void NowRequest::set_request_id(const char* value, size_t size) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowRequest.request_id)
 }
 inline ::std::string* NowRequest::mutable_request_id() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowRequest.request_id)
   return request_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowRequest::release_request_id() {
-  // @@protoc_insertion_point(field_release:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowRequest.request_id)
   
   return request_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -673,7 +679,7 @@ inline void NowRequest::set_allocated_request_id(::std::string* request_id) {
     
   }
   request_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), request_id);
-  // @@protoc_insertion_point(field_set_allocated:date.NowRequest.request_id)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowRequest.request_id)
 }
 
 // -------------------------------------------------------------------
@@ -685,41 +691,41 @@ inline void NowResponse::clear_request_id() {
   request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowResponse::request_id() const {
-  // @@protoc_insertion_point(field_get:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowResponse.request_id)
   return request_id_.GetNoArena();
 }
 inline void NowResponse::set_request_id(const ::std::string& value) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowResponse.request_id)
 }
 #if LANG_CXX11
 inline void NowResponse::set_request_id(::std::string&& value) {
   
   request_id_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowResponse.request_id)
 }
 #endif
 inline void NowResponse::set_request_id(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowResponse.request_id)
 }
 inline void NowResponse::set_request_id(const char* value, size_t size) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowResponse.request_id)
 }
 inline ::std::string* NowResponse::mutable_request_id() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowResponse.request_id)
   return request_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowResponse::release_request_id() {
-  // @@protoc_insertion_point(field_release:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowResponse.request_id)
   
   return request_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -730,7 +736,7 @@ inline void NowResponse::set_allocated_request_id(::std::string* request_id) {
     
   }
   request_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), request_id);
-  // @@protoc_insertion_point(field_set_allocated:date.NowResponse.request_id)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowResponse.request_id)
 }
 
 // string date = 2[json_name = "Date"];
@@ -738,41 +744,41 @@ inline void NowResponse::clear_date() {
   date_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowResponse::date() const {
-  // @@protoc_insertion_point(field_get:date.NowResponse.date)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowResponse.date)
   return date_.GetNoArena();
 }
 inline void NowResponse::set_date(const ::std::string& value) {
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowResponse.date)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowResponse.date)
 }
 #if LANG_CXX11
 inline void NowResponse::set_date(::std::string&& value) {
   
   date_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowResponse.date)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowResponse.date)
 }
 #endif
 inline void NowResponse::set_date(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowResponse.date)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowResponse.date)
 }
 inline void NowResponse::set_date(const char* value, size_t size) {
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowResponse.date)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowResponse.date)
 }
 inline ::std::string* NowResponse::mutable_date() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowResponse.date)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowResponse.date)
   return date_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowResponse::release_date() {
-  // @@protoc_insertion_point(field_release:date.NowResponse.date)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowResponse.date)
   
   return date_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -783,7 +789,7 @@ inline void NowResponse::set_allocated_date(::std::string* date) {
     
   }
   date_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), date);
-  // @@protoc_insertion_point(field_set_allocated:date.NowResponse.date)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowResponse.date)
 }
 
 // -------------------------------------------------------------------
@@ -795,41 +801,41 @@ inline void NowErrorRequest::clear_request_id() {
   request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowErrorRequest::request_id() const {
-  // @@protoc_insertion_point(field_get:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowErrorRequest.request_id)
   return request_id_.GetNoArena();
 }
 inline void NowErrorRequest::set_request_id(const ::std::string& value) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowErrorRequest.request_id)
 }
 #if LANG_CXX11
 inline void NowErrorRequest::set_request_id(::std::string&& value) {
   
   request_id_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowErrorRequest.request_id)
 }
 #endif
 inline void NowErrorRequest::set_request_id(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowErrorRequest.request_id)
 }
 inline void NowErrorRequest::set_request_id(const char* value, size_t size) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowErrorRequest.request_id)
 }
 inline ::std::string* NowErrorRequest::mutable_request_id() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowErrorRequest.request_id)
   return request_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowErrorRequest::release_request_id() {
-  // @@protoc_insertion_point(field_release:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowErrorRequest.request_id)
   
   return request_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -840,7 +846,7 @@ inline void NowErrorRequest::set_allocated_request_id(::std::string* request_id)
     
   }
   request_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), request_id);
-  // @@protoc_insertion_point(field_set_allocated:date.NowErrorRequest.request_id)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowErrorRequest.request_id)
 }
 
 // -------------------------------------------------------------------
@@ -852,41 +858,41 @@ inline void NowErrorResponse::clear_request_id() {
   request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowErrorResponse::request_id() const {
-  // @@protoc_insertion_point(field_get:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowErrorResponse.request_id)
   return request_id_.GetNoArena();
 }
 inline void NowErrorResponse::set_request_id(const ::std::string& value) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowErrorResponse.request_id)
 }
 #if LANG_CXX11
 inline void NowErrorResponse::set_request_id(::std::string&& value) {
   
   request_id_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowErrorResponse.request_id)
 }
 #endif
 inline void NowErrorResponse::set_request_id(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowErrorResponse.request_id)
 }
 inline void NowErrorResponse::set_request_id(const char* value, size_t size) {
   
   request_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowErrorResponse.request_id)
 }
 inline ::std::string* NowErrorResponse::mutable_request_id() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowErrorResponse.request_id)
   return request_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowErrorResponse::release_request_id() {
-  // @@protoc_insertion_point(field_release:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowErrorResponse.request_id)
   
   return request_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -897,7 +903,7 @@ inline void NowErrorResponse::set_allocated_request_id(::std::string* request_id
     
   }
   request_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), request_id);
-  // @@protoc_insertion_point(field_set_allocated:date.NowErrorResponse.request_id)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowErrorResponse.request_id)
 }
 
 // string date = 2[json_name = "Date"];
@@ -905,41 +911,41 @@ inline void NowErrorResponse::clear_date() {
   date_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& NowErrorResponse::date() const {
-  // @@protoc_insertion_point(field_get:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_get:sea.api.date.NowErrorResponse.date)
   return date_.GetNoArena();
 }
 inline void NowErrorResponse::set_date(const ::std::string& value) {
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_set:sea.api.date.NowErrorResponse.date)
 }
 #if LANG_CXX11
 inline void NowErrorResponse::set_date(::std::string&& value) {
   
   date_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_set_rvalue:sea.api.date.NowErrorResponse.date)
 }
 #endif
 inline void NowErrorResponse::set_date(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_set_char:sea.api.date.NowErrorResponse.date)
 }
 inline void NowErrorResponse::set_date(const char* value, size_t size) {
   
   date_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_set_pointer:sea.api.date.NowErrorResponse.date)
 }
 inline ::std::string* NowErrorResponse::mutable_date() {
   
-  // @@protoc_insertion_point(field_mutable:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_mutable:sea.api.date.NowErrorResponse.date)
   return date_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* NowErrorResponse::release_date() {
-  // @@protoc_insertion_point(field_release:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_release:sea.api.date.NowErrorResponse.date)
   
   return date_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -950,7 +956,7 @@ inline void NowErrorResponse::set_allocated_date(::std::string* date) {
     
   }
   date_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), date);
-  // @@protoc_insertion_point(field_set_allocated:date.NowErrorResponse.date)
+  // @@protoc_insertion_point(field_set_allocated:sea.api.date.NowErrorResponse.date)
 }
 
 #ifdef __GNUC__
@@ -966,6 +972,8 @@ inline void NowErrorResponse::set_allocated_date(::std::string* date) {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace date
+}  // namespace api
+}  // namespace sea
 
 // @@protoc_insertion_point(global_scope)
 
