@@ -125,6 +125,7 @@ class Random {
   }
 
   static unsigned int GetRandom();
+  //[min_val, max_val)
   static unsigned int GetRandomRange(unsigned int min_val,
                                      unsigned int max_val);
   static float GetRandomPercentage();
