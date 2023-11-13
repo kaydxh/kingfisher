@@ -12,6 +12,7 @@
 #include <iostream>
 #include <mutex>
 #include <vector>
+
 #include "thread.h"
 
 namespace kingfisher {
@@ -43,6 +44,25 @@ class ThreadPool : noncopyable {
     condition_.notify_one();
 
     return res;
+  }
+
+  template <typename F, typename... Args>
+  auto AddTaskSync(F&& f, int timeout, Args&&... args) ->
+      typename std::result_of<F(Args...)>::type {
+    auto future = AddTask(f, args...);
+    // future.wait();
+    if (timeout > 0) {
+      if (future.wait_for(std::chrono::seconds(timeout)) !=
+          std::future_status::ready) {
+        std::cout << "not complete..." << std::endl;
+        // return future.get();
+        return -1;
+      }
+    } else {
+      future.wait();
+    }
+
+    return future.get();
   }
 
   Task take();
