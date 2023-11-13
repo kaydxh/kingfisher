@@ -20,6 +20,17 @@ void TimeCounter::Tick(const std::string &msg) {
   }
 }
 
+double TimeCounter::Elapse() {
+  if (!effect_) {
+    return 0;
+  }
+  if (starts_.empty()) {
+    return 0;
+  }
+
+  return DiffTimerenceMilliSecond(Timestamp::Now(), starts_[0]);
+}
+
 std::string TimeCounter::String() {
   if (!effect_) {
     return "";

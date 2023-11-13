@@ -21,6 +21,7 @@ class TimeCounter {
   void Tick(const std::string &msg);
   std::string String();
   void Reset();
+  double Elapse();
 
  private:
   std::string summary(std::function<std::string(int, std::string, double,
