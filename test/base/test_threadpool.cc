@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "thread/thread_pool.h"
 
 using namespace kingfisher;
@@ -17,6 +18,13 @@ class test_ThreadPool : public testing::Test {
 void taskAdd(int a, int b) {
   a += b;
   std::cout << "do worker task add result= " << a << std::endl;
+}
+
+int taskAdd2(int a, int b) {
+  a += b;
+  sleep(2);
+  std::cout << "do worker task add result= " << a << std::endl;
+  return a;
 }
 
 class Worker {
@@ -60,4 +68,15 @@ TEST(test_ThreadPool, theadpool) {
 
   //  auto result = pool.AddTask([](int answer) { return answer; }, 42);
   // std::cout << result.get() << std::endl;
+}
+
+TEST(test_ThreadPool, AddTaskSync) {
+  {
+    ThreadPool pool(1);
+    pool.start();
+    auto res = pool.AddTaskSync(taskAdd2, 1, 2, 3);
+    std::cout << "res: " << res << std::endl;
+
+    pool.stop();
+  }
 }

@@ -3,7 +3,10 @@
 //
 
 #include "thread_pool.h"
+
 #include <iostream>
+
+#include "log/config.h"
 
 namespace kingfisher {
 namespace thread {
@@ -65,7 +68,7 @@ void ThreadPool::stop() {
   for (auto &thr : threads_) {
     thr->join();
   }
-  std::cout << "stop end, tasks_remaining_:" << tasks_remaining_ << std::endl;
+  LOG(INFO) << "stop end, tasks_remaining_:" << tasks_remaining_;
 }
 
 void ThreadPool::join() {
@@ -73,7 +76,7 @@ void ThreadPool::join() {
   while (tasks_remaining_) {
     condition_.wait(lock);
   }
-  std::cout << "join end, tasks_remaining_:" << tasks_remaining_ << std::endl;
+  LOG(INFO) << "join end, tasks_remaining_:" << tasks_remaining_;
 }
 
 }  // namespace thread
