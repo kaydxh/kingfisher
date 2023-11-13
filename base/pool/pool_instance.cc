@@ -9,6 +9,7 @@
 namespace kingfisher {
 namespace pool {
 
+// thread pool size is 1, means CoreInstanceHolder run in one thread
 CoreInstanceHolder::CoreInstanceHolder() : thread_pool_(1) {
   thread_pool_.start();
 }
@@ -17,7 +18,6 @@ CoreInstanceHolder::~CoreInstanceHolder() { thread_pool_.stop(); }
 
 void CoreInstanceHolder::Do(std::function<int()> f) {
   thread_pool_.AddTaskSync(f, 0);
-  // thread_pool_.AddTask(f);
 }
 
 int Pool::init() {
