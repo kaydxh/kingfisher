@@ -16,8 +16,8 @@ CoreInstanceHolder::CoreInstanceHolder() : thread_pool_(1) {
 
 CoreInstanceHolder::~CoreInstanceHolder() { thread_pool_.stop(); }
 
-void CoreInstanceHolder::Do(std::function<int()> f) {
-  thread_pool_.AddTaskSync(f, 0);
+int CoreInstanceHolder::Do(std::function<void()> f) {
+  return thread_pool_.AddTaskSync(f);
 }
 
 int Pool::init() {
@@ -29,10 +29,15 @@ int Pool::init() {
       holder->model_paths = opts_.model_paths;
       holder->batch_size = opts_.batch_size;
 
-      holder->Do([&]() -> int {
+      int ret = holder->Do([&]() -> int {
         holder->instance = new_func_();
         return 0;
       });
+
+      if (ret != 0) {
+        LOG(ERROR) << "failed to init pool by new instance for core id: " << id;
+        return ret;
+      }
 
       if (opts_.local_init_func) {
         opts_.local_init_func(holder->instance);

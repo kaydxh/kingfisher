@@ -6,6 +6,7 @@
 #define BASE_THREAD_POOL_THREAD_H_
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <future>
@@ -47,22 +48,20 @@ class ThreadPool : noncopyable {
   }
 
   template <typename F, typename... Args>
-  auto AddTaskSync(F&& f, int timeout, Args&&... args) ->
-      typename std::result_of<F(Args...)>::type {
+  int AddTaskSync(F&& f, int timeout = 0, Args&&... args) {
     auto future = AddTask(f, args...);
-    // future.wait();
     if (timeout > 0) {
-      if (future.wait_for(std::chrono::seconds(timeout)) !=
+      if (future.wait_for(std::chrono::milliseconds(timeout)) !=
           std::future_status::ready) {
         std::cout << "not complete..." << std::endl;
-        // return future.get();
         return -1;
       }
-    } else {
-      future.wait();
+
+      return 0;
     }
 
-    return future.get();
+    future.wait();
+    return 0;  // future.get();
   }
 
   Task take();
