@@ -74,8 +74,8 @@ TEST(test_ThreadPool, AddTaskSync) {
   {
     ThreadPool pool(1);
     pool.start();
-    auto res = pool.AddTaskSync(taskAdd2, 1, 2, 3);
-    std::cout << "res: " << res << std::endl;
+    int ret = pool.AddTaskSync(taskAdd2, 1, 2, 3);
+    ASSERT_EQ(0, ret);
 
     pool.stop();
   }

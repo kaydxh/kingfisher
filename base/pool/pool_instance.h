@@ -23,7 +23,7 @@ class CoreInstanceHolder {
   CoreInstanceHolder();
   ~CoreInstanceHolder();
 
-  void Do(std::function<int()> f);
+  int Do(std::function<void()> f);
 
   void* instance = nullptr;
   std::string name;
@@ -72,21 +72,16 @@ class Pool {
   void Put(const std::shared_ptr<CoreInstanceHolder>& holder);
 
   template <typename F>
-  void Invoke(F&& f) {
+  int Invoke(F&& f) {
     std::shared_ptr<CoreInstanceHolder> holder;
     int ret = Get(holder);
     if (ret != 0) {
       LOG(ERROR) << "failed to get holder, ret: " << ret;
-      return;
+      return ret;
     }
     SCOPE_EXIT { Put(holder); };
 
-    holder->Do([&]() -> int {
-      f(holder->instance);
-      return 0;
-    });
-
-    return;
+    return holder->Do([&]() { f(holder->instance); });
   }
 
  private:

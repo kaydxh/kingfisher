@@ -63,10 +63,11 @@ TEST(test_Pool, All) {
   auto ret = pool.GlobalInit();
   ASSERT_EQ(0, ret);
 
-  pool.Invoke([&](void* p) {
-    auto s = reinterpret_cast<SDK*>(p);
-    s->doSdk();
-  });
-
-  //  sleep(1);
+  for (int i = 0; i < 10; ++i) {
+    ret = pool.Invoke([&](void* p) {
+      auto s = reinterpret_cast<SDK*>(p);
+      s->doSdk();
+    });
+    ASSERT_EQ(0, ret);
+  }
 }
