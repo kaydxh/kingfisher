@@ -11,7 +11,7 @@ class NetBuffer : public container::Buffer {
   NetBuffer(int n = 1024);
   ~NetBuffer();
 
-  virtual int Read();
+  virtual int Read(std::string& buffer);
 
  private:
 };

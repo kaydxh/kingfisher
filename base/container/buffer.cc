@@ -35,7 +35,15 @@ void Buffer::ensureWriteSize(size_t len) {
   }
 }
 
-int Buffer::Read() { return 0; }
+int Buffer::Read(std::string& buffer) {
+  size_t n = ReadableBytes();
+  if (n > buffer.size()) {
+    buffer.resize(n);
+  }
+
+  std::copy(Peek(), Peek() + ReadableBytes(), (char*)(&*buffer.begin()));
+  return 0;
+}
 
 }  // namespace container
 }  // namespace kingfisher

@@ -38,7 +38,7 @@ class Buffer : public noncopyable_::noncopyable {
     return v;
   }
 
-  virtual int Read();
+  virtual int Read(std::string& buffer);
 
  private:
   void ensureWriteSize(size_t len);
