@@ -2,6 +2,9 @@
 
 #include <curl/easy.h>
 
+#include <memory>
+
+#include "container/buffer.h"
 #include "log/config.h"
 
 namespace kingfisher {
@@ -36,6 +39,8 @@ int CurlClient::Init() {
   }
 
   XSET_EASY_OPT(curl_, CURLOPT_NOSIGNAL, 1L)
+  XSET_EASY_OPT(curl_, CURLOPT_READFUNCTION, readCallback)
+  XSET_EASY_OPT(curl_, CURLOPT_READDATA, this);
 
   return 0;
 }
@@ -50,9 +55,16 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
   XSET_EASY_OPT(curl_, CURLOPT_URL, request.Url().c_str());
   XSET_EASY_OPT(curl_, CURLOPT_CUSTOMREQUEST, request.Method().c_str());
 
-  XSET_EASY_OPT(curl_, CURLOPT_READDATA, this);
   // XSET_EASY_OPT(curl_, CURLOPT_POST, 1L);
+  reader_buffer_ = std::make_unique<container::Buffer>(request.Body());
+  if (reader_buffer_->Size() > 0) {
+    // set header Content-length
+  }
+  LOG(INFO) << "requet body size: " << reader_buffer_->Size();
 
+  // 需要配合使用,才可进入readcallback函数
+  // curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
+  // XSET_EASY_OPT(curl_, CURLOPT_INFILESIZE_LARGE, reader_buffer_->Size());
   auto code = curl_easy_perform(curl_);
   if (code != CURLE_OK) {
     LOG(ERROR) << "failed to curl_easy_perform, code: " << code;
@@ -76,6 +88,31 @@ size_t CurlClient::writeCallback(char *ptr, size_t size, size_t nmemb,
   size_t len = size * nmemb;
 
   return len;
+}
+
+size_t CurlClient::readCallback(char *ptr, size_t size, size_t nmemb,
+                                void *userdata) {
+  CurlClient *client = static_cast<CurlClient *>(userdata);
+  if (client == nullptr) {
+    return 0;
+  }
+
+  size_t buffer_size = size * nmemb;
+  if (buffer_size <= 0) {
+    return 0;
+  }
+
+  std::string buffer;
+  buffer.resize(buffer_size);
+
+  int ret = client->reader_buffer_->Read(buffer);
+  if (ret != 0) {
+    LOG(ERROR) << "failed to read in read callback, ret: " << ret;
+    return ret;
+  }
+  LOG(INFO) << "read data: " << buffer;
+
+  return buffer_size;
 }
 
 }  // namespace net
