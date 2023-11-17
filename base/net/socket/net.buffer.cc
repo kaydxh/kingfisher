@@ -9,7 +9,7 @@ NetBuffer::NetBuffer(int n) {}
 
 NetBuffer::~NetBuffer() {}
 
-int NetBuffer::Read() {
+int NetBuffer::Read(std::string& buffer) {
   // saved an ioctl()/FIONREAD call to tell how much to read
   char extrabuf[65536];
   struct iovec vec[2];
@@ -28,7 +28,8 @@ int NetBuffer::Read() {
     writer_index_ += n;
   } else {
     writer_index_ = buffer_.size();
-    Append(extrabuf, n - writable);
+    // Append(extrabuf, n - writable);
+    Append(buffer.c_str(), n - writable);
   }
   return n;
 }

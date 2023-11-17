@@ -56,7 +56,8 @@ void TcpConnection::sendInLoop(const void* data, size_t len) {
 
 void TcpConnection::handleRead() {
   loop_->AssertInLoopThread();
-  ssize_t n = input_buffer_.Read();
+  std::string buffer;
+  ssize_t n = input_buffer_.Read(buffer);
   LOG(INFO) << ">> handleRead " << n << "bytes";
   if (n == 0) {
     return;
