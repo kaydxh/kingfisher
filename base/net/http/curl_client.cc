@@ -41,6 +41,8 @@ int CurlClient::Init() {
   XSET_EASY_OPT(curl_, CURLOPT_NOSIGNAL, 1L)
   XSET_EASY_OPT(curl_, CURLOPT_READFUNCTION, readCallback)
   XSET_EASY_OPT(curl_, CURLOPT_READDATA, this);
+  XSET_EASY_OPT(curl_, CURLOPT_WRITEFUNCTION, writeCallback)
+  XSET_EASY_OPT(curl_, CURLOPT_WRITEDATA, this);
 
   return 0;
 }
@@ -50,6 +52,8 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
     LOG(ERROR) << "curl is nil";
     return -1;
   }
+
+  chain_ = &chain;
 
   auto &request = chain.Request();
   XSET_EASY_OPT(curl_, CURLOPT_URL, request.Url().c_str());
@@ -77,16 +81,28 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
     return -1;
   }
 
-  return chain.Handler();
+  return chain_->Handler();
 }
 
 size_t CurlClient::writeCallback(char *ptr, size_t size, size_t nmemb,
                                  void *userdata) {
+  LOG(INFO) << "=======writeCallback=========";
   if (ptr == nullptr || userdata == nullptr) {
+    LOG(ERROR) << "ptr: " << ptr << ", userdata: " << userdata;
     return 0;
   }
-  size_t len = size * nmemb;
 
+  CurlClient *client = static_cast<CurlClient *>(userdata);
+  if (client == nullptr) {
+    LOG(ERROR) << "client is nil";
+    return 0;
+  }
+
+  size_t len = size * nmemb;
+  client->chain_->Response().SetBody(std::string(ptr, len));
+
+  LOG(INFO) << "write data len: " << len
+            << ", resp body len: " << client->chain_->Response().Body().size();
   return len;
 }
 
