@@ -14,6 +14,7 @@ namespace container {
 class Buffer : public noncopyable_::noncopyable {
  public:
   explicit Buffer(int n = 1024) {}
+  Buffer(const std::string& data) { Append(data); }
 
   size_t ReadableBytes() const;
   size_t WriteableBytes() const;
@@ -39,6 +40,8 @@ class Buffer : public noncopyable_::noncopyable {
   }
 
   virtual int Read(std::string& buffer);
+
+  size_t Size() const { return buffer_.size(); }
 
  private:
   void ensureWriteSize(size_t len);
