@@ -28,11 +28,12 @@ class HttpChainInterceptor {
   int Handler();
 
   HttpRequest& Request() { return request_; }
+  HttpResponse& Response() { return response_; }
 
  private:
   HttpClient http_client_;
-  HttpRequest request_;
-  HttpResponse response_;
+  HttpRequest& request_;
+  HttpResponse& response_;
   HttpInterceptors::iterator begin_;
   HttpInterceptors::iterator end_;
 };
