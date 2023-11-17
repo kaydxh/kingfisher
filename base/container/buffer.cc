@@ -22,11 +22,13 @@ void Buffer::Append(const std::string& data) {
   ensureWriteSize(data.size());
   std::copy(data.c_str(), data.data() + data.size(), BeginWrite());
   // std::memcpy(BeginWrite(), data.c_str(), data.size());
+  writer_index_ += data.size();
 }
 
 void Buffer::Append(const char* data, int len) {
   ensureWriteSize(len);
   std::copy(data, data + len, BeginWrite());
+  writer_index_ += len;
 }
 
 void Buffer::ensureWriteSize(size_t len) {
@@ -41,7 +43,9 @@ int Buffer::Read(std::string& buffer) {
     buffer.resize(n);
   }
 
-  std::copy(Peek(), Peek() + ReadableBytes(), (char*)(&*buffer.begin()));
+  std::copy(Peek(), Peek() + ReadableBytes(),
+            static_cast<char*>(&*buffer.begin()));
+  reader_index_ += n;
   return 0;
 }
 
