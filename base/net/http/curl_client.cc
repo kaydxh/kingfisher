@@ -95,7 +95,7 @@ size_t CurlClient::writeCallback(char *ptr, size_t size, size_t nmemb,
   CurlClient *client = static_cast<CurlClient *>(userdata);
   if (client == nullptr) {
     LOG(ERROR) << "client is nil";
-    return 0;
+    return -1;
   }
 
   size_t len = size * nmemb;

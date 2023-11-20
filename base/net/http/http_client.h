@@ -6,12 +6,12 @@
 
 #include "http_request.h"
 #include "http_response.h"
+#include "types.h"
 
 namespace kingfisher {
 namespace net {
 
 class HttpInterceptor;
-using HttpInterceptors = std::vector<std::shared_ptr<HttpInterceptor>>;
 
 class HttpClient {
  public:

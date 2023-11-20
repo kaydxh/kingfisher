@@ -7,11 +7,6 @@
 namespace kingfisher {
 namespace net {
 
-enum class HttpMethod { GET, POST, PUT, OPTIONS, HEAD, PATCH, DELETE };
-
-const std::string HTTP_METHOD_GET = "GET";
-const std::string HTTP_METHOD_POST = "POST";
-
 struct KeyCmp {
   bool operator()(const std::string& s1, const std::string& s2) const {
     return std::lexicographical_compare(
