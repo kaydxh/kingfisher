@@ -50,6 +50,14 @@ void HttpHeaders::SetContentLength(int64_t sz) {
   SetHeader("Content-Length", std::to_string(sz));
 }
 
+void HttpHeaders::SetJsonContentType() {
+  SetHeader("Content-Type", "application/json");
+}
+
+void HttpHeaders::SetProtobufContentType() {
+  SetHeader("Content-Type", "application/x-protobuf");
+}
+
 void HttpHeaders::RemoveHeaders(const std::string& key) { headers_.erase(key); }
 
 void HttpHeaders::RemoveHeader(const std::string& key,
