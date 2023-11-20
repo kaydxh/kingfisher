@@ -31,6 +31,7 @@ class CurlClient : public HttpInterceptor {
   HttpChainInterceptor *chain_;
   std::unique_ptr<container::Buffer> reader_buffer_;
   static std::once_flag once_;
+  std::string error_message_;
 };
 
 }  // namespace net

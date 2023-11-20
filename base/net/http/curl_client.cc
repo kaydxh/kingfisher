@@ -5,7 +5,9 @@
 #include <memory>
 
 #include "container/buffer.h"
+#include "curl/curl.h"
 #include "log/config.h"
+#include "strings/strings.h"
 
 namespace kingfisher {
 namespace net {
@@ -21,7 +23,7 @@ std::once_flag CurlClient::once_;
     }                                                           \
   }
 
-CurlClient::CurlClient() {}
+CurlClient::CurlClient() : error_message_(CURL_ERROR_SIZE, 0) {}
 
 CurlClient::~CurlClient() {
   if (curl_) {
@@ -38,6 +40,7 @@ int CurlClient::Init() {
     return -1;
   }
 
+  XSET_EASY_OPT(curl_, CURLOPT_ERRORBUFFER, error_message_.data());
   XSET_EASY_OPT(curl_, CURLOPT_NOSIGNAL, 1L)
   XSET_EASY_OPT(curl_, CURLOPT_READFUNCTION, readCallback)
   XSET_EASY_OPT(curl_, CURLOPT_READDATA, this);
@@ -58,6 +61,9 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
   auto &request = chain.Request();
   XSET_EASY_OPT(curl_, CURLOPT_URL, request.Url().c_str());
   XSET_EASY_OPT(curl_, CURLOPT_CUSTOMREQUEST, request.Method().c_str());
+  XSET_EASY_OPT(curl_, CURLOPT_CONNECTTIMEOUT_MS,
+                chain_->Client().ConnectTimeoutMs());
+  XSET_EASY_OPT(curl_, CURLOPT_TIMEOUT_MS, chain_->Client().TimeoutMs());
 
   // XSET_EASY_OPT(curl_, CURLOPT_POST, 1L);
   reader_buffer_ = std::make_unique<container::Buffer>(request.Body());
@@ -71,14 +77,18 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
   // XSET_EASY_OPT(curl_, CURLOPT_INFILESIZE_LARGE, reader_buffer_->Size());
   auto code = curl_easy_perform(curl_);
   if (code != CURLE_OK) {
-    LOG(ERROR) << "failed to curl_easy_perform, code: " << code;
-    return -1;
+    LOG(ERROR) << strings::FormatString(
+        "failed to curl_easy_perform, code: %d, message: %s", code,
+        error_message_);
+    return code;
   }
   long status = 0;
   code = curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &status);
   if (code != CURLE_OK) {
-    LOG(ERROR) << "failed to curl_easy_getinfo, code: " << code;
-    return -1;
+    LOG(ERROR) << strings::FormatString(
+        "failed to  curl_easy_getinfo, code: %d, message: %s", code,
+        curl_easy_strerror(code));
+    return code;
   }
 
   return chain_->Handler();
