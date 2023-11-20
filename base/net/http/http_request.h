@@ -20,6 +20,8 @@ class HttpRequest {
   const std::string& Body() { return body_; }
   void SetBody(const std::string& body) { body_ = body; }
 
+  HttpHeaders& Headers() { return headers_; }
+
  private:
   std::string url_;
   std::string method_;

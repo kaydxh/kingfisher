@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_BASE_NET_HTTP_CURL_CLIENT_H_
 #define KINGFISHER_BASE_NET_HTTP_CURL_CLIENT_H_
 
+#include <memory>
 #include <mutex>
 
 #include "container/buffer.h"
@@ -24,6 +25,10 @@ class CurlClient : public HttpInterceptor {
                               void *userdata);
   static size_t readCallback(char *ptr, size_t size, size_t nmemb,
                              void *userdata);
+
+  // 自定义删除器curl_slice_free_all
+  std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> GetHeaders()
+      const;
 
  private:
   CURL *curl_ = nullptr;
