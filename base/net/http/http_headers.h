@@ -38,6 +38,8 @@ class HttpHeaders {
   void RemoveHeader(const std::string& key, const std::string& value);
 
   void SetContentLength(int64_t sz);
+  void SetJsonContentType();
+  void SetProtobufContentType();
 
  private:
   Headers headers_;
