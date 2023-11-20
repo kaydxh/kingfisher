@@ -12,7 +12,6 @@ namespace kingfisher {
 namespace net {
 
 class HttpInterceptor;
-using HttpInterceptors = std::vector<std::shared_ptr<HttpInterceptor>>;
 
 class HttpChainInterceptor {
  public:
