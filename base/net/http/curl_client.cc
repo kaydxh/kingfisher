@@ -67,14 +67,22 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
 
   // XSET_EASY_OPT(curl_, CURLOPT_POST, 1L);
   reader_buffer_ = std::make_unique<container::Buffer>(request.Body());
-  if (reader_buffer_->Size() > 0) {
+  auto content_length = reader_buffer_->Size();
+  if (content_length > 0) {
     // set header Content-length
+    request.Headers().SetContentLength(content_length);
   }
   LOG(INFO) << "requet body size: " << reader_buffer_->Size();
 
   // 需要配合使用,才可进入readcallback函数
   // curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
   // XSET_EASY_OPT(curl_, CURLOPT_INFILESIZE_LARGE, reader_buffer_->Size());
+  //
+  auto headers_up = GetHeaders();
+  if (headers_up) {
+    XSET_EASY_OPT(curl_, CURLOPT_HTTPHEADER, headers_up.get());
+  }
+
   auto code = curl_easy_perform(curl_);
   if (code != CURLE_OK) {
     LOG(ERROR) << strings::FormatString(
@@ -139,6 +147,21 @@ size_t CurlClient::readCallback(char *ptr, size_t size, size_t nmemb,
   LOG(INFO) << "read data: " << buffer;
 
   return buffer_size;
+}
+
+std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)>
+CurlClient::GetHeaders() const {
+  auto list_up = std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)>(
+      0, curl_slist_free_all);
+  curl_slist *list = nullptr;
+
+  chain_->Request().Headers().Traverse(
+      [&](const std::string &k, const std::string &v) {
+        curl_slist_append(list, (k + ":" + v).c_str());
+      });
+
+  list_up.reset(list);
+  return list_up;
 }
 
 }  // namespace net

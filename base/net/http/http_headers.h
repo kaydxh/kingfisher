@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_BASE_NET_HTTP_HTTP_HEADERS_H_
 #define KINGFISHER_BASE_NET_HTTP_HTTP_HEADERS_H_
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -28,6 +29,10 @@ class HttpHeaders {
 
   std::string GetHeader(const std::string& key);
   std::vector<std::string> GetHeaders(const std::string& key);
+
+  void Traverse(
+      std::function<void(const std::string& key, const std::string& value)>
+          handler) const;
 
   void RemoveHeaders(const std::string& key);
   void RemoveHeader(const std::string& key, const std::string& value);

@@ -38,6 +38,14 @@ std::vector<std::string> HttpHeaders::GetHeaders(const std::string& key) {
   return headers;
 }
 
+void HttpHeaders::Traverse(
+    std::function<void(const std::string& key, const std::string& value)>
+        handler) const {
+  for (auto it = headers_.begin(); it != headers_.end(); ++it) {
+    handler(it->first, it->second);
+  }
+}
+
 void HttpHeaders::SetContentLength(int64_t sz) {
   SetHeader("Content-Length", std::to_string(sz));
 }
