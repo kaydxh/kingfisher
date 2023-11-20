@@ -29,8 +29,10 @@ class HttpChainInterceptor {
   HttpRequest& Request() { return request_; }
   HttpResponse& Response() { return response_; }
 
+  HttpClient& Client() { return http_client_; }
+
  private:
-  HttpClient http_client_;
+  HttpClient& http_client_;
   HttpRequest& request_;
   HttpResponse& response_;
   HttpInterceptors::iterator begin_;

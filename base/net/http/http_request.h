@@ -4,18 +4,10 @@
 #include <map>
 #include <string>
 
+#include "http_headers.h"
+
 namespace kingfisher {
 namespace net {
-
-struct KeyCmp {
-  bool operator()(const std::string& s1, const std::string& s2) const {
-    return std::lexicographical_compare(
-        s1.begin(), s1.end(), s2.begin(), s2.end(),
-        [](char c1, char c2) { return ::tolower(c1) < ::tolower(c2); });
-  }
-};
-
-using Headers = std::multimap<std::string, std::string, KeyCmp>;
 
 class HttpRequest {
  public:
@@ -31,10 +23,8 @@ class HttpRequest {
  private:
   std::string url_;
   std::string method_;
-  Headers headers_;
+  HttpHeaders headers_;
   std::string body_;
-
-  int64_t timeout_ms_ = 5000;
 };
 
 }  // namespace net
