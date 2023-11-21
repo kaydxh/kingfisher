@@ -22,13 +22,19 @@ class HttpClient {
 
   int Get(HttpRequest& req, HttpResponse& resp);
   int Post(HttpRequest& req, HttpResponse& resp);
+  int Put(HttpRequest& req, HttpResponse& resp);
   int Do(HttpRequest& req, HttpResponse& resp);
 
   int64_t ConnectTimeoutMs() { return connect_timeout_ms_; }
   int64_t TimeoutMs() { return timeout_ms_; }
+  void SetProxy(const std::string& proxy);
+  std::string Proxy() { return proxy_; }
+
+  void AddInterceptor(const std::shared_ptr<HttpInterceptor> interceptor);
 
  private:
   HttpInterceptors interceptors_;
+  std::string proxy_;
 
   int64_t connect_timeout_ms_ = 5000;
   int64_t timeout_ms_ = 5000;

@@ -13,6 +13,7 @@ class HttpResponse {
 
   const std::string& Body() { return body_; }
   void SetBody(const std::string& body) { body_ = body; }
+  void AppendBody(const std::string& body) { body_.append(body); }
 
  private:
   int status_code_ = 0;
