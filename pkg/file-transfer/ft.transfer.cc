@@ -5,6 +5,7 @@
 #include "net/http/http_request.h"
 #include "net/http/http_response.h"
 #include "strings/strings.h"
+#include "time/timer.h"
 
 namespace kingfisher {
 namespace file {
@@ -24,16 +25,23 @@ int FileTransfer::Download(std::string& data, const std::string& url) {
   req.SetUrl(url);
 
   net::HttpResponse resp;
-  int ret = client.Get(req, resp);
-  if (ret != 0) {
-    LOG(ERROR) << strings::FormatString("failed to download %s, ret: %d", url,
-                                        ret);
 
-    return ret;
+  int ret = 0;
+  for (int i = 0; i < opts_.retry_times; ++i) {
+    ret = client.Get(req, resp);
+    if (ret == 0) {
+      break;
+    }
+    LOG(ERROR) << strings::FormatString("failed to download %s, ret: %d",
+                                        url.c_str(), ret);
+    time::MsSleep(opts_.retry_interval);
   }
-  data = resp.Body();
 
-  return 0;
+  if (ret == 0) {
+    data = resp.Body();
+  }
+
+  return ret;
 }
 
 int FileTransfer::Upload(const std::string& data, const std::string& url) {
@@ -46,8 +54,9 @@ int FileTransfer::Upload(const std::string& data, const std::string& url) {
   net::HttpResponse resp;
   int ret = client.Put(req, resp);
   if (ret != 0) {
-    LOG(ERROR) << strings::FormatString("failed to upload %s, ret: %d", url,
-                                        ret);
+    LOG(ERROR) << strings::FormatString(
+        "failed to upload len %d to %s, ret: %d", data.size(), url.c_str(),
+        ret);
 
     return ret;
   }

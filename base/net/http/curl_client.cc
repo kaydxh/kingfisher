@@ -104,6 +104,11 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
   }
   chain_->Response().SetStatusCode(status);
 
+  if (status >= 400) {
+    LOG(ERROR) << strings::FormatString("http status code: %d", status);
+    return status;
+  }
+
   return chain_->Handler();
 }
 
