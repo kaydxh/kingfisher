@@ -19,6 +19,7 @@ int FileTransfer::Init(const FileTransferOptions& opts) {
 
 int FileTransfer::Download(std::string& data, const std::string& url) {
   net::HttpClient client;
+  client.SetTimeoutMs(opts_.download_timeout_ms);
   net::HttpRequest req;
   req.SetUrl(url);
 

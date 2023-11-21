@@ -6,15 +6,15 @@ import "google/protobuf/duration.proto";
 option go_package = "github.com/kaydxh/go.pkg.filetransfer;filetransfer";
 
 message FtConfig {
-  Ft ft = 1;
+  Ft filetransfer = 1;
 }
 
 message Ft {
   bool enabled = 1;
-  google.protobuf.Duration download_timeout = 2;
-  google.protobuf.Duration upload_timeout = 3;
+  int64 download_timeout = 2;
+  int64 upload_timeout = 3;
   uint32 retry_times = 4;
-  google.protobuf.Duration retry_interval = 5;
+  int64 retry_interval = 5;
 
   // 当有多个代理地址时，代理模式, use proxy mode
   LoadBalanceMode load_balance_mode = 10;

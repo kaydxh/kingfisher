@@ -32,7 +32,6 @@ Config& Config::NewConfig(const ConfigOptions& opts) {
 
 int Config::parseViper() {
   // auto& ft_proto = proto_.ft();
-
   return 0;
 }
 
@@ -61,17 +60,23 @@ FileTransfer& CompletedConfig::ApplyOrDie() {
     LOG(FATAL) << "failed to init FileTransfer, err:" << completed_ret_;
   }
 
+  if (!config_->proto_.filetransfer().enabled()) {
+    LOG(FATAL) << "not enable FileTransfer";
+  }
+
   return InstallOrDie();
 }
 
 FileTransfer& CompletedConfig::InstallOrDie() {
   auto& ft = kingfisher::core::Singleton<FileTransfer>::Instance();
 
+  auto proto = config_->proto_.filetransfer();
+
   FileTransferOptions opts;
-  opts.download_timeout_ms = -1;
-  opts.upload_timeout_ms = -1;
-  opts.retry_times = 1;
-  opts.retry_interval = 0;
+  opts.download_timeout_ms = proto.download_timeout();
+  opts.upload_timeout_ms = proto.upload_timeout();
+  opts.retry_times = proto.retry_times();
+  opts.retry_interval = proto.retry_interval();
 
   int ret = ft.Init(opts);
   if (ret != 0) {

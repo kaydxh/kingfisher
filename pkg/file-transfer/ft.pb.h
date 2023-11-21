@@ -183,23 +183,23 @@ class FtConfig : public ::google::protobuf::Message /* @@protoc_insertion_point(
 
   // accessors -------------------------------------------------------
 
-  // .go.pkg.filetransfer.Ft ft = 1;
-  bool has_ft() const;
-  void clear_ft();
-  static const int kFtFieldNumber = 1;
+  // .go.pkg.filetransfer.Ft filetransfer = 1;
+  bool has_filetransfer() const;
+  void clear_filetransfer();
+  static const int kFiletransferFieldNumber = 1;
   private:
-  const ::go::pkg::filetransfer::Ft& _internal_ft() const;
+  const ::go::pkg::filetransfer::Ft& _internal_filetransfer() const;
   public:
-  const ::go::pkg::filetransfer::Ft& ft() const;
-  ::go::pkg::filetransfer::Ft* release_ft();
-  ::go::pkg::filetransfer::Ft* mutable_ft();
-  void set_allocated_ft(::go::pkg::filetransfer::Ft* ft);
+  const ::go::pkg::filetransfer::Ft& filetransfer() const;
+  ::go::pkg::filetransfer::Ft* release_filetransfer();
+  ::go::pkg::filetransfer::Ft* mutable_filetransfer();
+  void set_allocated_filetransfer(::go::pkg::filetransfer::Ft* filetransfer);
 
   // @@protoc_insertion_point(class_scope:go.pkg.filetransfer.FtConfig)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::go::pkg::filetransfer::Ft* ft_;
+  ::go::pkg::filetransfer::Ft* filetransfer_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::TableStruct;
 };
@@ -473,41 +473,11 @@ class Ft : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
   const ::google::protobuf::RepeatedPtrField< ::go::pkg::filetransfer::Ft_Proxy >&
       proxies() const;
 
-  // .google.protobuf.Duration download_timeout = 2;
-  bool has_download_timeout() const;
+  // int64 download_timeout = 2;
   void clear_download_timeout();
   static const int kDownloadTimeoutFieldNumber = 2;
-  private:
-  const ::google::protobuf::Duration& _internal_download_timeout() const;
-  public:
-  const ::google::protobuf::Duration& download_timeout() const;
-  ::google::protobuf::Duration* release_download_timeout();
-  ::google::protobuf::Duration* mutable_download_timeout();
-  void set_allocated_download_timeout(::google::protobuf::Duration* download_timeout);
-
-  // .google.protobuf.Duration upload_timeout = 3;
-  bool has_upload_timeout() const;
-  void clear_upload_timeout();
-  static const int kUploadTimeoutFieldNumber = 3;
-  private:
-  const ::google::protobuf::Duration& _internal_upload_timeout() const;
-  public:
-  const ::google::protobuf::Duration& upload_timeout() const;
-  ::google::protobuf::Duration* release_upload_timeout();
-  ::google::protobuf::Duration* mutable_upload_timeout();
-  void set_allocated_upload_timeout(::google::protobuf::Duration* upload_timeout);
-
-  // .google.protobuf.Duration retry_interval = 5;
-  bool has_retry_interval() const;
-  void clear_retry_interval();
-  static const int kRetryIntervalFieldNumber = 5;
-  private:
-  const ::google::protobuf::Duration& _internal_retry_interval() const;
-  public:
-  const ::google::protobuf::Duration& retry_interval() const;
-  ::google::protobuf::Duration* release_retry_interval();
-  ::google::protobuf::Duration* mutable_retry_interval();
-  void set_allocated_retry_interval(::google::protobuf::Duration* retry_interval);
+  ::google::protobuf::int64 download_timeout() const;
+  void set_download_timeout(::google::protobuf::int64 value);
 
   // bool enabled = 1;
   void clear_enabled();
@@ -521,6 +491,18 @@ class Ft : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
   ::google::protobuf::uint32 retry_times() const;
   void set_retry_times(::google::protobuf::uint32 value);
 
+  // int64 upload_timeout = 3;
+  void clear_upload_timeout();
+  static const int kUploadTimeoutFieldNumber = 3;
+  ::google::protobuf::int64 upload_timeout() const;
+  void set_upload_timeout(::google::protobuf::int64 value);
+
+  // int64 retry_interval = 5;
+  void clear_retry_interval();
+  static const int kRetryIntervalFieldNumber = 5;
+  ::google::protobuf::int64 retry_interval() const;
+  void set_retry_interval(::google::protobuf::int64 value);
+
   // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
   void clear_load_balance_mode();
   static const int kLoadBalanceModeFieldNumber = 10;
@@ -532,11 +514,11 @@ class Ft : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::go::pkg::filetransfer::Ft_Proxy > proxies_;
-  ::google::protobuf::Duration* download_timeout_;
-  ::google::protobuf::Duration* upload_timeout_;
-  ::google::protobuf::Duration* retry_interval_;
+  ::google::protobuf::int64 download_timeout_;
   bool enabled_;
   ::google::protobuf::uint32 retry_times_;
+  ::google::protobuf::int64 upload_timeout_;
+  ::google::protobuf::int64 retry_interval_;
   int load_balance_mode_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::TableStruct;
@@ -552,58 +534,58 @@ class Ft : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
 #endif  // __GNUC__
 // FtConfig
 
-// .go.pkg.filetransfer.Ft ft = 1;
-inline bool FtConfig::has_ft() const {
-  return this != internal_default_instance() && ft_ != NULL;
+// .go.pkg.filetransfer.Ft filetransfer = 1;
+inline bool FtConfig::has_filetransfer() const {
+  return this != internal_default_instance() && filetransfer_ != NULL;
 }
-inline void FtConfig::clear_ft() {
-  if (GetArenaNoVirtual() == NULL && ft_ != NULL) {
-    delete ft_;
+inline void FtConfig::clear_filetransfer() {
+  if (GetArenaNoVirtual() == NULL && filetransfer_ != NULL) {
+    delete filetransfer_;
   }
-  ft_ = NULL;
+  filetransfer_ = NULL;
 }
-inline const ::go::pkg::filetransfer::Ft& FtConfig::_internal_ft() const {
-  return *ft_;
+inline const ::go::pkg::filetransfer::Ft& FtConfig::_internal_filetransfer() const {
+  return *filetransfer_;
 }
-inline const ::go::pkg::filetransfer::Ft& FtConfig::ft() const {
-  const ::go::pkg::filetransfer::Ft* p = ft_;
-  // @@protoc_insertion_point(field_get:go.pkg.filetransfer.FtConfig.ft)
+inline const ::go::pkg::filetransfer::Ft& FtConfig::filetransfer() const {
+  const ::go::pkg::filetransfer::Ft* p = filetransfer_;
+  // @@protoc_insertion_point(field_get:go.pkg.filetransfer.FtConfig.filetransfer)
   return p != NULL ? *p : *reinterpret_cast<const ::go::pkg::filetransfer::Ft*>(
       &::go::pkg::filetransfer::_Ft_default_instance_);
 }
-inline ::go::pkg::filetransfer::Ft* FtConfig::release_ft() {
-  // @@protoc_insertion_point(field_release:go.pkg.filetransfer.FtConfig.ft)
+inline ::go::pkg::filetransfer::Ft* FtConfig::release_filetransfer() {
+  // @@protoc_insertion_point(field_release:go.pkg.filetransfer.FtConfig.filetransfer)
   
-  ::go::pkg::filetransfer::Ft* temp = ft_;
-  ft_ = NULL;
+  ::go::pkg::filetransfer::Ft* temp = filetransfer_;
+  filetransfer_ = NULL;
   return temp;
 }
-inline ::go::pkg::filetransfer::Ft* FtConfig::mutable_ft() {
+inline ::go::pkg::filetransfer::Ft* FtConfig::mutable_filetransfer() {
   
-  if (ft_ == NULL) {
+  if (filetransfer_ == NULL) {
     auto* p = CreateMaybeMessage<::go::pkg::filetransfer::Ft>(GetArenaNoVirtual());
-    ft_ = p;
+    filetransfer_ = p;
   }
-  // @@protoc_insertion_point(field_mutable:go.pkg.filetransfer.FtConfig.ft)
-  return ft_;
+  // @@protoc_insertion_point(field_mutable:go.pkg.filetransfer.FtConfig.filetransfer)
+  return filetransfer_;
 }
-inline void FtConfig::set_allocated_ft(::go::pkg::filetransfer::Ft* ft) {
+inline void FtConfig::set_allocated_filetransfer(::go::pkg::filetransfer::Ft* filetransfer) {
   ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
   if (message_arena == NULL) {
-    delete ft_;
+    delete filetransfer_;
   }
-  if (ft) {
+  if (filetransfer) {
     ::google::protobuf::Arena* submessage_arena = NULL;
     if (message_arena != submessage_arena) {
-      ft = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, ft, submessage_arena);
+      filetransfer = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, filetransfer, submessage_arena);
     }
     
   } else {
     
   }
-  ft_ = ft;
-  // @@protoc_insertion_point(field_set_allocated:go.pkg.filetransfer.FtConfig.ft)
+  filetransfer_ = filetransfer;
+  // @@protoc_insertion_point(field_set_allocated:go.pkg.filetransfer.FtConfig.filetransfer)
 }
 
 // -------------------------------------------------------------------
@@ -787,102 +769,32 @@ inline void Ft::set_enabled(bool value) {
   // @@protoc_insertion_point(field_set:go.pkg.filetransfer.Ft.enabled)
 }
 
-// .google.protobuf.Duration download_timeout = 2;
-inline bool Ft::has_download_timeout() const {
-  return this != internal_default_instance() && download_timeout_ != NULL;
+// int64 download_timeout = 2;
+inline void Ft::clear_download_timeout() {
+  download_timeout_ = GOOGLE_LONGLONG(0);
 }
-inline const ::google::protobuf::Duration& Ft::_internal_download_timeout() const {
-  return *download_timeout_;
-}
-inline const ::google::protobuf::Duration& Ft::download_timeout() const {
-  const ::google::protobuf::Duration* p = download_timeout_;
+inline ::google::protobuf::int64 Ft::download_timeout() const {
   // @@protoc_insertion_point(field_get:go.pkg.filetransfer.Ft.download_timeout)
-  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
-      &::google::protobuf::_Duration_default_instance_);
-}
-inline ::google::protobuf::Duration* Ft::release_download_timeout() {
-  // @@protoc_insertion_point(field_release:go.pkg.filetransfer.Ft.download_timeout)
-  
-  ::google::protobuf::Duration* temp = download_timeout_;
-  download_timeout_ = NULL;
-  return temp;
-}
-inline ::google::protobuf::Duration* Ft::mutable_download_timeout() {
-  
-  if (download_timeout_ == NULL) {
-    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
-    download_timeout_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:go.pkg.filetransfer.Ft.download_timeout)
   return download_timeout_;
 }
-inline void Ft::set_allocated_download_timeout(::google::protobuf::Duration* download_timeout) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete reinterpret_cast< ::google::protobuf::MessageLite*>(download_timeout_);
-  }
-  if (download_timeout) {
-    ::google::protobuf::Arena* submessage_arena =
-      reinterpret_cast<::google::protobuf::MessageLite*>(download_timeout)->GetArena();
-    if (message_arena != submessage_arena) {
-      download_timeout = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, download_timeout, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  download_timeout_ = download_timeout;
-  // @@protoc_insertion_point(field_set_allocated:go.pkg.filetransfer.Ft.download_timeout)
+inline void Ft::set_download_timeout(::google::protobuf::int64 value) {
+  
+  download_timeout_ = value;
+  // @@protoc_insertion_point(field_set:go.pkg.filetransfer.Ft.download_timeout)
 }
 
-// .google.protobuf.Duration upload_timeout = 3;
-inline bool Ft::has_upload_timeout() const {
-  return this != internal_default_instance() && upload_timeout_ != NULL;
+// int64 upload_timeout = 3;
+inline void Ft::clear_upload_timeout() {
+  upload_timeout_ = GOOGLE_LONGLONG(0);
 }
-inline const ::google::protobuf::Duration& Ft::_internal_upload_timeout() const {
-  return *upload_timeout_;
-}
-inline const ::google::protobuf::Duration& Ft::upload_timeout() const {
-  const ::google::protobuf::Duration* p = upload_timeout_;
+inline ::google::protobuf::int64 Ft::upload_timeout() const {
   // @@protoc_insertion_point(field_get:go.pkg.filetransfer.Ft.upload_timeout)
-  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
-      &::google::protobuf::_Duration_default_instance_);
-}
-inline ::google::protobuf::Duration* Ft::release_upload_timeout() {
-  // @@protoc_insertion_point(field_release:go.pkg.filetransfer.Ft.upload_timeout)
-  
-  ::google::protobuf::Duration* temp = upload_timeout_;
-  upload_timeout_ = NULL;
-  return temp;
-}
-inline ::google::protobuf::Duration* Ft::mutable_upload_timeout() {
-  
-  if (upload_timeout_ == NULL) {
-    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
-    upload_timeout_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:go.pkg.filetransfer.Ft.upload_timeout)
   return upload_timeout_;
 }
-inline void Ft::set_allocated_upload_timeout(::google::protobuf::Duration* upload_timeout) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete reinterpret_cast< ::google::protobuf::MessageLite*>(upload_timeout_);
-  }
-  if (upload_timeout) {
-    ::google::protobuf::Arena* submessage_arena =
-      reinterpret_cast<::google::protobuf::MessageLite*>(upload_timeout)->GetArena();
-    if (message_arena != submessage_arena) {
-      upload_timeout = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, upload_timeout, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  upload_timeout_ = upload_timeout;
-  // @@protoc_insertion_point(field_set_allocated:go.pkg.filetransfer.Ft.upload_timeout)
+inline void Ft::set_upload_timeout(::google::protobuf::int64 value) {
+  
+  upload_timeout_ = value;
+  // @@protoc_insertion_point(field_set:go.pkg.filetransfer.Ft.upload_timeout)
 }
 
 // uint32 retry_times = 4;
@@ -899,53 +811,18 @@ inline void Ft::set_retry_times(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:go.pkg.filetransfer.Ft.retry_times)
 }
 
-// .google.protobuf.Duration retry_interval = 5;
-inline bool Ft::has_retry_interval() const {
-  return this != internal_default_instance() && retry_interval_ != NULL;
+// int64 retry_interval = 5;
+inline void Ft::clear_retry_interval() {
+  retry_interval_ = GOOGLE_LONGLONG(0);
 }
-inline const ::google::protobuf::Duration& Ft::_internal_retry_interval() const {
-  return *retry_interval_;
-}
-inline const ::google::protobuf::Duration& Ft::retry_interval() const {
-  const ::google::protobuf::Duration* p = retry_interval_;
+inline ::google::protobuf::int64 Ft::retry_interval() const {
   // @@protoc_insertion_point(field_get:go.pkg.filetransfer.Ft.retry_interval)
-  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
-      &::google::protobuf::_Duration_default_instance_);
-}
-inline ::google::protobuf::Duration* Ft::release_retry_interval() {
-  // @@protoc_insertion_point(field_release:go.pkg.filetransfer.Ft.retry_interval)
-  
-  ::google::protobuf::Duration* temp = retry_interval_;
-  retry_interval_ = NULL;
-  return temp;
-}
-inline ::google::protobuf::Duration* Ft::mutable_retry_interval() {
-  
-  if (retry_interval_ == NULL) {
-    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
-    retry_interval_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:go.pkg.filetransfer.Ft.retry_interval)
   return retry_interval_;
 }
-inline void Ft::set_allocated_retry_interval(::google::protobuf::Duration* retry_interval) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete reinterpret_cast< ::google::protobuf::MessageLite*>(retry_interval_);
-  }
-  if (retry_interval) {
-    ::google::protobuf::Arena* submessage_arena =
-      reinterpret_cast<::google::protobuf::MessageLite*>(retry_interval)->GetArena();
-    if (message_arena != submessage_arena) {
-      retry_interval = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, retry_interval, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  retry_interval_ = retry_interval;
-  // @@protoc_insertion_point(field_set_allocated:go.pkg.filetransfer.Ft.retry_interval)
+inline void Ft::set_retry_interval(::google::protobuf::int64 value) {
+  
+  retry_interval_ = value;
+  // @@protoc_insertion_point(field_set:go.pkg.filetransfer.Ft.retry_interval)
 }
 
 // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
