@@ -83,6 +83,10 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
     XSET_EASY_OPT(curl_, CURLOPT_HTTPHEADER, headers_up.get());
   }
 
+  if (!chain_->Client().Proxy().empty()) {
+    XSET_EASY_OPT(curl_, CURLOPT_PROXY, chain_->Client().Proxy().c_str());
+  }
+
   auto code = curl_easy_perform(curl_);
   if (code != CURLE_OK) {
     LOG(ERROR) << strings::FormatString(
@@ -94,10 +98,11 @@ int CurlClient::Intercept(HttpChainInterceptor &chain) {
   code = curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &status);
   if (code != CURLE_OK) {
     LOG(ERROR) << strings::FormatString(
-        "failed to  curl_easy_getinfo, code: %d, message: %s", code,
+        "failed to curl_easy_getinfo, code: %d, message: %s", code,
         curl_easy_strerror(code));
     return code;
   }
+  chain_->Response().SetStatusCode(status);
 
   return chain_->Handler();
 }
@@ -117,7 +122,7 @@ size_t CurlClient::writeCallback(char *ptr, size_t size, size_t nmemb,
   }
 
   size_t len = size * nmemb;
-  client->chain_->Response().SetBody(std::string(ptr, len));
+  client->chain_->Response().AppendBody(std::string(ptr, len));
 
   LOG(INFO) << "write data len: " << len
             << ", resp body len: " << client->chain_->Response().Body().size();
