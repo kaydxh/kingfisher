@@ -25,8 +25,13 @@ class HttpClient {
   int Put(HttpRequest& req, HttpResponse& resp);
   int Do(HttpRequest& req, HttpResponse& resp);
 
+  void SetConnectTimeoutMs(int64_t timeout) { connect_timeout_ms_ = timeout; }
+
   int64_t ConnectTimeoutMs() { return connect_timeout_ms_; }
+
+  void SetTimeoutMs(int64_t timeout) { timeout_ms_ = timeout; }
   int64_t TimeoutMs() { return timeout_ms_; }
+
   void SetProxy(const std::string& proxy);
   std::string Proxy() { return proxy_; }
 
