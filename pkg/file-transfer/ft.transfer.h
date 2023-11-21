@@ -21,6 +21,7 @@ class FileTransfer {
   int Init(const FileTransferOptions& opts);
 
   int Download(std::string& data, const std::string& url);
+  int Upload(const std::string& data, const std::string& url);
 
  private:
   FileTransferOptions opts_;
