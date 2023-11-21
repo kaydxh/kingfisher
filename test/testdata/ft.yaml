@@ -1,9 +1,9 @@
 filetransfer:
     enabled: true
-    download_timeout : 5s
-    upload_timeout : 0s
+    download_timeout : 5000
+    upload_timeout : 0
     retry_times: 0 # must >= 0
-    retry_interval: 1s
+    retry_interval: 1000
     load_balance_mode: load_balance_mode_first 
     proxies:
       - proxy_url: "" #"http://127.0.0.1:80" 
