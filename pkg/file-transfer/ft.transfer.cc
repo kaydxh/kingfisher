@@ -36,5 +36,24 @@ int FileTransfer::Download(std::string& data, const std::string& url) {
   return 0;
 }
 
+int FileTransfer::Upload(const std::string& data, const std::string& url) {
+  net::HttpClient client;
+  client.SetTimeoutMs(opts_.upload_timeout_ms);
+  net::HttpRequest req;
+  req.SetUrl(url);
+  req.SetBody(data);
+
+  net::HttpResponse resp;
+  int ret = client.Put(req, resp);
+  if (ret != 0) {
+    LOG(ERROR) << strings::FormatString("failed to upload %s, ret: %d", url,
+                                        ret);
+
+    return ret;
+  }
+
+  return 0;
+}
+
 }  // namespace file
 }  // namespace kingfisher
