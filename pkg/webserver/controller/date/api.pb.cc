@@ -5,208 +5,173 @@
 
 #include <algorithm>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/extension_set.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
-// This is a temporary google only hack
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-#include "third_party/protobuf/version.h"
-#endif
 // @@protoc_insertion_point(includes)
-
+#include <google/protobuf/port_def.inc>
 namespace sea {
 namespace api {
 namespace date {
 class NowRequestDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<NowRequest>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<NowRequest> _instance;
 } _NowRequest_default_instance_;
 class NowResponseDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<NowResponse>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<NowResponse> _instance;
 } _NowResponse_default_instance_;
 class NowErrorRequestDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<NowErrorRequest>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<NowErrorRequest> _instance;
 } _NowErrorRequest_default_instance_;
 class NowErrorResponseDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<NowErrorResponse>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<NowErrorResponse> _instance;
 } _NowErrorResponse_default_instance_;
 }  // namespace date
 }  // namespace api
 }  // namespace sea
-namespace protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto {
-static void InitDefaultsNowRequest() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::sea::api::date::_NowRequest_default_instance_;
-    new (ptr) ::sea::api::date::NowRequest();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::sea::api::date::NowRequest::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<0> scc_info_NowRequest =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsNowRequest}, {}};
-
-static void InitDefaultsNowResponse() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::sea::api::date::_NowResponse_default_instance_;
-    new (ptr) ::sea::api::date::NowResponse();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::sea::api::date::NowResponse::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<0> scc_info_NowResponse =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsNowResponse}, {}};
-
-static void InitDefaultsNowErrorRequest() {
+static void InitDefaultsscc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::sea::api::date::_NowErrorRequest_default_instance_;
     new (ptr) ::sea::api::date::NowErrorRequest();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::sea::api::date::NowErrorRequest::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_NowErrorRequest =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsNowErrorRequest}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto}, {}};
 
-static void InitDefaultsNowErrorResponse() {
+static void InitDefaultsscc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::sea::api::date::_NowErrorResponse_default_instance_;
     new (ptr) ::sea::api::date::NowErrorResponse();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::sea::api::date::NowErrorResponse::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_NowErrorResponse =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsNowErrorResponse}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto}, {}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_NowRequest.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_NowResponse.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_NowErrorRequest.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_NowErrorResponse.base);
+static void InitDefaultsscc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::sea::api::date::_NowRequest_default_instance_;
+    new (ptr) ::sea::api::date::NowRequest();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::sea::api::date::NowRequest::InitAsDefaultInstance();
 }
 
-::google::protobuf::Metadata file_level_metadata[4];
-const ::google::protobuf::ServiceDescriptor* file_level_service_descriptors[1];
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto}, {}};
 
-const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static void InitDefaultsscc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::sea::api::date::_NowResponse_default_instance_;
+    new (ptr) ::sea::api::date::NowResponse();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::sea::api::date::NowResponse::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto}, {}};
+
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto[4];
+static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto = nullptr;
+static const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* file_level_service_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto[1];
+
+const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowRequest, request_id_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowRequest, request_id_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, request_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowResponse, date_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowResponse, request_id_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowResponse, date_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowErrorRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorRequest, request_id_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowErrorRequest, request_id_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowErrorResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, request_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::sea::api::date::NowErrorResponse, date_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowErrorResponse, request_id_),
+  PROTOBUF_FIELD_OFFSET(::sea::api::date::NowErrorResponse, date_),
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::sea::api::date::NowRequest)},
   { 6, -1, sizeof(::sea::api::date::NowResponse)},
   { 13, -1, sizeof(::sea::api::date::NowErrorRequest)},
   { 19, -1, sizeof(::sea::api::date::NowErrorResponse)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowRequest_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowResponse_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowErrorRequest_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::sea::api::date::_NowErrorResponse_default_instance_),
+static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::sea::api::date::_NowRequest_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::sea::api::date::_NowResponse_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::sea::api::date::_NowErrorRequest_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::sea::api::date::_NowErrorResponse_default_instance_),
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "pkg/webserver/controller/date/api.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, NULL, file_level_service_descriptors);
-}
+const char descriptor_table_protodef_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
+  "\n\'pkg/webserver/controller/date/api.prot"
+  "o\022\014sea.api.date\032 google/protobuf/descrip"
+  "tor.proto\"+\n\nNowRequest\022\035\n\nrequest_id\030\001 "
+  "\001(\tR\tRequestId\"@\n\013NowResponse\022\035\n\nrequest"
+  "_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Date"
+  "\"0\n\017NowErrorRequest\022\035\n\nrequest_id\030\001 \001(\tR"
+  "\tRequestId\"E\n\020NowErrorResponse\022\035\n\nreques"
+  "t_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Dat"
+  "e2\230\001\n\013DateService\022<\n\003Now\022\030.sea.api.date."
+  "NowRequest\032\031.sea.api.date.NowResponse\"\000\022"
+  "K\n\010NowError\022\035.sea.api.date.NowErrorReque"
+  "st\032\036.sea.api.date.NowErrorResponse\"\000B\003\200\001"
+  "\001b\006proto3"
+  ;
+static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_deps[1] = {
+  &::descriptor_table_google_2fprotobuf_2fdescriptor_2eproto,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_sccs[4] = {
+  &scc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base,
+  &scc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base,
+  &scc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base,
+  &scc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_once;
+const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto = {
+  false, false, descriptor_table_protodef_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto, "pkg/webserver/controller/date/api.proto", 489,
+  &descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_once, descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_sccs, descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto_deps, 4, 1,
+  schemas, file_default_instances, TableStruct_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::offsets,
+  file_level_metadata_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto, 4, file_level_enum_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto, file_level_service_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto,
+};
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 4);
-}
-
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\'pkg/webserver/controller/date/api.prot"
-      "o\022\014sea.api.date\032 google/protobuf/descrip"
-      "tor.proto\"+\n\nNowRequest\022\035\n\nrequest_id\030\001 "
-      "\001(\tR\tRequestId\"@\n\013NowResponse\022\035\n\nrequest"
-      "_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Date"
-      "\"0\n\017NowErrorRequest\022\035\n\nrequest_id\030\001 \001(\tR"
-      "\tRequestId\"E\n\020NowErrorResponse\022\035\n\nreques"
-      "t_id\030\001 \001(\tR\tRequestId\022\022\n\004date\030\002 \001(\tR\004Dat"
-      "e2\230\001\n\013DateService\022<\n\003Now\022\030.sea.api.date."
-      "NowRequest\032\031.sea.api.date.NowResponse\"\000\022"
-      "K\n\010NowError\022\035.sea.api.date.NowErrorReque"
-      "st\032\036.sea.api.date.NowErrorResponse\"\000B\003\200\001"
-      "\001b\006proto3"
-  };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 489);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "pkg/webserver/controller/date/api.proto", &protobuf_RegisterTypes);
-  ::protobuf_google_2fprotobuf_2fdescriptor_2eproto::AddDescriptors();
-}
-
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
-}
-// Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
-} static_descriptor_initializer;
-}  // namespace protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto
+// Force running AddDescriptors() at dynamic initialization time.
+static bool dynamic_init_dummy_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto = (static_cast<void>(::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto)), true);
 namespace sea {
 namespace api {
 namespace date {
@@ -215,155 +180,126 @@ namespace date {
 
 void NowRequest::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int NowRequest::kRequestIdFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class NowRequest::_Internal {
+ public:
+};
 
-NowRequest::NowRequest()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowRequest.base);
+NowRequest::NowRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:sea.api.date.NowRequest)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sea.api.date.NowRequest)
 }
 NowRequest::NowRequest(const NowRequest& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.request_id().size() > 0) {
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_request_id().empty()) {
+    request_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_request_id(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:sea.api.date.NowRequest)
 }
 
 void NowRequest::SharedCtor() {
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 NowRequest::~NowRequest() {
   // @@protoc_insertion_point(destructor:sea.api.date.NowRequest)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void NowRequest::SharedDtor() {
-  request_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  request_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void NowRequest::ArenaDtor(void* object) {
+  NowRequest* _this = reinterpret_cast< NowRequest* >(object);
+  (void)_this;
+}
+void NowRequest::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void NowRequest::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* NowRequest::descriptor() {
-  ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const NowRequest& NowRequest::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowRequest.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_NowRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void NowRequest::Clear() {
 // @@protoc_insertion_point(message_clear_start:sea.api.date.NowRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
+  request_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool NowRequest::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:sea.api.date.NowRequest)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* NowRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // string request_id = 1[json_name = "RequestId"];
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_request_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->request_id().data(), static_cast<int>(this->request_id().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowRequest.request_id"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_request_id();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowRequest.request_id"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:sea.api.date.NowRequest)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:sea.api.date.NowRequest)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void NowRequest::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:sea.api.date.NowRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string request_id = 1[json_name = "RequestId"];
-  if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowRequest.request_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->request_id(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:sea.api.date.NowRequest)
-}
-
-::google::protobuf::uint8* NowRequest::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* NowRequest::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_request_id().data(), static_cast<int>(this->_internal_request_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowRequest.request_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->request_id(), target);
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_request_id(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowRequest)
   return target;
@@ -373,32 +309,35 @@ size_t NowRequest::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowRequest)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->request_id());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_request_id());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void NowRequest::MergeFrom(const ::google::protobuf::Message& from) {
+void NowRequest::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowRequest)
   GOOGLE_DCHECK_NE(&from, this);
   const NowRequest* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const NowRequest>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<NowRequest>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowRequest)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowRequest)
     MergeFrom(*source);
@@ -408,17 +347,16 @@ void NowRequest::MergeFrom(const ::google::protobuf::Message& from) {
 void NowRequest::MergeFrom(const NowRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowRequest)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.request_id().size() > 0) {
-
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+    _internal_set_request_id(from._internal_request_id());
   }
 }
 
-void NowRequest::CopyFrom(const ::google::protobuf::Message& from) {
+void NowRequest::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowRequest)
   if (&from == this) return;
   Clear();
@@ -436,20 +374,14 @@ bool NowRequest::IsInitialized() const {
   return true;
 }
 
-void NowRequest::Swap(NowRequest* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void NowRequest::InternalSwap(NowRequest* other) {
   using std::swap;
-  request_id_.Swap(&other->request_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  request_id_.Swap(&other->request_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
-::google::protobuf::Metadata NowRequest::GetMetadata() const {
-  protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata NowRequest::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -457,200 +389,153 @@ void NowRequest::InternalSwap(NowRequest* other) {
 
 void NowResponse::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int NowResponse::kRequestIdFieldNumber;
-const int NowResponse::kDateFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class NowResponse::_Internal {
+ public:
+};
 
-NowResponse::NowResponse()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowResponse.base);
+NowResponse::NowResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:sea.api.date.NowResponse)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sea.api.date.NowResponse)
 }
 NowResponse::NowResponse(const NowResponse& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.request_id().size() > 0) {
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_request_id().empty()) {
+    request_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_request_id(),
+      GetArena());
   }
-  date_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.date().size() > 0) {
-    date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
+  date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_date().empty()) {
+    date_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_date(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:sea.api.date.NowResponse)
 }
 
 void NowResponse::SharedCtor() {
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 NowResponse::~NowResponse() {
   // @@protoc_insertion_point(destructor:sea.api.date.NowResponse)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void NowResponse::SharedDtor() {
-  request_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  request_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  date_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void NowResponse::ArenaDtor(void* object) {
+  NowResponse* _this = reinterpret_cast< NowResponse* >(object);
+  (void)_this;
+}
+void NowResponse::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void NowResponse::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* NowResponse::descriptor() {
-  ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const NowResponse& NowResponse::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowResponse.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_NowResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void NowResponse::Clear() {
 // @@protoc_insertion_point(message_clear_start:sea.api.date.NowResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
+  request_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  date_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool NowResponse::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:sea.api.date.NowResponse)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* NowResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // string request_id = 1[json_name = "RequestId"];
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_request_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->request_id().data(), static_cast<int>(this->request_id().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowResponse.request_id"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_request_id();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowResponse.request_id"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // string date = 2[json_name = "Date"];
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_date()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->date().data(), static_cast<int>(this->date().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowResponse.date"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_date();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowResponse.date"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:sea.api.date.NowResponse)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:sea.api.date.NowResponse)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void NowResponse::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:sea.api.date.NowResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string request_id = 1[json_name = "RequestId"];
-  if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowResponse.request_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->request_id(), output);
-  }
-
-  // string date = 2[json_name = "Date"];
-  if (this->date().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->date().data(), static_cast<int>(this->date().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowResponse.date");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->date(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:sea.api.date.NowResponse)
-}
-
-::google::protobuf::uint8* NowResponse::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* NowResponse::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_request_id().data(), static_cast<int>(this->_internal_request_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowResponse.request_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->request_id(), target);
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_request_id(), target);
   }
 
   // string date = 2[json_name = "Date"];
   if (this->date().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->date().data(), static_cast<int>(this->date().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_date().data(), static_cast<int>(this->_internal_date().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowResponse.date");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->date(), target);
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_date(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowResponse)
   return target;
@@ -660,39 +545,42 @@ size_t NowResponse::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowResponse)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->request_id());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_request_id());
   }
 
   // string date = 2[json_name = "Date"];
   if (this->date().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->date());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_date());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void NowResponse::MergeFrom(const ::google::protobuf::Message& from) {
+void NowResponse::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const NowResponse* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const NowResponse>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<NowResponse>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowResponse)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowResponse)
     MergeFrom(*source);
@@ -702,21 +590,19 @@ void NowResponse::MergeFrom(const ::google::protobuf::Message& from) {
 void NowResponse::MergeFrom(const NowResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowResponse)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.request_id().size() > 0) {
-
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+    _internal_set_request_id(from._internal_request_id());
   }
   if (from.date().size() > 0) {
-
-    date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
+    _internal_set_date(from._internal_date());
   }
 }
 
-void NowResponse::CopyFrom(const ::google::protobuf::Message& from) {
+void NowResponse::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowResponse)
   if (&from == this) return;
   Clear();
@@ -734,22 +620,15 @@ bool NowResponse::IsInitialized() const {
   return true;
 }
 
-void NowResponse::Swap(NowResponse* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void NowResponse::InternalSwap(NowResponse* other) {
   using std::swap;
-  request_id_.Swap(&other->request_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  date_.Swap(&other->date_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  request_id_.Swap(&other->request_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  date_.Swap(&other->date_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
-::google::protobuf::Metadata NowResponse::GetMetadata() const {
-  protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata NowResponse::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -757,155 +636,126 @@ void NowResponse::InternalSwap(NowResponse* other) {
 
 void NowErrorRequest::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int NowErrorRequest::kRequestIdFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class NowErrorRequest::_Internal {
+ public:
+};
 
-NowErrorRequest::NowErrorRequest()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorRequest.base);
+NowErrorRequest::NowErrorRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:sea.api.date.NowErrorRequest)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sea.api.date.NowErrorRequest)
 }
 NowErrorRequest::NowErrorRequest(const NowErrorRequest& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.request_id().size() > 0) {
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_request_id().empty()) {
+    request_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_request_id(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:sea.api.date.NowErrorRequest)
 }
 
 void NowErrorRequest::SharedCtor() {
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 NowErrorRequest::~NowErrorRequest() {
   // @@protoc_insertion_point(destructor:sea.api.date.NowErrorRequest)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void NowErrorRequest::SharedDtor() {
-  request_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  request_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void NowErrorRequest::ArenaDtor(void* object) {
+  NowErrorRequest* _this = reinterpret_cast< NowErrorRequest* >(object);
+  (void)_this;
+}
+void NowErrorRequest::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void NowErrorRequest::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* NowErrorRequest::descriptor() {
-  ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const NowErrorRequest& NowErrorRequest::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorRequest.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_NowErrorRequest_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void NowErrorRequest::Clear() {
 // @@protoc_insertion_point(message_clear_start:sea.api.date.NowErrorRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
+  request_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool NowErrorRequest::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:sea.api.date.NowErrorRequest)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* NowErrorRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // string request_id = 1[json_name = "RequestId"];
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_request_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->request_id().data(), static_cast<int>(this->request_id().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowErrorRequest.request_id"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_request_id();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowErrorRequest.request_id"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:sea.api.date.NowErrorRequest)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:sea.api.date.NowErrorRequest)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void NowErrorRequest::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:sea.api.date.NowErrorRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string request_id = 1[json_name = "RequestId"];
-  if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowErrorRequest.request_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->request_id(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:sea.api.date.NowErrorRequest)
-}
-
-::google::protobuf::uint8* NowErrorRequest::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* NowErrorRequest::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowErrorRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_request_id().data(), static_cast<int>(this->_internal_request_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowErrorRequest.request_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->request_id(), target);
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_request_id(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowErrorRequest)
   return target;
@@ -915,32 +765,35 @@ size_t NowErrorRequest::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowErrorRequest)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->request_id());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_request_id());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void NowErrorRequest::MergeFrom(const ::google::protobuf::Message& from) {
+void NowErrorRequest::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowErrorRequest)
   GOOGLE_DCHECK_NE(&from, this);
   const NowErrorRequest* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const NowErrorRequest>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<NowErrorRequest>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowErrorRequest)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowErrorRequest)
     MergeFrom(*source);
@@ -950,17 +803,16 @@ void NowErrorRequest::MergeFrom(const ::google::protobuf::Message& from) {
 void NowErrorRequest::MergeFrom(const NowErrorRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowErrorRequest)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.request_id().size() > 0) {
-
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+    _internal_set_request_id(from._internal_request_id());
   }
 }
 
-void NowErrorRequest::CopyFrom(const ::google::protobuf::Message& from) {
+void NowErrorRequest::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowErrorRequest)
   if (&from == this) return;
   Clear();
@@ -978,20 +830,14 @@ bool NowErrorRequest::IsInitialized() const {
   return true;
 }
 
-void NowErrorRequest::Swap(NowErrorRequest* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void NowErrorRequest::InternalSwap(NowErrorRequest* other) {
   using std::swap;
-  request_id_.Swap(&other->request_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  request_id_.Swap(&other->request_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
-::google::protobuf::Metadata NowErrorRequest::GetMetadata() const {
-  protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata NowErrorRequest::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -999,200 +845,153 @@ void NowErrorRequest::InternalSwap(NowErrorRequest* other) {
 
 void NowErrorResponse::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int NowErrorResponse::kRequestIdFieldNumber;
-const int NowErrorResponse::kDateFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class NowErrorResponse::_Internal {
+ public:
+};
 
-NowErrorResponse::NowErrorResponse()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorResponse.base);
+NowErrorResponse::NowErrorResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:sea.api.date.NowErrorResponse)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sea.api.date.NowErrorResponse)
 }
 NowErrorResponse::NowErrorResponse(const NowErrorResponse& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.request_id().size() > 0) {
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_request_id().empty()) {
+    request_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_request_id(),
+      GetArena());
   }
-  date_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.date().size() > 0) {
-    date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
+  date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_date().empty()) {
+    date_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_date(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:sea.api.date.NowErrorResponse)
 }
 
 void NowErrorResponse::SharedCtor() {
-  request_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
+  request_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 NowErrorResponse::~NowErrorResponse() {
   // @@protoc_insertion_point(destructor:sea.api.date.NowErrorResponse)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void NowErrorResponse::SharedDtor() {
-  request_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  request_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  date_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void NowErrorResponse::ArenaDtor(void* object) {
+  NowErrorResponse* _this = reinterpret_cast< NowErrorResponse* >(object);
+  (void)_this;
+}
+void NowErrorResponse::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void NowErrorResponse::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* NowErrorResponse::descriptor() {
-  ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const NowErrorResponse& NowErrorResponse::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::scc_info_NowErrorResponse.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_NowErrorResponse_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void NowErrorResponse::Clear() {
 // @@protoc_insertion_point(message_clear_start:sea.api.date.NowErrorResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  request_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  date_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
+  request_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  date_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool NowErrorResponse::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:sea.api.date.NowErrorResponse)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* NowErrorResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // string request_id = 1[json_name = "RequestId"];
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_request_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->request_id().data(), static_cast<int>(this->request_id().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowErrorResponse.request_id"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_request_id();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowErrorResponse.request_id"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // string date = 2[json_name = "Date"];
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_date()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->date().data(), static_cast<int>(this->date().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "sea.api.date.NowErrorResponse.date"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_date();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "sea.api.date.NowErrorResponse.date"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:sea.api.date.NowErrorResponse)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:sea.api.date.NowErrorResponse)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void NowErrorResponse::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:sea.api.date.NowErrorResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string request_id = 1[json_name = "RequestId"];
-  if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowErrorResponse.request_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->request_id(), output);
-  }
-
-  // string date = 2[json_name = "Date"];
-  if (this->date().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->date().data(), static_cast<int>(this->date().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "sea.api.date.NowErrorResponse.date");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->date(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:sea.api.date.NowErrorResponse)
-}
-
-::google::protobuf::uint8* NowErrorResponse::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* NowErrorResponse::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:sea.api.date.NowErrorResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->request_id().data(), static_cast<int>(this->request_id().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_request_id().data(), static_cast<int>(this->_internal_request_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowErrorResponse.request_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->request_id(), target);
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_request_id(), target);
   }
 
   // string date = 2[json_name = "Date"];
   if (this->date().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->date().data(), static_cast<int>(this->date().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_date().data(), static_cast<int>(this->_internal_date().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "sea.api.date.NowErrorResponse.date");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->date(), target);
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_date(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:sea.api.date.NowErrorResponse)
   return target;
@@ -1202,39 +1001,42 @@ size_t NowErrorResponse::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:sea.api.date.NowErrorResponse)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string request_id = 1[json_name = "RequestId"];
   if (this->request_id().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->request_id());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_request_id());
   }
 
   // string date = 2[json_name = "Date"];
   if (this->date().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->date());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_date());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void NowErrorResponse::MergeFrom(const ::google::protobuf::Message& from) {
+void NowErrorResponse::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:sea.api.date.NowErrorResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const NowErrorResponse* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const NowErrorResponse>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<NowErrorResponse>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:sea.api.date.NowErrorResponse)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:sea.api.date.NowErrorResponse)
     MergeFrom(*source);
@@ -1244,21 +1046,19 @@ void NowErrorResponse::MergeFrom(const ::google::protobuf::Message& from) {
 void NowErrorResponse::MergeFrom(const NowErrorResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:sea.api.date.NowErrorResponse)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.request_id().size() > 0) {
-
-    request_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.request_id_);
+    _internal_set_request_id(from._internal_request_id());
   }
   if (from.date().size() > 0) {
-
-    date_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.date_);
+    _internal_set_date(from._internal_date());
   }
 }
 
-void NowErrorResponse::CopyFrom(const ::google::protobuf::Message& from) {
+void NowErrorResponse::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:sea.api.date.NowErrorResponse)
   if (&from == this) return;
   Clear();
@@ -1276,22 +1076,15 @@ bool NowErrorResponse::IsInitialized() const {
   return true;
 }
 
-void NowErrorResponse::Swap(NowErrorResponse* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void NowErrorResponse::InternalSwap(NowErrorResponse* other) {
   using std::swap;
-  request_id_.Swap(&other->request_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  date_.Swap(&other->date_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  request_id_.Swap(&other->request_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  date_.Swap(&other->date_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
-::google::protobuf::Metadata NowErrorResponse::GetMetadata() const {
-  protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata NowErrorResponse::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -1299,16 +1092,16 @@ void NowErrorResponse::InternalSwap(NowErrorResponse* other) {
 
 DateService::~DateService() {}
 
-const ::google::protobuf::ServiceDescriptor* DateService::descriptor() {
-  protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_service_descriptors[0];
+const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* DateService::descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto);
+  return file_level_service_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto[0];
 }
 
-const ::google::protobuf::ServiceDescriptor* DateService::GetDescriptor() {
+const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* DateService::GetDescriptor() {
   return descriptor();
 }
 
-void DateService::Now(::google::protobuf::RpcController* controller,
+void DateService::Now(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                          const ::sea::api::date::NowRequest*,
                          ::sea::api::date::NowResponse*,
                          ::google::protobuf::Closure* done) {
@@ -1316,7 +1109,7 @@ void DateService::Now(::google::protobuf::RpcController* controller,
   done->Run();
 }
 
-void DateService::NowError(::google::protobuf::RpcController* controller,
+void DateService::NowError(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                          const ::sea::api::date::NowErrorRequest*,
                          ::sea::api::date::NowErrorResponse*,
                          ::google::protobuf::Closure* done) {
@@ -1324,23 +1117,27 @@ void DateService::NowError(::google::protobuf::RpcController* controller,
   done->Run();
 }
 
-void DateService::CallMethod(const ::google::protobuf::MethodDescriptor* method,
-                             ::google::protobuf::RpcController* controller,
-                             const ::google::protobuf::Message* request,
-                             ::google::protobuf::Message* response,
+void DateService::CallMethod(const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method,
+                             ::PROTOBUF_NAMESPACE_ID::RpcController* controller,
+                             const ::PROTOBUF_NAMESPACE_ID::Message* request,
+                             ::PROTOBUF_NAMESPACE_ID::Message* response,
                              ::google::protobuf::Closure* done) {
-  GOOGLE_DCHECK_EQ(method->service(), protobuf_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto::file_level_service_descriptors[0]);
+  GOOGLE_DCHECK_EQ(method->service(), file_level_service_descriptors_pkg_2fwebserver_2fcontroller_2fdate_2fapi_2eproto[0]);
   switch(method->index()) {
     case 0:
       Now(controller,
-             ::google::protobuf::down_cast<const ::sea::api::date::NowRequest*>(request),
-             ::google::protobuf::down_cast< ::sea::api::date::NowResponse*>(response),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<const ::sea::api::date::NowRequest*>(
+                 request),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<::sea::api::date::NowResponse*>(
+                 response),
              done);
       break;
     case 1:
       NowError(controller,
-             ::google::protobuf::down_cast<const ::sea::api::date::NowErrorRequest*>(request),
-             ::google::protobuf::down_cast< ::sea::api::date::NowErrorResponse*>(response),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<const ::sea::api::date::NowErrorRequest*>(
+                 request),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<::sea::api::date::NowErrorResponse*>(
+                 response),
              done);
       break;
     default:
@@ -1349,8 +1146,8 @@ void DateService::CallMethod(const ::google::protobuf::MethodDescriptor* method,
   }
 }
 
-const ::google::protobuf::Message& DateService::GetRequestPrototype(
-    const ::google::protobuf::MethodDescriptor* method) const {
+const ::PROTOBUF_NAMESPACE_ID::Message& DateService::GetRequestPrototype(
+    const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
@@ -1359,13 +1156,13 @@ const ::google::protobuf::Message& DateService::GetRequestPrototype(
       return ::sea::api::date::NowErrorRequest::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
-      return *::google::protobuf::MessageFactory::generated_factory()
+      return *::PROTOBUF_NAMESPACE_ID::MessageFactory::generated_factory()
           ->GetPrototype(method->input_type());
   }
 }
 
-const ::google::protobuf::Message& DateService::GetResponsePrototype(
-    const ::google::protobuf::MethodDescriptor* method) const {
+const ::PROTOBUF_NAMESPACE_ID::Message& DateService::GetResponsePrototype(
+    const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
@@ -1374,30 +1171,30 @@ const ::google::protobuf::Message& DateService::GetResponsePrototype(
       return ::sea::api::date::NowErrorResponse::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
-      return *::google::protobuf::MessageFactory::generated_factory()
+      return *::PROTOBUF_NAMESPACE_ID::MessageFactory::generated_factory()
           ->GetPrototype(method->output_type());
   }
 }
 
-DateService_Stub::DateService_Stub(::google::protobuf::RpcChannel* channel)
+DateService_Stub::DateService_Stub(::PROTOBUF_NAMESPACE_ID::RpcChannel* channel)
   : channel_(channel), owns_channel_(false) {}
 DateService_Stub::DateService_Stub(
-    ::google::protobuf::RpcChannel* channel,
-    ::google::protobuf::Service::ChannelOwnership ownership)
+    ::PROTOBUF_NAMESPACE_ID::RpcChannel* channel,
+    ::PROTOBUF_NAMESPACE_ID::Service::ChannelOwnership ownership)
   : channel_(channel),
-    owns_channel_(ownership == ::google::protobuf::Service::STUB_OWNS_CHANNEL) {}
+    owns_channel_(ownership == ::PROTOBUF_NAMESPACE_ID::Service::STUB_OWNS_CHANNEL) {}
 DateService_Stub::~DateService_Stub() {
   if (owns_channel_) delete channel_;
 }
 
-void DateService_Stub::Now(::google::protobuf::RpcController* controller,
+void DateService_Stub::Now(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                               const ::sea::api::date::NowRequest* request,
                               ::sea::api::date::NowResponse* response,
                               ::google::protobuf::Closure* done) {
   channel_->CallMethod(descriptor()->method(0),
                        controller, request, response, done);
 }
-void DateService_Stub::NowError(::google::protobuf::RpcController* controller,
+void DateService_Stub::NowError(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                               const ::sea::api::date::NowErrorRequest* request,
                               ::sea::api::date::NowErrorResponse* response,
                               ::google::protobuf::Closure* done) {
@@ -1409,21 +1206,20 @@ void DateService_Stub::NowError(::google::protobuf::RpcController* controller,
 }  // namespace date
 }  // namespace api
 }  // namespace sea
-namespace google {
-namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowRequest >(Arena* arena) {
-  return Arena::CreateInternal< ::sea::api::date::NowRequest >(arena);
+PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::sea::api::date::NowRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::sea::api::date::NowRequest >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowResponse >(Arena* arena) {
-  return Arena::CreateInternal< ::sea::api::date::NowResponse >(arena);
+template<> PROTOBUF_NOINLINE ::sea::api::date::NowResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::sea::api::date::NowResponse >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowErrorRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorRequest >(Arena* arena) {
-  return Arena::CreateInternal< ::sea::api::date::NowErrorRequest >(arena);
+template<> PROTOBUF_NOINLINE ::sea::api::date::NowErrorRequest* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::sea::api::date::NowErrorRequest >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::sea::api::date::NowErrorResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorResponse >(Arena* arena) {
-  return Arena::CreateInternal< ::sea::api::date::NowErrorResponse >(arena);
+template<> PROTOBUF_NOINLINE ::sea::api::date::NowErrorResponse* Arena::CreateMaybeMessage< ::sea::api::date::NowErrorResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::sea::api::date::NowErrorResponse >(arena);
 }
-}  // namespace protobuf
-}  // namespace google
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
+#include <google/protobuf/port_undef.inc>

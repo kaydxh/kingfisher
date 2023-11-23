@@ -1,7 +1,10 @@
 #ifndef KINGFISHER_PKG_WEB_SERVER_CONTROLLER_HEALTHZ_HEALTHZ_H_
 #define KINGFISHER_PKG_WEB_SERVER_CONTROLLER_HEALTHZ_HEALTHZ_H_
 
+#ifdef ENABLE_BRPC
 #include "brpc/server.h"
+#endif
+
 #include "healthz.pb.h"
 
 namespace kingfisher {
@@ -16,6 +19,7 @@ class HealthCheckServiceImpl : public healthz::HealthCheckService {
                    ::google::protobuf::Closure* done) override {
     // This object helps you to call done->Run() in RAII style. If you need
     // to process the request asynchronously, pass done_guard.release().
+#ifdef ENABLE_BRPC
     brpc::ClosureGuard done_guard(done);
 
     brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
@@ -24,6 +28,7 @@ class HealthCheckServiceImpl : public healthz::HealthCheckService {
     butil::IOBufBuilder os;
     os << "healthz Ok\n";
     os.move_to(cntl->response_attachment());
+#endif
   }
 };
 
