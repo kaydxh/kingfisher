@@ -179,6 +179,21 @@ std::string TrimRight(const std::string &s, const std::string &suffix) {
   return s;
 }
 
+std::string Trim(const std::string &s) {
+  if (s.empty()) {
+    return s;
+  }
+  size_t left = 0;
+  for (; left < s.size() && std::isspace(s[left]); ++left) {
+  }
+
+  size_t right = s.size() - 1;
+  for (; right > left && std::isspace(s[right]); --right) {
+  }
+
+  return s.substr(left, right - left + 1);
+}
+
 std::string FormatString(const char *fmt, ...) {
   if (fmt == nullptr) {
     return "";
