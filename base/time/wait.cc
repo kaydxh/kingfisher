@@ -7,6 +7,9 @@ int Retry(std::function<int()> f, int64_t period_ms, int retry_times) {
   if (retry_times <= 0) {
     retry_times = 1;
   }
+  if (period_ms < 0) {
+    period_ms = 0;
+  }
 
   int ret = 0;
   for (int i = 0; i < retry_times; ++i) {
