@@ -2,7 +2,11 @@
 #define KINGFISHER_PKG_WEB_SERVER_CONTROLLER_DATE_DATE_H_
 
 #include "api.pb.h"
+
+#ifdef ENABLE_BRPC
 #include "brpc/server.h"
+#endif
+
 #include "middleware/api/api_guard.hpp"
 #include "time/timestamp.h"
 
@@ -16,6 +20,7 @@ class DateServiceImpl : public sea::api::date::DateService {
            ::google::protobuf::Closure* done) override {
     // This object helps you to call done->Run() in RAII style. If you need
     // to process the request asynchronously, pass done_guard.release().
+#ifdef ENABLE_BRPC
     brpc::ClosureGuard done_guard(done);
     API_GUARD;
     butil::IOBufBuilder os;
@@ -23,6 +28,7 @@ class DateServiceImpl : public sea::api::date::DateService {
     os << now;
     resp->set_request_id(req->request_id());
     resp->set_date(now);
+#endif
   }
 };
 

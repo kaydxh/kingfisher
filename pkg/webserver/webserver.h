@@ -1,8 +1,12 @@
 #ifndef KINGFISHER_PKG_WEB_SERVER_H_
 #define KINGFISHER_PKG_WEB_SERVER_H_
 
+#ifdef ENABLE_BRPC
 #include "brpc/controller.h"
 #include "brpc/server.h"
+#endif
+
+#include "google/protobuf/service.h"
 #include "webserver/webserverbase.h"
 
 namespace kingfisher {
@@ -21,19 +25,24 @@ class WebServer {
   int Init(const std::string& port, const WebServerOptions& opts);
 
   WebServer& AddServiceOrDie(google::protobuf::Service* service);
+
+#ifdef ENABLE_BRPC
   WebServer& AddInterceptor(const brpc::Interceptor& interceptor);
+  brpc::Server& GetBrpcServer() { return server_; }
+#endif
 
   int Run();
-
-  brpc::Server& GetBrpcServer() { return server_; }
 
  private:
   void OnSignalStop(int sig);
 
  private:
   std::string port_;
+
+#ifdef ENABLE_BRPC
   brpc::Server server_;
   brpc::ServerOptions options_;
+#endif
 };
 
 }  // namespace web

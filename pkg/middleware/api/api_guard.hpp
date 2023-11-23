@@ -4,7 +4,11 @@
 #include <iostream>
 #include <type_traits>
 
+#ifdef ENABLE_BRPC
 #include "brpc/controller.h"
+#endif
+
+#include "google/protobuf/service.h"
 #include "in_out_printer.h"
 #include "log/config.h"
 #include "middleware/api/request_id.h"
@@ -20,13 +24,22 @@ class ApiGuard {
            ::google::protobuf::RpcController* controller = nullptr)
       : req_(req),
         resp_(resp),
-        controller_(static_cast<brpc::Controller*>(controller)) {
+#ifdef ENABLE_BRPC
+        controller_(static_cast<brpc::Controller*>(controller))
+#else
+        controller_(controller)
+#endif
+  {
     RequestID(const_cast<REQ*>(req));
 
     if (controller_) {
       LOG(INFO) << "recv req: " << ProtoString(req_) << ", from remote ip: "
+
+#ifdef ENABLE_BRPC
                 << butil::endpoint2str(controller_->remote_side())
-                << ", method: " << controller_->method()->full_name();
+                << ", method: " << controller_->method()->full_name()
+#endif
+          ;
     } else {
       LOG(INFO) << "recv req: " << ProtoString(req_);
     }
@@ -41,7 +54,12 @@ class ApiGuard {
   kingfisher::time::TimeCounter tc_;
   const REQ* req_;
   RESP* resp_;
+
+#ifdef ENABLE_BRPC
   brpc::Controller* controller_;
+#else
+  ::google::protobuf::RpcController* controller_;
+#endif
 };
 
 }  // namespace middleware
