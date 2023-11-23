@@ -5,180 +5,143 @@
 
 #include <algorithm>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/extension_set.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
-// This is a temporary google only hack
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-#include "third_party/protobuf/version.h"
-#endif
 // @@protoc_insertion_point(includes)
-
-namespace protobuf_google_2fprotobuf_2fduration_2eproto {
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_google_2fprotobuf_2fduration_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Duration;
-}  // namespace protobuf_google_2fprotobuf_2fduration_2eproto
-namespace protobuf_pkg_2flog_2flog_2eproto {
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_pkg_2flog_2flog_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Log;
-}  // namespace protobuf_pkg_2flog_2flog_2eproto
+#include <google/protobuf/port_def.inc>
+extern PROTOBUF_INTERNAL_EXPORT_pkg_2flog_2flog_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_Log_pkg_2flog_2flog_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_google_2fprotobuf_2fduration_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Duration_google_2fprotobuf_2fduration_2eproto;
 namespace api {
 namespace v1 {
 namespace viper {
 namespace logs {
 class LogConfigDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<LogConfig>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<LogConfig> _instance;
 } _LogConfig_default_instance_;
 class LogDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Log>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Log> _instance;
 } _Log_default_instance_;
 }  // namespace logs
 }  // namespace viper
 }  // namespace v1
 }  // namespace api
-namespace protobuf_pkg_2flog_2flog_2eproto {
-static void InitDefaultsLogConfig() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::api::v1::viper::logs::_LogConfig_default_instance_;
-    new (ptr) ::api::v1::viper::logs::LogConfig();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::api::v1::viper::logs::LogConfig::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<1> scc_info_LogConfig =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsLogConfig}, {
-      &protobuf_pkg_2flog_2flog_2eproto::scc_info_Log.base,}};
-
-static void InitDefaultsLog() {
+static void InitDefaultsscc_info_Log_pkg_2flog_2flog_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::api::v1::viper::logs::_Log_default_instance_;
     new (ptr) ::api::v1::viper::logs::Log();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::api::v1::viper::logs::Log::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_Log =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsLog}, {
-      &protobuf_google_2fprotobuf_2fduration_2eproto::scc_info_Duration.base,}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_Log_pkg_2flog_2flog_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, 0, InitDefaultsscc_info_Log_pkg_2flog_2flog_2eproto}, {
+      &scc_info_Duration_google_2fprotobuf_2fduration_2eproto.base,}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_LogConfig.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Log.base);
+static void InitDefaultsscc_info_LogConfig_pkg_2flog_2flog_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::api::v1::viper::logs::_LogConfig_default_instance_;
+    new (ptr) ::api::v1::viper::logs::LogConfig();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::api::v1::viper::logs::LogConfig::InitAsDefaultInstance();
 }
 
-::google::protobuf::Metadata file_level_metadata[2];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[3];
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_LogConfig_pkg_2flog_2flog_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, 0, InitDefaultsscc_info_LogConfig_pkg_2flog_2flog_2eproto}, {
+      &scc_info_Log_pkg_2flog_2flog_2eproto.base,}};
 
-const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_pkg_2flog_2flog_2eproto[2];
+static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_pkg_2flog_2flog_2eproto[3];
+static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_pkg_2flog_2flog_2eproto = nullptr;
+
+const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pkg_2flog_2flog_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, log_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::LogConfig, log_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, level_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, formatter_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, filepath_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, max_age_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, max_count_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, rotate_interval_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, rotate_size_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, report_caller_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, enable_goroutine_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::api::v1::viper::logs::Log, redirct_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, level_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, formatter_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, filepath_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, max_age_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, max_count_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, rotate_interval_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, rotate_size_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, report_caller_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, enable_goroutine_id_),
+  PROTOBUF_FIELD_OFFSET(::api::v1::viper::logs::Log, redirct_),
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::api::v1::viper::logs::LogConfig)},
   { 6, -1, sizeof(::api::v1::viper::logs::Log)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::api::v1::viper::logs::_LogConfig_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::api::v1::viper::logs::_Log_default_instance_),
+static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::api::v1::viper::logs::_LogConfig_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::api::v1::viper::logs::_Log_default_instance_),
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "pkg/log/log.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, file_level_enum_descriptors, NULL);
-}
+const char descriptor_table_protodef_pkg_2flog_2flog_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
+  "\n\021pkg/log/log.proto\022\021api.v1.viper.logs\032\036"
+  "google/protobuf/duration.proto\"0\n\tLogCon"
+  "fig\022#\n\003log\030\001 \001(\0132\026.api.v1.viper.logs.Log"
+  "\"\353\003\n\003Log\022+\n\005level\030\001 \001(\0162\034.api.v1.viper.l"
+  "ogs.Log.Level\0223\n\tformatter\030\002 \001(\0162 .api.v"
+  "1.viper.logs.Log.Formatter\022\020\n\010filepath\030\003"
+  " \001(\t\022\017\n\007max_age\030\004 \001(\003\022\021\n\tmax_count\030\005 \001(\003"
+  "\0222\n\017rotate_interval\030\006 \001(\0132\031.google.proto"
+  "buf.Duration\022\023\n\013rotate_size\030\007 \001(\003\022\025\n\rrep"
+  "ort_caller\030\010 \001(\010\022\033\n\023enable_goroutine_id\030"
+  "\t \001(\010\022/\n\007redirct\030\n \001(\0162\036.api.v1.viper.lo"
+  "gs.Log.Redirct\"R\n\005Level\022\t\n\005panic\020\000\022\t\n\005fa"
+  "tal\020\001\022\t\n\005error\020\002\022\010\n\004warn\020\003\022\010\n\004info\020\004\022\t\n\005"
+  "debug\020\005\022\t\n\005trace\020\006\")\n\tFormatter\022\010\n\004text\020"
+  "\000\022\010\n\004json\020\001\022\010\n\004glog\020\002\"\037\n\007Redirct\022\n\n\006stdo"
+  "ut\020\000\022\010\n\004file\020\001B(Z&github.com/kaydxh/gola"
+  "ng/pkg/logs;logsb\006proto3"
+  ;
+static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_pkg_2flog_2flog_2eproto_deps[1] = {
+  &::descriptor_table_google_2fprotobuf_2fduration_2eproto,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pkg_2flog_2flog_2eproto_sccs[2] = {
+  &scc_info_Log_pkg_2flog_2flog_2eproto.base,
+  &scc_info_LogConfig_pkg_2flog_2flog_2eproto.base,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_pkg_2flog_2flog_2eproto_once;
+const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pkg_2flog_2flog_2eproto = {
+  false, false, descriptor_table_protodef_pkg_2flog_2flog_2eproto, "pkg/log/log.proto", 664,
+  &descriptor_table_pkg_2flog_2flog_2eproto_once, descriptor_table_pkg_2flog_2flog_2eproto_sccs, descriptor_table_pkg_2flog_2flog_2eproto_deps, 2, 1,
+  schemas, file_default_instances, TableStruct_pkg_2flog_2flog_2eproto::offsets,
+  file_level_metadata_pkg_2flog_2flog_2eproto, 2, file_level_enum_descriptors_pkg_2flog_2flog_2eproto, file_level_service_descriptors_pkg_2flog_2flog_2eproto,
+};
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
-}
-
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\021pkg/log/log.proto\022\021api.v1.viper.logs\032\036"
-      "google/protobuf/duration.proto\"0\n\tLogCon"
-      "fig\022#\n\003log\030\001 \001(\0132\026.api.v1.viper.logs.Log"
-      "\"\353\003\n\003Log\022+\n\005level\030\001 \001(\0162\034.api.v1.viper.l"
-      "ogs.Log.Level\0223\n\tformatter\030\002 \001(\0162 .api.v"
-      "1.viper.logs.Log.Formatter\022\020\n\010filepath\030\003"
-      " \001(\t\022\017\n\007max_age\030\004 \001(\003\022\021\n\tmax_count\030\005 \001(\003"
-      "\0222\n\017rotate_interval\030\006 \001(\0132\031.google.proto"
-      "buf.Duration\022\023\n\013rotate_size\030\007 \001(\003\022\025\n\rrep"
-      "ort_caller\030\010 \001(\010\022\033\n\023enable_goroutine_id\030"
-      "\t \001(\010\022/\n\007redirct\030\n \001(\0162\036.api.v1.viper.lo"
-      "gs.Log.Redirct\"R\n\005Level\022\t\n\005panic\020\000\022\t\n\005fa"
-      "tal\020\001\022\t\n\005error\020\002\022\010\n\004warn\020\003\022\010\n\004info\020\004\022\t\n\005"
-      "debug\020\005\022\t\n\005trace\020\006\")\n\tFormatter\022\010\n\004text\020"
-      "\000\022\010\n\004json\020\001\022\010\n\004glog\020\002\"\037\n\007Redirct\022\n\n\006stdo"
-      "ut\020\000\022\010\n\004file\020\001B(Z&github.com/kaydxh/gola"
-      "ng/pkg/logs;logsb\006proto3"
-  };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 664);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "pkg/log/log.proto", &protobuf_RegisterTypes);
-  ::protobuf_google_2fprotobuf_2fduration_2eproto::AddDescriptors();
-}
-
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
-}
-// Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
-} static_descriptor_initializer;
-}  // namespace protobuf_pkg_2flog_2flog_2eproto
+// Force running AddDescriptors() at dynamic initialization time.
+static bool dynamic_init_dummy_pkg_2flog_2flog_2eproto = (static_cast<void>(::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_pkg_2flog_2flog_2eproto)), true);
 namespace api {
 namespace v1 {
 namespace viper {
 namespace logs {
-const ::google::protobuf::EnumDescriptor* Log_Level_descriptor() {
-  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_pkg_2flog_2flog_2eproto::file_level_enum_descriptors[0];
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Log_Level_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_pkg_2flog_2flog_2eproto);
+  return file_level_enum_descriptors_pkg_2flog_2flog_2eproto[0];
 }
 bool Log_Level_IsValid(int value) {
   switch (value) {
@@ -195,21 +158,21 @@ bool Log_Level_IsValid(int value) {
   }
 }
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const Log_Level Log::panic;
-const Log_Level Log::fatal;
-const Log_Level Log::error;
-const Log_Level Log::warn;
-const Log_Level Log::info;
-const Log_Level Log::debug;
-const Log_Level Log::trace;
-const Log_Level Log::Level_MIN;
-const Log_Level Log::Level_MAX;
-const int Log::Level_ARRAYSIZE;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-const ::google::protobuf::EnumDescriptor* Log_Formatter_descriptor() {
-  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_pkg_2flog_2flog_2eproto::file_level_enum_descriptors[1];
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+constexpr Log_Level Log::panic;
+constexpr Log_Level Log::fatal;
+constexpr Log_Level Log::error;
+constexpr Log_Level Log::warn;
+constexpr Log_Level Log::info;
+constexpr Log_Level Log::debug;
+constexpr Log_Level Log::trace;
+constexpr Log_Level Log::Level_MIN;
+constexpr Log_Level Log::Level_MAX;
+constexpr int Log::Level_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Log_Formatter_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_pkg_2flog_2flog_2eproto);
+  return file_level_enum_descriptors_pkg_2flog_2flog_2eproto[1];
 }
 bool Log_Formatter_IsValid(int value) {
   switch (value) {
@@ -222,17 +185,17 @@ bool Log_Formatter_IsValid(int value) {
   }
 }
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const Log_Formatter Log::text;
-const Log_Formatter Log::json;
-const Log_Formatter Log::glog;
-const Log_Formatter Log::Formatter_MIN;
-const Log_Formatter Log::Formatter_MAX;
-const int Log::Formatter_ARRAYSIZE;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-const ::google::protobuf::EnumDescriptor* Log_Redirct_descriptor() {
-  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_pkg_2flog_2flog_2eproto::file_level_enum_descriptors[2];
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+constexpr Log_Formatter Log::text;
+constexpr Log_Formatter Log::json;
+constexpr Log_Formatter Log::glog;
+constexpr Log_Formatter Log::Formatter_MIN;
+constexpr Log_Formatter Log::Formatter_MAX;
+constexpr int Log::Formatter_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Log_Redirct_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_pkg_2flog_2flog_2eproto);
+  return file_level_enum_descriptors_pkg_2flog_2flog_2eproto[2];
 }
 bool Log_Redirct_IsValid(int value) {
   switch (value) {
@@ -244,13 +207,13 @@ bool Log_Redirct_IsValid(int value) {
   }
 }
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const Log_Redirct Log::stdout;
-const Log_Redirct Log::file;
-const Log_Redirct Log::Redirct_MIN;
-const Log_Redirct Log::Redirct_MAX;
-const int Log::Redirct_ARRAYSIZE;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+constexpr Log_Redirct Log::stdout;
+constexpr Log_Redirct Log::file;
+constexpr Log_Redirct Log::Redirct_MIN;
+constexpr Log_Redirct Log::Redirct_MAX;
+constexpr int Log::Redirct_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
 
 // ===================================================================
 
@@ -258,147 +221,130 @@ void LogConfig::InitAsDefaultInstance() {
   ::api::v1::viper::logs::_LogConfig_default_instance_._instance.get_mutable()->log_ = const_cast< ::api::v1::viper::logs::Log*>(
       ::api::v1::viper::logs::Log::internal_default_instance());
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int LogConfig::kLogFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class LogConfig::_Internal {
+ public:
+  static const ::api::v1::viper::logs::Log& log(const LogConfig* msg);
+};
 
-LogConfig::LogConfig()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2flog_2flog_2eproto::scc_info_LogConfig.base);
+const ::api::v1::viper::logs::Log&
+LogConfig::_Internal::log(const LogConfig* msg) {
+  return *msg->log_;
+}
+LogConfig::LogConfig(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:api.v1.viper.logs.LogConfig)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:api.v1.viper.logs.LogConfig)
 }
 LogConfig::LogConfig(const LogConfig& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  if (from.has_log()) {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_log()) {
     log_ = new ::api::v1::viper::logs::Log(*from.log_);
   } else {
-    log_ = NULL;
+    log_ = nullptr;
   }
   // @@protoc_insertion_point(copy_constructor:api.v1.viper.logs.LogConfig)
 }
 
 void LogConfig::SharedCtor() {
-  log_ = NULL;
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_LogConfig_pkg_2flog_2flog_2eproto.base);
+  log_ = nullptr;
 }
 
 LogConfig::~LogConfig() {
   // @@protoc_insertion_point(destructor:api.v1.viper.logs.LogConfig)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void LogConfig::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete log_;
 }
 
+void LogConfig::ArenaDtor(void* object) {
+  LogConfig* _this = reinterpret_cast< LogConfig* >(object);
+  (void)_this;
+}
+void LogConfig::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void LogConfig::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* LogConfig::descriptor() {
-  ::protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const LogConfig& LogConfig::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2flog_2flog_2eproto::scc_info_LogConfig.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_LogConfig_pkg_2flog_2flog_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void LogConfig::Clear() {
 // @@protoc_insertion_point(message_clear_start:api.v1.viper.logs.LogConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (GetArenaNoVirtual() == NULL && log_ != NULL) {
+  if (GetArena() == nullptr && log_ != nullptr) {
     delete log_;
   }
-  log_ = NULL;
-  _internal_metadata_.Clear();
+  log_ = nullptr;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool LogConfig::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:api.v1.viper.logs.LogConfig)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* LogConfig::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // .api.v1.viper.logs.Log log = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-               input, mutable_log()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_log(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:api.v1.viper.logs.LogConfig)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:api.v1.viper.logs.LogConfig)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void LogConfig::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:api.v1.viper.logs.LogConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // .api.v1.viper.logs.Log log = 1;
-  if (this->has_log()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->_internal_log(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:api.v1.viper.logs.LogConfig)
-}
-
-::google::protobuf::uint8* LogConfig::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* LogConfig::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:api.v1.viper.logs.LogConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // .api.v1.viper.logs.Log log = 1;
   if (this->has_log()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        1, this->_internal_log(), deterministic, target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        1, _Internal::log(this), target, stream);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:api.v1.viper.logs.LogConfig)
   return target;
@@ -408,32 +354,35 @@ size_t LogConfig::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:api.v1.viper.logs.LogConfig)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // .api.v1.viper.logs.Log log = 1;
   if (this->has_log()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *log_);
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void LogConfig::MergeFrom(const ::google::protobuf::Message& from) {
+void LogConfig::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:api.v1.viper.logs.LogConfig)
   GOOGLE_DCHECK_NE(&from, this);
   const LogConfig* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const LogConfig>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<LogConfig>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:api.v1.viper.logs.LogConfig)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:api.v1.viper.logs.LogConfig)
     MergeFrom(*source);
@@ -443,16 +392,16 @@ void LogConfig::MergeFrom(const ::google::protobuf::Message& from) {
 void LogConfig::MergeFrom(const LogConfig& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:api.v1.viper.logs.LogConfig)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.has_log()) {
-    mutable_log()->::api::v1::viper::logs::Log::MergeFrom(from.log());
+    _internal_mutable_log()->::api::v1::viper::logs::Log::MergeFrom(from._internal_log());
   }
 }
 
-void LogConfig::CopyFrom(const ::google::protobuf::Message& from) {
+void LogConfig::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:api.v1.viper.logs.LogConfig)
   if (&from == this) return;
   Clear();
@@ -470,66 +419,56 @@ bool LogConfig::IsInitialized() const {
   return true;
 }
 
-void LogConfig::Swap(LogConfig* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void LogConfig::InternalSwap(LogConfig* other) {
   using std::swap;
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(log_, other->log_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
-::google::protobuf::Metadata LogConfig::GetMetadata() const {
-  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata LogConfig::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
 // ===================================================================
 
 void Log::InitAsDefaultInstance() {
-  ::api::v1::viper::logs::_Log_default_instance_._instance.get_mutable()->rotate_interval_ = const_cast< ::google::protobuf::Duration*>(
-      ::google::protobuf::Duration::internal_default_instance());
+  ::api::v1::viper::logs::_Log_default_instance_._instance.get_mutable()->rotate_interval_ = const_cast< PROTOBUF_NAMESPACE_ID::Duration*>(
+      PROTOBUF_NAMESPACE_ID::Duration::internal_default_instance());
+}
+class Log::_Internal {
+ public:
+  static const PROTOBUF_NAMESPACE_ID::Duration& rotate_interval(const Log* msg);
+};
+
+const PROTOBUF_NAMESPACE_ID::Duration&
+Log::_Internal::rotate_interval(const Log* msg) {
+  return *msg->rotate_interval_;
 }
 void Log::clear_rotate_interval() {
-  if (GetArenaNoVirtual() == NULL && rotate_interval_ != NULL) {
+  if (GetArena() == nullptr && rotate_interval_ != nullptr) {
     delete rotate_interval_;
   }
-  rotate_interval_ = NULL;
+  rotate_interval_ = nullptr;
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Log::kLevelFieldNumber;
-const int Log::kFormatterFieldNumber;
-const int Log::kFilepathFieldNumber;
-const int Log::kMaxAgeFieldNumber;
-const int Log::kMaxCountFieldNumber;
-const int Log::kRotateIntervalFieldNumber;
-const int Log::kRotateSizeFieldNumber;
-const int Log::kReportCallerFieldNumber;
-const int Log::kEnableGoroutineIdFieldNumber;
-const int Log::kRedirctFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
-Log::Log()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2flog_2flog_2eproto::scc_info_Log.base);
+Log::Log(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:api.v1.viper.logs.Log)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:api.v1.viper.logs.Log)
 }
 Log::Log(const Log& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  filepath_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.filepath().size() > 0) {
-    filepath_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filepath_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  filepath_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_filepath().empty()) {
+    filepath_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_filepath(),
+      GetArena());
   }
-  if (from.has_rotate_interval()) {
-    rotate_interval_ = new ::google::protobuf::Duration(*from.rotate_interval_);
+  if (from._internal_has_rotate_interval()) {
+    rotate_interval_ = new PROTOBUF_NAMESPACE_ID::Duration(*from.rotate_interval_);
   } else {
-    rotate_interval_ = NULL;
+    rotate_interval_ = nullptr;
   }
   ::memcpy(&level_, &from.level_,
     static_cast<size_t>(reinterpret_cast<char*>(&redirct_) -
@@ -538,7 +477,8 @@ Log::Log(const Log& from)
 }
 
 void Log::SharedCtor() {
-  filepath_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Log_pkg_2flog_2flog_2eproto.base);
+  filepath_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&rotate_interval_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&redirct_) -
       reinterpret_cast<char*>(&rotate_interval_)) + sizeof(redirct_));
@@ -547,360 +487,230 @@ void Log::SharedCtor() {
 Log::~Log() {
   // @@protoc_insertion_point(destructor:api.v1.viper.logs.Log)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void Log::SharedDtor() {
-  filepath_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  filepath_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete rotate_interval_;
 }
 
+void Log::ArenaDtor(void* object) {
+  Log* _this = reinterpret_cast< Log* >(object);
+  (void)_this;
+}
+void Log::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void Log::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Log::descriptor() {
-  ::protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Log& Log::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2flog_2flog_2eproto::scc_info_Log.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_Log_pkg_2flog_2flog_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void Log::Clear() {
 // @@protoc_insertion_point(message_clear_start:api.v1.viper.logs.Log)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  filepath_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (GetArenaNoVirtual() == NULL && rotate_interval_ != NULL) {
+  filepath_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  if (GetArena() == nullptr && rotate_interval_ != nullptr) {
     delete rotate_interval_;
   }
-  rotate_interval_ = NULL;
+  rotate_interval_ = nullptr;
   ::memset(&level_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&redirct_) -
       reinterpret_cast<char*>(&level_)) + sizeof(redirct_));
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool Log::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:api.v1.viper.logs.Log)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* Log::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // .api.v1.viper.logs.Log.Level level = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-          int value;
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
-                 input, &value)));
-          set_level(static_cast< ::api::v1::viper::logs::Log_Level >(value));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_level(static_cast<::api::v1::viper::logs::Log_Level>(val));
+        } else goto handle_unusual;
+        continue;
       // .api.v1.viper.logs.Log.Formatter formatter = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
-          int value;
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
-                 input, &value)));
-          set_formatter(static_cast< ::api::v1::viper::logs::Log_Formatter >(value));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_formatter(static_cast<::api::v1::viper::logs::Log_Formatter>(val));
+        } else goto handle_unusual;
+        continue;
       // string filepath = 3;
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_filepath()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->filepath().data(), static_cast<int>(this->filepath().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "api.v1.viper.logs.Log.filepath"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          auto str = _internal_mutable_filepath();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "api.v1.viper.logs.Log.filepath"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 max_age = 4;
-      case 4: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &max_age_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          max_age_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 max_count = 5;
-      case 5: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &max_count_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          max_count_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // .google.protobuf.Duration rotate_interval = 6;
-      case 6: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-               input, mutable_rotate_interval()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
+          ptr = ctx->ParseMessage(_internal_mutable_rotate_interval(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 rotate_size = 7;
-      case 7: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(56u /* 56 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &rotate_size_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
+          rotate_size_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // bool report_caller = 8;
-      case 8: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(64u /* 64 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &report_caller_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 64)) {
+          report_caller_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // bool enable_goroutine_id = 9;
-      case 9: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(72u /* 72 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &enable_goroutine_id_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 72)) {
+          enable_goroutine_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // .api.v1.viper.logs.Log.Redirct redirct = 10;
-      case 10: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(80u /* 80 & 0xFF */)) {
-          int value;
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
-                 input, &value)));
-          set_redirct(static_cast< ::api::v1::viper::logs::Log_Redirct >(value));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 80)) {
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_redirct(static_cast<::api::v1::viper::logs::Log_Redirct>(val));
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:api.v1.viper.logs.Log)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:api.v1.viper.logs.Log)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void Log::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:api.v1.viper.logs.Log)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // .api.v1.viper.logs.Log.Level level = 1;
-  if (this->level() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      1, this->level(), output);
-  }
-
-  // .api.v1.viper.logs.Log.Formatter formatter = 2;
-  if (this->formatter() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      2, this->formatter(), output);
-  }
-
-  // string filepath = 3;
-  if (this->filepath().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->filepath().data(), static_cast<int>(this->filepath().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "api.v1.viper.logs.Log.filepath");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->filepath(), output);
-  }
-
-  // int64 max_age = 4;
-  if (this->max_age() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(4, this->max_age(), output);
-  }
-
-  // int64 max_count = 5;
-  if (this->max_count() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(5, this->max_count(), output);
-  }
-
-  // .google.protobuf.Duration rotate_interval = 6;
-  if (this->has_rotate_interval()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->_internal_rotate_interval(), output);
-  }
-
-  // int64 rotate_size = 7;
-  if (this->rotate_size() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(7, this->rotate_size(), output);
-  }
-
-  // bool report_caller = 8;
-  if (this->report_caller() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->report_caller(), output);
-  }
-
-  // bool enable_goroutine_id = 9;
-  if (this->enable_goroutine_id() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(9, this->enable_goroutine_id(), output);
-  }
-
-  // .api.v1.viper.logs.Log.Redirct redirct = 10;
-  if (this->redirct() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      10, this->redirct(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:api.v1.viper.logs.Log)
-}
-
-::google::protobuf::uint8* Log::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* Log::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:api.v1.viper.logs.Log)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // .api.v1.viper.logs.Log.Level level = 1;
   if (this->level() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->level(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_level(), target);
   }
 
   // .api.v1.viper.logs.Log.Formatter formatter = 2;
   if (this->formatter() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      2, this->formatter(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_formatter(), target);
   }
 
   // string filepath = 3;
   if (this->filepath().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->filepath().data(), static_cast<int>(this->filepath().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_filepath().data(), static_cast<int>(this->_internal_filepath().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "api.v1.viper.logs.Log.filepath");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->filepath(), target);
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_filepath(), target);
   }
 
   // int64 max_age = 4;
   if (this->max_age() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(4, this->max_age(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(4, this->_internal_max_age(), target);
   }
 
   // int64 max_count = 5;
   if (this->max_count() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(5, this->max_count(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(5, this->_internal_max_count(), target);
   }
 
   // .google.protobuf.Duration rotate_interval = 6;
   if (this->has_rotate_interval()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        6, this->_internal_rotate_interval(), deterministic, target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        6, _Internal::rotate_interval(this), target, stream);
   }
 
   // int64 rotate_size = 7;
   if (this->rotate_size() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(7, this->rotate_size(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(7, this->_internal_rotate_size(), target);
   }
 
   // bool report_caller = 8;
   if (this->report_caller() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->report_caller(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(8, this->_internal_report_caller(), target);
   }
 
   // bool enable_goroutine_id = 9;
   if (this->enable_goroutine_id() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(9, this->enable_goroutine_id(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(9, this->_internal_enable_goroutine_id(), target);
   }
 
   // .api.v1.viper.logs.Log.Redirct redirct = 10;
   if (this->redirct() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      10, this->redirct(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      10, this->_internal_redirct(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:api.v1.viper.logs.Log)
   return target;
@@ -910,56 +720,55 @@ size_t Log::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:api.v1.viper.logs.Log)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string filepath = 3;
   if (this->filepath().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->filepath());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_filepath());
   }
 
   // .google.protobuf.Duration rotate_interval = 6;
   if (this->has_rotate_interval()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *rotate_interval_);
   }
 
   // .api.v1.viper.logs.Log.Level level = 1;
   if (this->level() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->level());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_level());
   }
 
   // .api.v1.viper.logs.Log.Formatter formatter = 2;
   if (this->formatter() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->formatter());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_formatter());
   }
 
   // int64 max_age = 4;
   if (this->max_age() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->max_age());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_max_age());
   }
 
   // int64 max_count = 5;
   if (this->max_count() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->max_count());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_max_count());
   }
 
   // int64 rotate_size = 7;
   if (this->rotate_size() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->rotate_size());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_rotate_size());
   }
 
   // bool report_caller = 8;
@@ -975,23 +784,27 @@ size_t Log::ByteSizeLong() const {
   // .api.v1.viper.logs.Log.Redirct redirct = 10;
   if (this->redirct() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->redirct());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_redirct());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void Log::MergeFrom(const ::google::protobuf::Message& from) {
+void Log::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:api.v1.viper.logs.Log)
   GOOGLE_DCHECK_NE(&from, this);
   const Log* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Log>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Log>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:api.v1.viper.logs.Log)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:api.v1.viper.logs.Log)
     MergeFrom(*source);
@@ -1001,44 +814,43 @@ void Log::MergeFrom(const ::google::protobuf::Message& from) {
 void Log::MergeFrom(const Log& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:api.v1.viper.logs.Log)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.filepath().size() > 0) {
-
-    filepath_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filepath_);
+    _internal_set_filepath(from._internal_filepath());
   }
   if (from.has_rotate_interval()) {
-    mutable_rotate_interval()->::google::protobuf::Duration::MergeFrom(from.rotate_interval());
+    _internal_mutable_rotate_interval()->PROTOBUF_NAMESPACE_ID::Duration::MergeFrom(from._internal_rotate_interval());
   }
   if (from.level() != 0) {
-    set_level(from.level());
+    _internal_set_level(from._internal_level());
   }
   if (from.formatter() != 0) {
-    set_formatter(from.formatter());
+    _internal_set_formatter(from._internal_formatter());
   }
   if (from.max_age() != 0) {
-    set_max_age(from.max_age());
+    _internal_set_max_age(from._internal_max_age());
   }
   if (from.max_count() != 0) {
-    set_max_count(from.max_count());
+    _internal_set_max_count(from._internal_max_count());
   }
   if (from.rotate_size() != 0) {
-    set_rotate_size(from.rotate_size());
+    _internal_set_rotate_size(from._internal_rotate_size());
   }
   if (from.report_caller() != 0) {
-    set_report_caller(from.report_caller());
+    _internal_set_report_caller(from._internal_report_caller());
   }
   if (from.enable_goroutine_id() != 0) {
-    set_enable_goroutine_id(from.enable_goroutine_id());
+    _internal_set_enable_goroutine_id(from._internal_enable_goroutine_id());
   }
   if (from.redirct() != 0) {
-    set_redirct(from.redirct());
+    _internal_set_redirct(from._internal_redirct());
   }
 }
 
-void Log::CopyFrom(const ::google::protobuf::Message& from) {
+void Log::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:api.v1.viper.logs.Log)
   if (&from == this) return;
   Clear();
@@ -1056,29 +868,20 @@ bool Log::IsInitialized() const {
   return true;
 }
 
-void Log::Swap(Log* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void Log::InternalSwap(Log* other) {
   using std::swap;
-  filepath_.Swap(&other->filepath_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  swap(rotate_interval_, other->rotate_interval_);
-  swap(level_, other->level_);
-  swap(formatter_, other->formatter_);
-  swap(max_age_, other->max_age_);
-  swap(max_count_, other->max_count_);
-  swap(rotate_size_, other->rotate_size_);
-  swap(report_caller_, other->report_caller_);
-  swap(enable_goroutine_id_, other->enable_goroutine_id_);
-  swap(redirct_, other->redirct_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  filepath_.Swap(&other->filepath_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Log, redirct_)
+      + sizeof(Log::redirct_)
+      - PROTOBUF_FIELD_OFFSET(Log, rotate_interval_)>(
+          reinterpret_cast<char*>(&rotate_interval_),
+          reinterpret_cast<char*>(&other->rotate_interval_));
 }
 
-::google::protobuf::Metadata Log::GetMetadata() const {
-  protobuf_pkg_2flog_2flog_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2flog_2flog_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata Log::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -1087,15 +890,14 @@ void Log::InternalSwap(Log* other) {
 }  // namespace viper
 }  // namespace v1
 }  // namespace api
-namespace google {
-namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::api::v1::viper::logs::LogConfig* Arena::CreateMaybeMessage< ::api::v1::viper::logs::LogConfig >(Arena* arena) {
-  return Arena::CreateInternal< ::api::v1::viper::logs::LogConfig >(arena);
+PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::api::v1::viper::logs::LogConfig* Arena::CreateMaybeMessage< ::api::v1::viper::logs::LogConfig >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::api::v1::viper::logs::LogConfig >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::api::v1::viper::logs::Log* Arena::CreateMaybeMessage< ::api::v1::viper::logs::Log >(Arena* arena) {
-  return Arena::CreateInternal< ::api::v1::viper::logs::Log >(arena);
+template<> PROTOBUF_NOINLINE ::api::v1::viper::logs::Log* Arena::CreateMaybeMessage< ::api::v1::viper::logs::Log >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::api::v1::viper::logs::Log >(arena);
 }
-}  // namespace protobuf
-}  // namespace google
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
+#include <google/protobuf/port_undef.inc>
