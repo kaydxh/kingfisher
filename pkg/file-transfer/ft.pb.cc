@@ -5,200 +5,164 @@
 
 #include <algorithm>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/extension_set.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
-// This is a temporary google only hack
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-#include "third_party/protobuf/version.h"
-#endif
 // @@protoc_insertion_point(includes)
-
-namespace protobuf_pkg_2ffile_2dtransfer_2fft_2eproto {
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_pkg_2ffile_2dtransfer_2fft_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Ft_Proxy;
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_pkg_2ffile_2dtransfer_2fft_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Ft;
-}  // namespace protobuf_pkg_2ffile_2dtransfer_2fft_2eproto
+#include <google/protobuf/port_def.inc>
+extern PROTOBUF_INTERNAL_EXPORT_pkg_2ffile_2dtransfer_2fft_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_pkg_2ffile_2dtransfer_2fft_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto;
 namespace go {
 namespace pkg {
 namespace filetransfer {
 class FtConfigDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<FtConfig>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<FtConfig> _instance;
 } _FtConfig_default_instance_;
 class Ft_ProxyDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Ft_Proxy>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Ft_Proxy> _instance;
 } _Ft_Proxy_default_instance_;
 class FtDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Ft>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Ft> _instance;
 } _Ft_default_instance_;
 }  // namespace filetransfer
 }  // namespace pkg
 }  // namespace go
-namespace protobuf_pkg_2ffile_2dtransfer_2fft_2eproto {
-static void InitDefaultsFtConfig() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::go::pkg::filetransfer::_FtConfig_default_instance_;
-    new (ptr) ::go::pkg::filetransfer::FtConfig();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::go::pkg::filetransfer::FtConfig::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<1> scc_info_FtConfig =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsFtConfig}, {
-      &protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft.base,}};
-
-static void InitDefaultsFt_Proxy() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::go::pkg::filetransfer::_Ft_Proxy_default_instance_;
-    new (ptr) ::go::pkg::filetransfer::Ft_Proxy();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::go::pkg::filetransfer::Ft_Proxy::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<0> scc_info_Ft_Proxy =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFt_Proxy}, {}};
-
-static void InitDefaultsFt() {
+static void InitDefaultsscc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::go::pkg::filetransfer::_Ft_default_instance_;
     new (ptr) ::go::pkg::filetransfer::Ft();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::go::pkg::filetransfer::Ft::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_Ft =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsFt}, {
-      &protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft_Proxy.base,}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, 0, InitDefaultsscc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto}, {
+      &scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto.base,}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_FtConfig.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Ft_Proxy.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Ft.base);
+static void InitDefaultsscc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::go::pkg::filetransfer::_Ft_Proxy_default_instance_;
+    new (ptr) ::go::pkg::filetransfer::Ft_Proxy();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::go::pkg::filetransfer::Ft_Proxy::InitAsDefaultInstance();
 }
 
-::google::protobuf::Metadata file_level_metadata[3];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto}, {}};
 
-const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static void InitDefaultsscc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::go::pkg::filetransfer::_FtConfig_default_instance_;
+    new (ptr) ::go::pkg::filetransfer::FtConfig();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::go::pkg::filetransfer::FtConfig::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, 0, InitDefaultsscc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto}, {
+      &scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto.base,}};
+
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_pkg_2ffile_2dtransfer_2fft_2eproto[3];
+static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_pkg_2ffile_2dtransfer_2fft_2eproto[1];
+static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_pkg_2ffile_2dtransfer_2fft_2eproto = nullptr;
+
+const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pkg_2ffile_2dtransfer_2fft_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::FtConfig, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::FtConfig, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::FtConfig, filetransfer_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::FtConfig, filetransfer_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, target_host_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, proxy_url_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, proxy_host_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, target_host_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, proxy_url_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft_Proxy, proxy_host_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, enabled_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, download_timeout_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, upload_timeout_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, retry_times_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, retry_interval_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, load_balance_mode_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::filetransfer::Ft, proxies_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, enabled_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, download_timeout_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, upload_timeout_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, retry_times_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, retry_interval_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, load_balance_mode_),
+  PROTOBUF_FIELD_OFFSET(::go::pkg::filetransfer::Ft, proxies_),
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::go::pkg::filetransfer::FtConfig)},
   { 6, -1, sizeof(::go::pkg::filetransfer::Ft_Proxy)},
   { 14, -1, sizeof(::go::pkg::filetransfer::Ft)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::go::pkg::filetransfer::_FtConfig_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::go::pkg::filetransfer::_Ft_Proxy_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::go::pkg::filetransfer::_Ft_default_instance_),
+static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::go::pkg::filetransfer::_FtConfig_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::go::pkg::filetransfer::_Ft_Proxy_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::go::pkg::filetransfer::_Ft_default_instance_),
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "pkg/file-transfer/ft.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, file_level_enum_descriptors, NULL);
-}
+const char descriptor_table_protodef_pkg_2ffile_2dtransfer_2fft_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
+  "\n\032pkg/file-transfer/ft.proto\022\023go.pkg.fil"
+  "etransfer\032\036google/protobuf/duration.prot"
+  "o\"9\n\010FtConfig\022-\n\014filetransfer\030\001 \001(\0132\027.go"
+  ".pkg.filetransfer.Ft\"\373\002\n\002Ft\022\017\n\007enabled\030\001"
+  " \001(\010\022\030\n\020download_timeout\030\002 \001(\003\022\026\n\016upload"
+  "_timeout\030\003 \001(\003\022\023\n\013retry_times\030\004 \001(\r\022\026\n\016r"
+  "etry_interval\030\005 \001(\003\022B\n\021load_balance_mode"
+  "\030\n \001(\0162\'.go.pkg.filetransfer.Ft.LoadBala"
+  "nceMode\022.\n\007proxies\030\013 \003(\0132\035.go.pkg.filetr"
+  "ansfer.Ft.Proxy\032C\n\005Proxy\022\023\n\013target_host\030"
+  "\001 \001(\t\022\021\n\tproxy_url\030\002 \001(\t\022\022\n\nproxy_host\030\003"
+  " \001(\t\"L\n\017LoadBalanceMode\022\033\n\027load_balance_"
+  "mode_first\020\000\022\034\n\030load_balance_mode_random"
+  "\020\001B4Z2github.com/kaydxh/go.pkg.filetrans"
+  "fer;filetransferb\006proto3"
+  ;
+static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_deps[1] = {
+  &::descriptor_table_google_2fprotobuf_2fduration_2eproto,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_sccs[3] = {
+  &scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto.base,
+  &scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto.base,
+  &scc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto.base,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_once;
+const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto = {
+  false, false, descriptor_table_protodef_pkg_2ffile_2dtransfer_2fft_2eproto, "pkg/file-transfer/ft.proto", 584,
+  &descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_once, descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_sccs, descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto_deps, 3, 1,
+  schemas, file_default_instances, TableStruct_pkg_2ffile_2dtransfer_2fft_2eproto::offsets,
+  file_level_metadata_pkg_2ffile_2dtransfer_2fft_2eproto, 3, file_level_enum_descriptors_pkg_2ffile_2dtransfer_2fft_2eproto, file_level_service_descriptors_pkg_2ffile_2dtransfer_2fft_2eproto,
+};
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 3);
-}
-
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\032pkg/file-transfer/ft.proto\022\023go.pkg.fil"
-      "etransfer\032\036google/protobuf/duration.prot"
-      "o\"9\n\010FtConfig\022-\n\014filetransfer\030\001 \001(\0132\027.go"
-      ".pkg.filetransfer.Ft\"\373\002\n\002Ft\022\017\n\007enabled\030\001"
-      " \001(\010\022\030\n\020download_timeout\030\002 \001(\003\022\026\n\016upload"
-      "_timeout\030\003 \001(\003\022\023\n\013retry_times\030\004 \001(\r\022\026\n\016r"
-      "etry_interval\030\005 \001(\003\022B\n\021load_balance_mode"
-      "\030\n \001(\0162\'.go.pkg.filetransfer.Ft.LoadBala"
-      "nceMode\022.\n\007proxies\030\013 \003(\0132\035.go.pkg.filetr"
-      "ansfer.Ft.Proxy\032C\n\005Proxy\022\023\n\013target_host\030"
-      "\001 \001(\t\022\021\n\tproxy_url\030\002 \001(\t\022\022\n\nproxy_host\030\003"
-      " \001(\t\"L\n\017LoadBalanceMode\022\033\n\027load_balance_"
-      "mode_first\020\000\022\034\n\030load_balance_mode_random"
-      "\020\001B4Z2github.com/kaydxh/go.pkg.filetrans"
-      "fer;filetransferb\006proto3"
-  };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 584);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "pkg/file-transfer/ft.proto", &protobuf_RegisterTypes);
-  ::protobuf_google_2fprotobuf_2fduration_2eproto::AddDescriptors();
-}
-
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
-}
-// Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
-} static_descriptor_initializer;
-}  // namespace protobuf_pkg_2ffile_2dtransfer_2fft_2eproto
+// Force running AddDescriptors() at dynamic initialization time.
+static bool dynamic_init_dummy_pkg_2ffile_2dtransfer_2fft_2eproto = (static_cast<void>(::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto)), true);
 namespace go {
 namespace pkg {
 namespace filetransfer {
-const ::google::protobuf::EnumDescriptor* Ft_LoadBalanceMode_descriptor() {
-  protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_enum_descriptors[0];
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Ft_LoadBalanceMode_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_pkg_2ffile_2dtransfer_2fft_2eproto);
+  return file_level_enum_descriptors_pkg_2ffile_2dtransfer_2fft_2eproto[0];
 }
 bool Ft_LoadBalanceMode_IsValid(int value) {
   switch (value) {
@@ -210,13 +174,13 @@ bool Ft_LoadBalanceMode_IsValid(int value) {
   }
 }
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const Ft_LoadBalanceMode Ft::load_balance_mode_first;
-const Ft_LoadBalanceMode Ft::load_balance_mode_random;
-const Ft_LoadBalanceMode Ft::LoadBalanceMode_MIN;
-const Ft_LoadBalanceMode Ft::LoadBalanceMode_MAX;
-const int Ft::LoadBalanceMode_ARRAYSIZE;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+constexpr Ft_LoadBalanceMode Ft::load_balance_mode_first;
+constexpr Ft_LoadBalanceMode Ft::load_balance_mode_random;
+constexpr Ft_LoadBalanceMode Ft::LoadBalanceMode_MIN;
+constexpr Ft_LoadBalanceMode Ft::LoadBalanceMode_MAX;
+constexpr int Ft::LoadBalanceMode_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
 
 // ===================================================================
 
@@ -224,147 +188,130 @@ void FtConfig::InitAsDefaultInstance() {
   ::go::pkg::filetransfer::_FtConfig_default_instance_._instance.get_mutable()->filetransfer_ = const_cast< ::go::pkg::filetransfer::Ft*>(
       ::go::pkg::filetransfer::Ft::internal_default_instance());
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int FtConfig::kFiletransferFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class FtConfig::_Internal {
+ public:
+  static const ::go::pkg::filetransfer::Ft& filetransfer(const FtConfig* msg);
+};
 
-FtConfig::FtConfig()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_FtConfig.base);
+const ::go::pkg::filetransfer::Ft&
+FtConfig::_Internal::filetransfer(const FtConfig* msg) {
+  return *msg->filetransfer_;
+}
+FtConfig::FtConfig(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:go.pkg.filetransfer.FtConfig)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:go.pkg.filetransfer.FtConfig)
 }
 FtConfig::FtConfig(const FtConfig& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  if (from.has_filetransfer()) {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_filetransfer()) {
     filetransfer_ = new ::go::pkg::filetransfer::Ft(*from.filetransfer_);
   } else {
-    filetransfer_ = NULL;
+    filetransfer_ = nullptr;
   }
   // @@protoc_insertion_point(copy_constructor:go.pkg.filetransfer.FtConfig)
 }
 
 void FtConfig::SharedCtor() {
-  filetransfer_ = NULL;
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto.base);
+  filetransfer_ = nullptr;
 }
 
 FtConfig::~FtConfig() {
   // @@protoc_insertion_point(destructor:go.pkg.filetransfer.FtConfig)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void FtConfig::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete filetransfer_;
 }
 
+void FtConfig::ArenaDtor(void* object) {
+  FtConfig* _this = reinterpret_cast< FtConfig* >(object);
+  (void)_this;
+}
+void FtConfig::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void FtConfig::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* FtConfig::descriptor() {
-  ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const FtConfig& FtConfig::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_FtConfig.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_FtConfig_pkg_2ffile_2dtransfer_2fft_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void FtConfig::Clear() {
 // @@protoc_insertion_point(message_clear_start:go.pkg.filetransfer.FtConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (GetArenaNoVirtual() == NULL && filetransfer_ != NULL) {
+  if (GetArena() == nullptr && filetransfer_ != nullptr) {
     delete filetransfer_;
   }
-  filetransfer_ = NULL;
-  _internal_metadata_.Clear();
+  filetransfer_ = nullptr;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool FtConfig::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:go.pkg.filetransfer.FtConfig)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* FtConfig::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // .go.pkg.filetransfer.Ft filetransfer = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-               input, mutable_filetransfer()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_filetransfer(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:go.pkg.filetransfer.FtConfig)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:go.pkg.filetransfer.FtConfig)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void FtConfig::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:go.pkg.filetransfer.FtConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // .go.pkg.filetransfer.Ft filetransfer = 1;
-  if (this->has_filetransfer()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->_internal_filetransfer(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:go.pkg.filetransfer.FtConfig)
-}
-
-::google::protobuf::uint8* FtConfig::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* FtConfig::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:go.pkg.filetransfer.FtConfig)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // .go.pkg.filetransfer.Ft filetransfer = 1;
   if (this->has_filetransfer()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        1, this->_internal_filetransfer(), deterministic, target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        1, _Internal::filetransfer(this), target, stream);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:go.pkg.filetransfer.FtConfig)
   return target;
@@ -374,32 +321,35 @@ size_t FtConfig::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:go.pkg.filetransfer.FtConfig)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // .go.pkg.filetransfer.Ft filetransfer = 1;
   if (this->has_filetransfer()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *filetransfer_);
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void FtConfig::MergeFrom(const ::google::protobuf::Message& from) {
+void FtConfig::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:go.pkg.filetransfer.FtConfig)
   GOOGLE_DCHECK_NE(&from, this);
   const FtConfig* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const FtConfig>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<FtConfig>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:go.pkg.filetransfer.FtConfig)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:go.pkg.filetransfer.FtConfig)
     MergeFrom(*source);
@@ -409,16 +359,16 @@ void FtConfig::MergeFrom(const ::google::protobuf::Message& from) {
 void FtConfig::MergeFrom(const FtConfig& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:go.pkg.filetransfer.FtConfig)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.has_filetransfer()) {
-    mutable_filetransfer()->::go::pkg::filetransfer::Ft::MergeFrom(from.filetransfer());
+    _internal_mutable_filetransfer()->::go::pkg::filetransfer::Ft::MergeFrom(from._internal_filetransfer());
   }
 }
 
-void FtConfig::CopyFrom(const ::google::protobuf::Message& from) {
+void FtConfig::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:go.pkg.filetransfer.FtConfig)
   if (&from == this) return;
   Clear();
@@ -436,19 +386,14 @@ bool FtConfig::IsInitialized() const {
   return true;
 }
 
-void FtConfig::Swap(FtConfig* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void FtConfig::InternalSwap(FtConfig* other) {
   using std::swap;
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(filetransfer_, other->filetransfer_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
-::google::protobuf::Metadata FtConfig::GetMetadata() const {
-  protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata FtConfig::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -456,245 +401,180 @@ void FtConfig::InternalSwap(FtConfig* other) {
 
 void Ft_Proxy::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Ft_Proxy::kTargetHostFieldNumber;
-const int Ft_Proxy::kProxyUrlFieldNumber;
-const int Ft_Proxy::kProxyHostFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class Ft_Proxy::_Internal {
+ public:
+};
 
-Ft_Proxy::Ft_Proxy()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft_Proxy.base);
+Ft_Proxy::Ft_Proxy(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:go.pkg.filetransfer.Ft.Proxy)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:go.pkg.filetransfer.Ft.Proxy)
 }
 Ft_Proxy::Ft_Proxy(const Ft_Proxy& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  target_host_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.target_host().size() > 0) {
-    target_host_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.target_host_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  target_host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_target_host().empty()) {
+    target_host_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_target_host(),
+      GetArena());
   }
-  proxy_url_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.proxy_url().size() > 0) {
-    proxy_url_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.proxy_url_);
+  proxy_url_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_proxy_url().empty()) {
+    proxy_url_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_proxy_url(),
+      GetArena());
   }
-  proxy_host_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.proxy_host().size() > 0) {
-    proxy_host_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.proxy_host_);
+  proxy_host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_proxy_host().empty()) {
+    proxy_host_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_proxy_host(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:go.pkg.filetransfer.Ft.Proxy)
 }
 
 void Ft_Proxy::SharedCtor() {
-  target_host_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_url_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_host_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto.base);
+  target_host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  proxy_url_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  proxy_host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 Ft_Proxy::~Ft_Proxy() {
   // @@protoc_insertion_point(destructor:go.pkg.filetransfer.Ft.Proxy)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void Ft_Proxy::SharedDtor() {
-  target_host_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_url_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_host_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  target_host_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  proxy_url_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  proxy_host_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void Ft_Proxy::ArenaDtor(void* object) {
+  Ft_Proxy* _this = reinterpret_cast< Ft_Proxy* >(object);
+  (void)_this;
+}
+void Ft_Proxy::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void Ft_Proxy::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Ft_Proxy::descriptor() {
-  ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Ft_Proxy& Ft_Proxy::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft_Proxy.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_Ft_Proxy_pkg_2ffile_2dtransfer_2fft_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void Ft_Proxy::Clear() {
 // @@protoc_insertion_point(message_clear_start:go.pkg.filetransfer.Ft.Proxy)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  target_host_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_url_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  proxy_host_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _internal_metadata_.Clear();
+  target_host_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  proxy_url_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  proxy_host_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool Ft_Proxy::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:go.pkg.filetransfer.Ft.Proxy)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* Ft_Proxy::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // string target_host = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_target_host()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->target_host().data(), static_cast<int>(this->target_host().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "go.pkg.filetransfer.Ft.Proxy.target_host"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_target_host();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "go.pkg.filetransfer.Ft.Proxy.target_host"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // string proxy_url = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_proxy_url()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->proxy_url().data(), static_cast<int>(this->proxy_url().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "go.pkg.filetransfer.Ft.Proxy.proxy_url"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_proxy_url();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "go.pkg.filetransfer.Ft.Proxy.proxy_url"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // string proxy_host = 3;
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_proxy_host()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->proxy_host().data(), static_cast<int>(this->proxy_host().length()),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "go.pkg.filetransfer.Ft.Proxy.proxy_host"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          auto str = _internal_mutable_proxy_host();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "go.pkg.filetransfer.Ft.Proxy.proxy_host"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:go.pkg.filetransfer.Ft.Proxy)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:go.pkg.filetransfer.Ft.Proxy)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void Ft_Proxy::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:go.pkg.filetransfer.Ft.Proxy)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string target_host = 1;
-  if (this->target_host().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->target_host().data(), static_cast<int>(this->target_host().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "go.pkg.filetransfer.Ft.Proxy.target_host");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->target_host(), output);
-  }
-
-  // string proxy_url = 2;
-  if (this->proxy_url().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->proxy_url().data(), static_cast<int>(this->proxy_url().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "go.pkg.filetransfer.Ft.Proxy.proxy_url");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->proxy_url(), output);
-  }
-
-  // string proxy_host = 3;
-  if (this->proxy_host().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->proxy_host().data(), static_cast<int>(this->proxy_host().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "go.pkg.filetransfer.Ft.Proxy.proxy_host");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->proxy_host(), output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:go.pkg.filetransfer.Ft.Proxy)
-}
-
-::google::protobuf::uint8* Ft_Proxy::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* Ft_Proxy::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:go.pkg.filetransfer.Ft.Proxy)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // string target_host = 1;
   if (this->target_host().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->target_host().data(), static_cast<int>(this->target_host().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_target_host().data(), static_cast<int>(this->_internal_target_host().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "go.pkg.filetransfer.Ft.Proxy.target_host");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->target_host(), target);
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_target_host(), target);
   }
 
   // string proxy_url = 2;
   if (this->proxy_url().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->proxy_url().data(), static_cast<int>(this->proxy_url().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_proxy_url().data(), static_cast<int>(this->_internal_proxy_url().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "go.pkg.filetransfer.Ft.Proxy.proxy_url");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->proxy_url(), target);
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_proxy_url(), target);
   }
 
   // string proxy_host = 3;
   if (this->proxy_host().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->proxy_host().data(), static_cast<int>(this->proxy_host().length()),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_proxy_host().data(), static_cast<int>(this->_internal_proxy_host().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "go.pkg.filetransfer.Ft.Proxy.proxy_host");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->proxy_host(), target);
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_proxy_host(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:go.pkg.filetransfer.Ft.Proxy)
   return target;
@@ -704,46 +584,49 @@ size_t Ft_Proxy::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:go.pkg.filetransfer.Ft.Proxy)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // string target_host = 1;
   if (this->target_host().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->target_host());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_target_host());
   }
 
   // string proxy_url = 2;
   if (this->proxy_url().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->proxy_url());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_proxy_url());
   }
 
   // string proxy_host = 3;
   if (this->proxy_host().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->proxy_host());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_proxy_host());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void Ft_Proxy::MergeFrom(const ::google::protobuf::Message& from) {
+void Ft_Proxy::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:go.pkg.filetransfer.Ft.Proxy)
   GOOGLE_DCHECK_NE(&from, this);
   const Ft_Proxy* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Ft_Proxy>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Ft_Proxy>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:go.pkg.filetransfer.Ft.Proxy)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:go.pkg.filetransfer.Ft.Proxy)
     MergeFrom(*source);
@@ -753,25 +636,22 @@ void Ft_Proxy::MergeFrom(const ::google::protobuf::Message& from) {
 void Ft_Proxy::MergeFrom(const Ft_Proxy& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:go.pkg.filetransfer.Ft.Proxy)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.target_host().size() > 0) {
-
-    target_host_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.target_host_);
+    _internal_set_target_host(from._internal_target_host());
   }
   if (from.proxy_url().size() > 0) {
-
-    proxy_url_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.proxy_url_);
+    _internal_set_proxy_url(from._internal_proxy_url());
   }
   if (from.proxy_host().size() > 0) {
-
-    proxy_host_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.proxy_host_);
+    _internal_set_proxy_host(from._internal_proxy_host());
   }
 }
 
-void Ft_Proxy::CopyFrom(const ::google::protobuf::Message& from) {
+void Ft_Proxy::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:go.pkg.filetransfer.Ft.Proxy)
   if (&from == this) return;
   Clear();
@@ -789,24 +669,16 @@ bool Ft_Proxy::IsInitialized() const {
   return true;
 }
 
-void Ft_Proxy::Swap(Ft_Proxy* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void Ft_Proxy::InternalSwap(Ft_Proxy* other) {
   using std::swap;
-  target_host_.Swap(&other->target_host_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  proxy_url_.Swap(&other->proxy_url_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  proxy_host_.Swap(&other->proxy_host_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  target_host_.Swap(&other->target_host_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  proxy_url_.Swap(&other->proxy_url_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  proxy_host_.Swap(&other->proxy_host_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
-::google::protobuf::Metadata Ft_Proxy::GetMetadata() const {
-  protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata Ft_Proxy::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -814,28 +686,21 @@ void Ft_Proxy::InternalSwap(Ft_Proxy* other) {
 
 void Ft::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Ft::kEnabledFieldNumber;
-const int Ft::kDownloadTimeoutFieldNumber;
-const int Ft::kUploadTimeoutFieldNumber;
-const int Ft::kRetryTimesFieldNumber;
-const int Ft::kRetryIntervalFieldNumber;
-const int Ft::kLoadBalanceModeFieldNumber;
-const int Ft::kProxiesFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class Ft::_Internal {
+ public:
+};
 
-Ft::Ft()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft.base);
+Ft::Ft(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  proxies_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:go.pkg.filetransfer.Ft)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:go.pkg.filetransfer.Ft)
 }
 Ft::Ft(const Ft& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       proxies_(from.proxies_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&download_timeout_, &from.download_timeout_,
     static_cast<size_t>(reinterpret_cast<char*>(&load_balance_mode_) -
     reinterpret_cast<char*>(&download_timeout_)) + sizeof(load_balance_mode_));
@@ -843,6 +708,7 @@ Ft::Ft(const Ft& from)
 }
 
 void Ft::SharedCtor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto.base);
   ::memset(&download_timeout_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&load_balance_mode_) -
       reinterpret_cast<char*>(&download_timeout_)) + sizeof(load_balance_mode_));
@@ -851,28 +717,31 @@ void Ft::SharedCtor() {
 Ft::~Ft() {
   // @@protoc_insertion_point(destructor:go.pkg.filetransfer.Ft)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void Ft::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void Ft::ArenaDtor(void* object) {
+  Ft* _this = reinterpret_cast< Ft* >(object);
+  (void)_this;
+}
+void Ft::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void Ft::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Ft::descriptor() {
-  ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Ft& Ft::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::scc_info_Ft.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_Ft_pkg_2ffile_2dtransfer_2fft_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void Ft::Clear() {
 // @@protoc_insertion_point(message_clear_start:go.pkg.filetransfer.Ft)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -880,238 +749,148 @@ void Ft::Clear() {
   ::memset(&download_timeout_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&load_balance_mode_) -
       reinterpret_cast<char*>(&download_timeout_)) + sizeof(load_balance_mode_));
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool Ft::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:go.pkg.filetransfer.Ft)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+const char* Ft::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
       // bool enabled = 1;
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &enabled_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          enabled_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 download_timeout = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &download_timeout_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          download_timeout_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 upload_timeout = 3;
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &upload_timeout_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          upload_timeout_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // uint32 retry_times = 4;
-      case 4: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &retry_times_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          retry_times_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // int64 retry_interval = 5;
-      case 5: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &retry_interval_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          retry_interval_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
-      case 10: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(80u /* 80 & 0xFF */)) {
-          int value;
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
-                 input, &value)));
-          set_load_balance_mode(static_cast< ::go::pkg::filetransfer::Ft_LoadBalanceMode >(value));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 80)) {
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_load_balance_mode(static_cast<::go::pkg::filetransfer::Ft_LoadBalanceMode>(val));
+        } else goto handle_unusual;
+        continue;
       // repeated .go.pkg.filetransfer.Ft.Proxy proxies = 11;
-      case 11: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(90u /* 90 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
-                input, add_proxies()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 90)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_proxies(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<90>(ptr));
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
-        if (tag == 0) {
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
-    }
-  }
+    }  // switch
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:go.pkg.filetransfer.Ft)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:go.pkg.filetransfer.Ft)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void Ft::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:go.pkg.filetransfer.Ft)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // bool enabled = 1;
-  if (this->enabled() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->enabled(), output);
-  }
-
-  // int64 download_timeout = 2;
-  if (this->download_timeout() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->download_timeout(), output);
-  }
-
-  // int64 upload_timeout = 3;
-  if (this->upload_timeout() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->upload_timeout(), output);
-  }
-
-  // uint32 retry_times = 4;
-  if (this->retry_times() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->retry_times(), output);
-  }
-
-  // int64 retry_interval = 5;
-  if (this->retry_interval() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(5, this->retry_interval(), output);
-  }
-
-  // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
-  if (this->load_balance_mode() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      10, this->load_balance_mode(), output);
-  }
-
-  // repeated .go.pkg.filetransfer.Ft.Proxy proxies = 11;
-  for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->proxies_size()); i < n; i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      11,
-      this->proxies(static_cast<int>(i)),
-      output);
-  }
-
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
-  }
-  // @@protoc_insertion_point(serialize_end:go.pkg.filetransfer.Ft)
-}
-
-::google::protobuf::uint8* Ft::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* Ft::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:go.pkg.filetransfer.Ft)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // bool enabled = 1;
   if (this->enabled() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->enabled(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_enabled(), target);
   }
 
   // int64 download_timeout = 2;
   if (this->download_timeout() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->download_timeout(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(2, this->_internal_download_timeout(), target);
   }
 
   // int64 upload_timeout = 3;
   if (this->upload_timeout() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->upload_timeout(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(3, this->_internal_upload_timeout(), target);
   }
 
   // uint32 retry_times = 4;
   if (this->retry_times() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->retry_times(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_retry_times(), target);
   }
 
   // int64 retry_interval = 5;
   if (this->retry_interval() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(5, this->retry_interval(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(5, this->_internal_retry_interval(), target);
   }
 
   // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
   if (this->load_balance_mode() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      10, this->load_balance_mode(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      10, this->_internal_load_balance_mode(), target);
   }
 
   // repeated .go.pkg.filetransfer.Ft.Proxy proxies = 11;
   for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->proxies_size()); i < n; i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageToArray(
-        11, this->proxies(static_cast<int>(i)), deterministic, target);
+      n = static_cast<unsigned int>(this->_internal_proxies_size()); i < n; i++) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(11, this->_internal_proxies(i), target, stream);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:go.pkg.filetransfer.Ft)
   return target;
@@ -1121,27 +900,22 @@ size_t Ft::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:go.pkg.filetransfer.Ft)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
-  }
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // repeated .go.pkg.filetransfer.Ft.Proxy proxies = 11;
-  {
-    unsigned int count = static_cast<unsigned int>(this->proxies_size());
-    total_size += 1UL * count;
-    for (unsigned int i = 0; i < count; i++) {
-      total_size +=
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
-          this->proxies(static_cast<int>(i)));
-    }
+  total_size += 1UL * this->_internal_proxies_size();
+  for (const auto& msg : this->proxies_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
   // int64 download_timeout = 2;
   if (this->download_timeout() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->download_timeout());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_download_timeout());
   }
 
   // bool enabled = 1;
@@ -1152,44 +926,48 @@ size_t Ft::ByteSizeLong() const {
   // uint32 retry_times = 4;
   if (this->retry_times() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
-        this->retry_times());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_retry_times());
   }
 
   // int64 upload_timeout = 3;
   if (this->upload_timeout() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->upload_timeout());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_upload_timeout());
   }
 
   // int64 retry_interval = 5;
   if (this->retry_interval() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->retry_interval());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+        this->_internal_retry_interval());
   }
 
   // .go.pkg.filetransfer.Ft.LoadBalanceMode load_balance_mode = 10;
   if (this->load_balance_mode() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->load_balance_mode());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_load_balance_mode());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void Ft::MergeFrom(const ::google::protobuf::Message& from) {
+void Ft::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:go.pkg.filetransfer.Ft)
   GOOGLE_DCHECK_NE(&from, this);
   const Ft* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Ft>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Ft>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:go.pkg.filetransfer.Ft)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:go.pkg.filetransfer.Ft)
     MergeFrom(*source);
@@ -1199,32 +977,32 @@ void Ft::MergeFrom(const ::google::protobuf::Message& from) {
 void Ft::MergeFrom(const Ft& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:go.pkg.filetransfer.Ft)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   proxies_.MergeFrom(from.proxies_);
   if (from.download_timeout() != 0) {
-    set_download_timeout(from.download_timeout());
+    _internal_set_download_timeout(from._internal_download_timeout());
   }
   if (from.enabled() != 0) {
-    set_enabled(from.enabled());
+    _internal_set_enabled(from._internal_enabled());
   }
   if (from.retry_times() != 0) {
-    set_retry_times(from.retry_times());
+    _internal_set_retry_times(from._internal_retry_times());
   }
   if (from.upload_timeout() != 0) {
-    set_upload_timeout(from.upload_timeout());
+    _internal_set_upload_timeout(from._internal_upload_timeout());
   }
   if (from.retry_interval() != 0) {
-    set_retry_interval(from.retry_interval());
+    _internal_set_retry_interval(from._internal_retry_interval());
   }
   if (from.load_balance_mode() != 0) {
-    set_load_balance_mode(from.load_balance_mode());
+    _internal_set_load_balance_mode(from._internal_load_balance_mode());
   }
 }
 
-void Ft::CopyFrom(const ::google::protobuf::Message& from) {
+void Ft::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:go.pkg.filetransfer.Ft)
   if (&from == this) return;
   Clear();
@@ -1242,25 +1020,20 @@ bool Ft::IsInitialized() const {
   return true;
 }
 
-void Ft::Swap(Ft* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void Ft::InternalSwap(Ft* other) {
   using std::swap;
-  CastToBase(&proxies_)->InternalSwap(CastToBase(&other->proxies_));
-  swap(download_timeout_, other->download_timeout_);
-  swap(enabled_, other->enabled_);
-  swap(retry_times_, other->retry_times_);
-  swap(upload_timeout_, other->upload_timeout_);
-  swap(retry_interval_, other->retry_interval_);
-  swap(load_balance_mode_, other->load_balance_mode_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  proxies_.InternalSwap(&other->proxies_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Ft, load_balance_mode_)
+      + sizeof(Ft::load_balance_mode_)
+      - PROTOBUF_FIELD_OFFSET(Ft, download_timeout_)>(
+          reinterpret_cast<char*>(&download_timeout_),
+          reinterpret_cast<char*>(&other->download_timeout_));
 }
 
-::google::protobuf::Metadata Ft::GetMetadata() const {
-  protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_pkg_2ffile_2dtransfer_2fft_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata Ft::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -1268,18 +1041,17 @@ void Ft::InternalSwap(Ft* other) {
 }  // namespace filetransfer
 }  // namespace pkg
 }  // namespace go
-namespace google {
-namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::go::pkg::filetransfer::FtConfig* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::FtConfig >(Arena* arena) {
-  return Arena::CreateInternal< ::go::pkg::filetransfer::FtConfig >(arena);
+PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::go::pkg::filetransfer::FtConfig* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::FtConfig >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::go::pkg::filetransfer::FtConfig >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::go::pkg::filetransfer::Ft_Proxy* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::Ft_Proxy >(Arena* arena) {
-  return Arena::CreateInternal< ::go::pkg::filetransfer::Ft_Proxy >(arena);
+template<> PROTOBUF_NOINLINE ::go::pkg::filetransfer::Ft_Proxy* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::Ft_Proxy >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::go::pkg::filetransfer::Ft_Proxy >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::go::pkg::filetransfer::Ft* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::Ft >(Arena* arena) {
-  return Arena::CreateInternal< ::go::pkg::filetransfer::Ft >(arena);
+template<> PROTOBUF_NOINLINE ::go::pkg::filetransfer::Ft* Arena::CreateMaybeMessage< ::go::pkg::filetransfer::Ft >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::go::pkg::filetransfer::Ft >(arena);
 }
-}  // namespace protobuf
-}  // namespace google
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
+#include <google/protobuf/port_undef.inc>

@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "butil/logging.h"
 #include "config/yaml/yaml.h"
 #include "core/singleton.hpp"
 
