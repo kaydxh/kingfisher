@@ -22,3 +22,13 @@ TEST_F(test_IP, GetHostIP) {
   EXPECT_TRUE(ip.size() > 0);
   std::cout << "ip: " << ip << std::endl;
 }
+
+TEST_F(test_IP, SpliteHostPort) {
+  std::string addr = "127.0.0.1:8080";
+  std::string host;
+  int port;
+  int ret = net::IPAddress::SpliteHostPort(host, port, addr);
+  ASSERT_EQ(0, ret);
+
+  std::cout << "host: " << host << ", port: " << port << std::endl;
+}

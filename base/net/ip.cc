@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "strings/strings.h"
+
 namespace kingfisher {
 namespace net {
 
@@ -39,6 +41,29 @@ int IPAddress::GetHostIP(std::string &ip_out) {
 
   if (0 == ip_out.size()) {
     ip_out = LOCAL_LOOPBACK_IP;
+  }
+
+  return 0;
+}
+
+int IPAddress::SpliteHostPort(std::string &host, int &port,
+                              const std::string &addr) {
+  size_t pos = addr.find(":");
+  if (pos != std::string::npos &&
+      addr.find(":", pos + 1) == std::string::npos) {
+    // only one colon
+    host = addr.substr(0, pos);
+    auto s_port = addr.substr(pos + 1, addr.size() - pos - 1);
+    int64_t n_port = 0;
+    int ret = strings::ParseInt64(n_port, s_port);
+    if (ret != 0) {
+      return ret;
+    }
+    port = static_cast<int>(n_port);
+  } else {
+    // 0 or more than one colons
+    host = addr;
+    port = 0;
   }
 
   return 0;
