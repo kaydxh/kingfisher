@@ -11,8 +11,11 @@ class IPAddress {
   IPAddress() {}
   ~IPAddress(){};
 
-  static int GetHostIP(std::string &ip_out);
+  static int GetHostIP(std::string& ip_out);
+  static int SpliteHostPort(std::string& host, int& port,
+                            const std::string& addr);
 };
+
 }  // namespace net
 }  // namespace kingfisher
 
