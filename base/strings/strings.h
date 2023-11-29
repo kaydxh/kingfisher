@@ -29,6 +29,18 @@ std::string TrimLeft(const std::string &s, const std::string &prefix);
 std::string TrimRight(const std::string &s, const std::string &suffix);
 std::string Trim(const std::string &s);
 
+bool Contains(const std::string &s, const std::string &sub);
+
+bool IsOctalDigit(char c);
+//{0-9} or {A-F}
+bool IsHexDigit(unsigned char c);
+unsigned int HexDigitToInt(char c);
+
+bool IsSurrogate(char32_t c, std::string src);
+
+bool Unescape(std::string &dest, const std::string &source,
+              bool leave_nulls_escaped);
+
 std::string FormatString(const char *fmt, ...);
 
 template <typename T>
