@@ -10,7 +10,8 @@ add_library(kingfisher_pkg STATIC ${PKG_SRC})
 file(GLOB_RECURSE ALLEGRO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 target_link_libraries(kingfisher_pkg ${OPENCV_DEPS} ${MAGICK_DEPS}
   ${YAML_DEPS} ${GLOG_DEPS} ${BRPC_DEPS} ${GFLAGS_DEPS}
-  ${LEVELDB_DEPS} ${CURL_DEPS} ${GRPC_DEPS} ${OPENSSL_DEPS} ${PROTOBUF_DEPS} dl)
+  ${LEVELDB_DEPS} ${CURL_DEPS} ${GRPC_DEPS} ${OPENSSL_DEPS}
+  ${PROTOBUF_DEPS} ${FFMPEGC_DEPS} dl)
 
 GET_MODEL_DIRS(${CMAKE_CURRENT_SOURCE_DIR} _module_dirs)
 FOREACH (_module_dir ${_module_dirs})

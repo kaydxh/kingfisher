@@ -128,3 +128,13 @@ if (ENABLE_GRPC)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/include)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/lib)
 endif()
+
+option(ENABLE_FFMPEG "ENABLE_FFMPEG" ON)
+if (ENABLE_FFMPEG)
+  message(STATUS "> build with ffmpeg lib")
+  add_definitions(-DENABLE_FFMPEG)
+  set(FFMPEGC_DEPS -Wl,--start-group 
+    avcodec avfilter avutil avformat avdevice postproc swscale swresample freetype x264 x265 -Wl,--end-group)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/ffmpeg/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/ffmpeg/ffmpeg/lib)
+endif()
