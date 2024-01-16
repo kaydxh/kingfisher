@@ -1,6 +1,8 @@
 #include "input_file.h"
 
 #include "ffmpeg_error.h"
+#include "ffmpeg_utils.h"
+#include "input_stream.h"
 
 namespace kingfisher {
 namespace cv {
@@ -9,6 +11,7 @@ InputFile::InputFile() {}
 
 InputFile::~InputFile() {}
 
+// https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   AVFormatContext *ifmt_ctx = nullptr;
   const AVInputFormat *file_iformat = nullptr;
@@ -43,9 +46,11 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   }
   */
 
+  bool scan_all_pmts_set = false;
   if (!av_dict_get(format_opts_, "scan_all_pmts", nullptr,
                    AV_DICT_MATCH_CASE)) {
     av_dict_set(&format_opts_, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
+    scan_all_pmts_set = true;
   }
 
   /* open the input file with generic avformat function */
@@ -55,11 +60,129 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     if (ret == AVERROR_PROTOCOL_NOT_FOUND) {
       av_log(nullptr, AV_LOG_ERROR, "Did you mean file:%s?\n",
              filename.c_str());
+    }
+    return ret;
+  }
+
+  if (scan_all_pmts_set) {
+    av_dict_set(&format_opts_, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
+  }
+
+  ifmt_ctx_ = std::shared_ptr<AVFormatContext>(
+      ifmt_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
+
+  if (find_stream_info_) {
+    /* If not enough info to get the stream parameters, we decode the
+       first frames to get it. (used in mpeg case for example) */
+    ret = avformat_find_stream_info(ifmt_ctx_.get(), &decoder_opts_);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Cannot find stream information '%s': %s\n",
+             filename.c_str(), av_err2str(ret));
       return ret;
     }
   }
 
+  if (start_time_ != AV_NOPTS_VALUE && start_time_eof_ != AV_NOPTS_VALUE) {
+    av_log(this, AV_LOG_WARNING,
+           "Cannot use -ss and -sseof both, using -ss for %s\n",
+           filename.c_str());
+    start_time_eof_ = AV_NOPTS_VALUE;
+  }
+  if (start_time_eof_ != AV_NOPTS_VALUE) {
+    if (start_time_eof_ >= 0) {
+      av_log(this, AV_LOG_ERROR, "-sseof value must be negative; aborting\n");
+      return AVERROR(EINVAL);
+    }
+    if (ifmt_ctx_->duration > 0) {
+      start_time_ = start_time_eof_ + ifmt_ctx_->duration;
+      if (start_time_ < 0) {
+        av_log(this, AV_LOG_WARNING,
+               "-sseof value seeks to before start of file %s; ignored\n",
+               filename.c_str());
+        start_time_ = AV_NOPTS_VALUE;
+      }
+    } else {
+      av_log(this, AV_LOG_WARNING,
+             "Cannot use -sseof, duration of %s not known\n", filename.c_str());
+    }
+  }
+
+  int64_t timestamp = (start_time_ == AV_NOPTS_VALUE) ? 0 : start_time_;
+  /* add the stream start time */
+  if (!seek_timestamp_ && ifmt_ctx_->start_time != AV_NOPTS_VALUE) {
+    timestamp += ifmt_ctx_->start_time;
+  }
+  /* if seeking requested, we execute it */
+  if (start_time_ != AV_NOPTS_VALUE) {
+    int64_t seek_timestamp = timestamp;
+
+    if (!(ifmt_ctx_->iformat->flags & AVFMT_SEEK_TO_PTS)) {
+      int dts_heuristic = 0;
+      for (unsigned int i = 0; i < ifmt_ctx_->nb_streams; i++) {
+        const AVCodecParameters *par = ifmt_ctx_->streams[i]->codecpar;
+        if (par->video_delay) {
+          dts_heuristic = 1;
+          break;
+        }
+      }
+      if (dts_heuristic) {
+        seek_timestamp -= 3 * AV_TIME_BASE / 23;
+      }
+    }
+    ret = avformat_seek_file(ifmt_ctx_.get(), -1, INT64_MIN, seek_timestamp,
+                             seek_timestamp, 0);
+    if (ret < 0) {
+      av_log(this, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
+             filename.c_str(), (double)timestamp / AV_TIME_BASE);
+    }
+  }
+
+  /* update the current parameters so that they match the one of the input
+   * stream */
+  add_input_streams(ifmt_ctx_.get());
+
   return 0;
+}
+
+int InputFile::add_input_streams(AVFormatContext *ic) {
+  input_streams_.resize(ifmt_ctx_->nb_streams);
+  for (unsigned int stream_id = 0; stream_id < ifmt_ctx_->nb_streams;
+       stream_id++) {
+    std::shared_ptr<InputStream> ist =
+        std::make_shared<InputStream>(ifmt_ctx_, file_index_, stream_id);
+  }
+
+  return 0;
+}
+
+int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
+                              const AVCodec *&codec) {
+  std::string codec_name;
+  auto st = ist->st_;
+  int ret = match_per_stream_opt_one(this, command_opts_, ifmt_ctx_.get(),
+                                     st.get(), "c", codec_name);
+  if (ret != 0) {
+    return ret;
+  }
+  if (codec_name.empty()) {
+    int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
+    if (ret) {
+      return ret;
+    }
+    st->codecpar->codec_id = codec->id;
+    if (recast_media_ && st->codecpar->codec_type != codec->type) {
+      st->codecpar->codec_type = codec->type;
+    }
+    return 0;
+  } else {
+    codec = avcodec_find_decoder(st->codecpar->codec_id);
+  }
+  return 0;
+}
+
+int InputFile::find_decoder(const std::string &name, enum AVMediaType type,
+                            const AVCodec *&codec) const {
+  return find_codec((void *)this, name, type, false, codec, recast_media_);
 }
 
 }  // namespace cv
