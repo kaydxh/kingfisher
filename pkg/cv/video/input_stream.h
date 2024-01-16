@@ -21,7 +21,9 @@ enum HWAccelID {
 
 class InputStream : public Stream {
  public:
-  InputStream(int file_index);
+  InputStream(std::weak_ptr<AVFormatContext> ifmtCtx, int file_index,
+              unsigned int stream_index);
+
   ~InputStream();
 
   int init_input_stream();

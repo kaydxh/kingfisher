@@ -2,6 +2,7 @@
 #define KINGFISHER_PKG_CV_VIDEO_INPUT_FILE_H_
 
 #include <memory>
+#include <vector>
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -11,15 +12,24 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
+class InputStream;
+
 class InputFile {
  public:
   InputFile();
   ~InputFile();
 
   int open(const std::string &filename, AVFormatContext &format_ctx);
+  int choose_decoder(const std::shared_ptr<InputStream> &ist,
+                     const AVCodec *&codec);
+
+ private:
+  int add_input_streams(AVFormatContext *ic);
+  int find_decoder(const std::string &name, enum AVMediaType type,
+                   const AVCodec *&codec) const;
 
  public:
-  std::shared_ptr<AVFormatContext> *ctx_;
+  std::shared_ptr<AVFormatContext> ifmt_ctx_;
   bool eof_reached_ = false; /* true if eof reached */
   bool eagain_ = false;      /* true if last read attempt returned EAGAIN */
   int ist_index_ = 0;        /* index of first stream in input_streams */
@@ -34,6 +44,8 @@ class InputFile {
   int64_t last_ts_ = 0;
   int64_t start_time_ = AV_NOPTS_VALUE; /* user-specified start time in
                          AV_TIME_BASE or AV_NOPTS_VALUE */
+  int64_t start_time_eof_ = AV_NOPTS_VALUE;
+  int seek_timestamp_ = 0;
   int64_t recording_time = AV_NOPTS_VALUE;
   int nb_streams_ = 0;      /* number of stream that ffmpeg is aware of; may be
                           different      from ctx.nb_streams if new streams appear
@@ -43,10 +55,18 @@ class InputFile {
   float readrate_ = 0;
   int accurate_seek = 1;
 
+  bool bitexact_ = true;
+
   AVPacket *pkt_ = nullptr;
 
   AVDictionary *format_opts_ = nullptr;
+  AVDictionary *decoder_opts_ = nullptr;
   std::string format_;
+  bool find_stream_info_ = true;
+  std::vector<std::shared_ptr<InputStream>> input_streams_;
+  int file_index_ = 0;
+  AVDictionary *command_opts_ = nullptr;
+  int recast_media_ = 0;
 };
 
 }  // namespace cv
