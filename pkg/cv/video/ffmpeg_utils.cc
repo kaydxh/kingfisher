@@ -93,11 +93,12 @@ int find_codec(void *avcl, const std::string &name, enum AVMediaType type,
   }
 
   if (!codec) {
-    av_log(avcl, AV_LOG_FATAL, "Unknown %s '%s'\n", codec_string, name.c_str());
+    // av_log(avcl, AV_LOG_ERROR, "Unknown %s '%s'\n", codec_string,
+    // name.c_str());
     return AVERROR(EINVAL);
   }
   if (codec->type != type && !recast_media) {
-    av_log(avcl, AV_LOG_FATAL, "Invalid %s type '%s'\n", codec_string,
+    av_log(avcl, AV_LOG_ERROR, "Invalid %s type '%s'\n", codec_string,
            name.c_str());
     return AVERROR(EINVAL);
   }
