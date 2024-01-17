@@ -11,28 +11,28 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
-InputFile::InputFile() {}
+InputFile::InputFile() {
+  av_dict_set(&format_opts_, "rtsp_transport", "tcp", 0);
+  av_dict_set(&format_opts_, "buffer_size", "10240000", 0);
+  av_dict_set(&format_opts_, "probesize", "50000000", 0);
+  av_dict_set(&format_opts_, "stimeout", "5000000", 0);
+  av_dict_set(&format_opts_, "max_delay", "5000000", 0);
+}
 
-InputFile::~InputFile() {}
+InputFile::~InputFile() { av_dict_free(&decoder_opts_); }
 
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   AVFormatContext *ifmt_ctx = nullptr;
   const AVInputFormat *file_iformat = nullptr;
   int ret = 0;
-  if (format_.empty()) {
+  if (!format_.empty()) {
     if (!(file_iformat = av_find_input_format(format_.c_str()))) {
       av_log(this, AV_LOG_FATAL, "Unknown input format: '%s'\n",
              format_.c_str());
       ret = AVERROR_UNKNOWN;
       return ret;
     }
-  }
-
-  ret = avformat_find_stream_info(ifmt_ctx, nullptr);
-  if (ret < 0) {
-    av_log(nullptr, AV_LOG_ERROR, "Cannot find stream information\n");
-    return ret;
   }
 
   /* get default parameters from command line */
@@ -44,11 +44,9 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   }
 
   ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
-  /*
   if (bitexact_) {
     ifmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
   }
-  */
 
   bool scan_all_pmts_set = false;
   if (!av_dict_get(format_opts_, "scan_all_pmts", nullptr,
@@ -72,13 +70,15 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     av_dict_set(&format_opts_, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
   }
 
-  ifmt_ctx_ = std::shared_ptr<AVFormatContext>(
-      ifmt_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
+  ifmt_ctx_ =
+      std::shared_ptr<AVFormatContext>(ifmt_ctx, [](AVFormatContext *s) {
+        /* avformat_close_input(&s);*/
+      });
 
   if (find_stream_info_) {
     /* If not enough info to get the stream parameters, we decode the
        first frames to get it. (used in mpeg case for example) */
-    ret = avformat_find_stream_info(ifmt_ctx_.get(), &decoder_opts_);
+    ret = avformat_find_stream_info(ifmt_ctx_.get(), nullptr);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Cannot find stream information '%s': %s\n",
              filename.c_str(), av_err2str(ret));
@@ -145,6 +145,9 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
    * stream */
   add_input_streams(ifmt_ctx_.get());
 
+  /* dump the file content */
+  av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
+
   return 0;
 }
 
@@ -155,6 +158,7 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
     AVStream *st = ifmt_ctx_->streams[stream_id];
     std::shared_ptr<InputStream> ist =
         std::make_shared<InputStream>(ifmt_ctx_, file_index_, stream_id);
+    ist->st_.reset(st);
     const AVCodec *dec = nullptr;
     int ret = choose_decoder(ist, dec);
     if (ret != 0) {
@@ -239,6 +243,12 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
         break;
       default:
         break;
+    }
+
+    ret = avcodec_parameters_from_context(par, ist->codec_ctx_.get());
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Error initializing the decoder context.\n");
+      return ret;
     }
   }
 
