@@ -77,6 +77,10 @@ int match_per_stream_opt_one(void *avcl, AVDictionary *opts, AVFormatContext *s,
 int find_codec(void *avcl, const std::string &name, enum AVMediaType type,
                bool encoder, const AVCodec *&codec, bool recast_media);
 
+AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
+                                AVFormatContext *s, AVStream *st,
+                                const AVCodec *codec);
+
 }  // namespace cv
 }  // namespace kingfisher
 

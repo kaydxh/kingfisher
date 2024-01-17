@@ -4,6 +4,10 @@
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
 
+extern "C" {
+#include "libavutil/parseutils.h"
+}
+
 namespace kingfisher {
 namespace cv {
 
@@ -148,8 +152,94 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
   input_streams_.resize(ifmt_ctx_->nb_streams);
   for (unsigned int stream_id = 0; stream_id < ifmt_ctx_->nb_streams;
        stream_id++) {
+    AVStream *st = ifmt_ctx_->streams[stream_id];
     std::shared_ptr<InputStream> ist =
         std::make_shared<InputStream>(ifmt_ctx_, file_index_, stream_id);
+    const AVCodec *dec = nullptr;
+    int ret = choose_decoder(ist, dec);
+    if (ret != 0) {
+      return ret;
+    }
+    ist->dec_ = dec;
+    ist->decoder_opts_ = filter_codec_opts(
+        decoder_opts_, st->codecpar->codec_id, ifmt_ctx_.get(), st, ist->dec_);
+    ist->discard_ = AVDISCARD_DEFAULT;
+    st->discard = AVDISCARD_NONE;
+
+    if ((video_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) ||
+        (audio_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) ||
+        (subtitle_disable_ &&
+         st->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE) ||
+        (data_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_DATA)) {
+      ist->user_set_discard_ = AVDISCARD_ALL;
+    }
+
+    ist->filter_in_rescale_delta_last_ = AV_NOPTS_VALUE;
+    ist->prev_pkt_pts_ = AV_NOPTS_VALUE;
+
+    auto codec_ctx = std::shared_ptr<AVCodecContext>(
+        avcodec_alloc_context3(ist->dec_),
+        [](AVCodecContext *avctx) { avcodec_free_context(&avctx); });
+    if (!codec_ctx) {
+      av_log(this, AV_LOG_ERROR,
+             "failed to allocate the decoder context#%d:%d\n", file_index_,
+             stream_id);
+      return AVERROR(ENOMEM);
+    }
+    ist->codec_ctx_ = codec_ctx;
+
+    ret = avcodec_parameters_to_context(codec_ctx.get(), st->codecpar);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "failed to initialize the decoder context stream#%d:%d -- %s\n",
+             file_index_, stream_id, av_err2str(ret));
+      return ret;
+    }
+
+    if (bitexact_) {
+      codec_ctx->flags |= AV_CODEC_FLAG_BITEXACT;
+    }
+
+    AVCodecParameters *par = st->codecpar;
+    switch (par->codec_type) {
+      case AVMEDIA_TYPE_VIDEO:
+        if (!ist->dec_) {
+          ist->dec_ = avcodec_find_decoder(par->codec_id);
+        }
+
+        // avformat_find_stream_info() doesn't set this for us anymore.
+        ist->codec_ctx_->framerate = st->avg_frame_rate;
+        /* Reencode video & audio and remux subtitles etc. */
+        if (!ist->codec_ctx_->framerate.num) {
+          ist->codec_ctx_->framerate =
+              av_guess_frame_rate(ifmt_ctx_.get(), st, nullptr);
+        }
+        // TODO support hwcaael options
+        break;
+      case AVMEDIA_TYPE_AUDIO:
+        ist->guess_input_channel_layout();
+        break;
+      case AVMEDIA_TYPE_DATA:
+      case AVMEDIA_TYPE_SUBTITLE: {
+        if (!ist->dec_) {
+          ist->dec_ = avcodec_find_decoder(par->codec_id);
+        }
+        if (!ist->canvas_size_.empty() &&
+            av_parse_video_size(&ist->codec_ctx_->width,
+                                &ist->codec_ctx_->height,
+                                ist->canvas_size_.c_str()) < 0) {
+          av_log(this, AV_LOG_FATAL, "Invalid canvas size: %s.\n",
+                 ist->canvas_size_.c_str());
+          return AVERROR(EINVAL);
+        }
+        break;
+      }
+      case AVMEDIA_TYPE_ATTACHMENT:
+      case AVMEDIA_TYPE_UNKNOWN:
+        break;
+      default:
+        break;
+    }
   }
 
   return 0;

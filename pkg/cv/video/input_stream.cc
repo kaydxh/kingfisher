@@ -41,5 +41,28 @@ int InputStream::init_input_stream() {
   return 0;
 }
 
+int InputStream::guess_input_channel_layout() {
+  AVCodecContext *dec = codec_ctx_.get();
+
+  if (dec->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
+    char layout_name[256] = {0};
+
+    if (dec->ch_layout.nb_channels > guess_layout_max_) {
+      return 0;
+    }
+    av_channel_layout_default(&dec->ch_layout, dec->ch_layout.nb_channels);
+    if (dec->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
+      return 0;
+    }
+    av_channel_layout_describe(&dec->ch_layout, layout_name,
+                               sizeof(layout_name));
+    av_log(nullptr, AV_LOG_WARNING,
+           "Guessed Channel Layout for Input Stream "
+           "#%d.%d : %s\n",
+           file_index_, av_stream()->index, layout_name);
+  }
+  return 1;
+}
+
 }  // namespace cv
 }  // namespace kingfisher
