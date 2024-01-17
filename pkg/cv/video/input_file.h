@@ -67,6 +67,11 @@ class InputFile {
   int file_index_ = 0;
   AVDictionary *command_opts_ = nullptr;
   int recast_media_ = 0;
+
+  bool video_disable_ = false;
+  bool audio_disable_ = false;
+  bool subtitle_disable_ = false;
+  bool data_disable_ = false;
 };
 
 }  // namespace cv

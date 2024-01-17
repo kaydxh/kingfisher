@@ -1,6 +1,10 @@
 #include "ffmpeg_utils.h"
 
 #include <strings/strings.h>
+extern "C" {
+#include "libavutil/avutil.h"
+#include "libavutil/opt.h"
+}
 
 namespace kingfisher {
 namespace cv {
@@ -19,7 +23,6 @@ std::string warn_mulitiple_opt_usage(void *avcl, AVStream *st,
                                      const std::vector<std::string> &vals) {
   std::string s;
   s = strings::Join(vals, ",");
-
   std::string warning_msg = "Multiple " + s + " options specified for stream " +
                             std::to_string(st->index) +
                             ", only the last option '" + vals.back() +
@@ -99,6 +102,75 @@ int find_codec(void *avcl, const std::string &name, enum AVMediaType type,
     return AVERROR(EINVAL);
   }
   return 0;
+}
+
+AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
+                                AVFormatContext *s, AVStream *st,
+                                const AVCodec *codec) {
+  AVDictionary *ret = nullptr;
+  const AVDictionaryEntry *t = nullptr;
+  int flags =
+      s->oformat ? AV_OPT_FLAG_ENCODING_PARAM : AV_OPT_FLAG_DECODING_PARAM;
+  char prefix = 0;
+  const AVClass *cc = avcodec_get_class();
+
+  if (!codec) {
+    codec = s->oformat ? avcodec_find_encoder(codec_id)
+                       : avcodec_find_decoder(codec_id);
+  }
+
+  switch (st->codecpar->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+      prefix = 'v';
+      flags |= AV_OPT_FLAG_VIDEO_PARAM;
+      break;
+    case AVMEDIA_TYPE_AUDIO:
+      prefix = 'a';
+      flags |= AV_OPT_FLAG_AUDIO_PARAM;
+      break;
+    case AVMEDIA_TYPE_SUBTITLE:
+      prefix = 's';
+      flags |= AV_OPT_FLAG_SUBTITLE_PARAM;
+      break;
+
+    default:
+      return nullptr;
+  }
+
+  while ((t = av_dict_get(opts, "", t, AV_DICT_IGNORE_SUFFIX))) {
+    const AVClass *priv_class;
+    char *p = strchr(t->key, ':');
+
+    /* check stream specification in opt name */
+    if (p) {
+      switch (check_stream_specifier(s, st, p + 1)) {
+        case 1:
+          *p = 0;
+          break;
+        case 0:
+          continue;
+        default:
+          return nullptr;
+      }
+    }
+
+    if (av_opt_find(&cc, t->key, nullptr, flags, AV_OPT_SEARCH_FAKE_OBJ) ||
+        !codec ||
+        ((priv_class = codec->priv_class) &&
+         av_opt_find(&priv_class, t->key, nullptr, flags,
+                     AV_OPT_SEARCH_FAKE_OBJ))) {
+      av_dict_set(&ret, t->key, t->value, 0);
+    } else if (t->key[0] == prefix &&
+               av_opt_find(&cc, t->key + 1, nullptr, flags,
+                           AV_OPT_SEARCH_FAKE_OBJ)) {
+      av_dict_set(&ret, t->key + 1, t->value, 0);
+    }
+
+    if (p) {
+      *p = ':';
+    }
+  }
+  return ret;
 }
 
 }  // namespace cv

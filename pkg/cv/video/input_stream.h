@@ -27,10 +27,10 @@ class InputStream : public Stream {
   ~InputStream();
 
   int init_input_stream();
+  int guess_input_channel_layout();
 
  public:
-  bool discard_ = false; /* true if stream data should be discarded */
-  int user_set_discard_ = AVDISCARD_NONE;
+  bool discard_ = false;         /* true if stream data should be discarded */
   bool decoding_needed_ = false; /* non zero if the packets must be decoded in
                           'raw_fifo', see DECODING_FOR_* */
 #define DECODING_FOR_OST 1
@@ -75,11 +75,15 @@ class InputStream : public Stream {
   AVDictionary *decoder_opts_ = nullptr;
   AVRational framerate_; /* framerate forced with -r */
   int top_field_first_ = -1;
-  int guess_layout_max = INT_MAX;
+  int guess_layout_max_ = INT_MAX;
 
   bool autorotate = true;
 
   int fix_sub_duration = 0;
+  const AVCodec *dec_ = nullptr;
+  AVDiscard user_set_discard_ = AVDISCARD_NONE;
+
+  std::string canvas_size_;
 #if 0
   struct { /* previous decoded subtitle and related variables */
     int got_output;

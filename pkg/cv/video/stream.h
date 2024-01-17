@@ -17,6 +17,8 @@ class Stream {
 
   ~Stream();
 
+  virtual AVStream *av_stream() const;
+
  public:
   std::weak_ptr<AVFormatContext> fmt_ctx_;
   int file_index_ = 0;
