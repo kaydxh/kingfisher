@@ -11,19 +11,35 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
-InputFile::InputFile() {
+static const AVClass input_file_class = {
+    .class_name = "InputFile",
+    .item_name = av_default_item_name,
+    .option = nullptr,
+    .version = LIBAVUTIL_VERSION_INT,
+};
+
+InputFile::InputFile()
+    : ifmt_ctx_(std::shared_ptr<AVFormatContext>(
+          avformat_alloc_context(),
+          [](AVFormatContext *ctx) { avformat_close_input(&ctx); })),
+      av_class_(&input_file_class) {
   av_dict_set(&format_opts_, "rtsp_transport", "tcp", 0);
   av_dict_set(&format_opts_, "buffer_size", "10240000", 0);
   av_dict_set(&format_opts_, "probesize", "50000000", 0);
   av_dict_set(&format_opts_, "stimeout", "5000000", 0);
   av_dict_set(&format_opts_, "max_delay", "5000000", 0);
+
+  ifmt_ctx_->flags |= AVFMT_FLAG_NONBLOCK;
+  if (bitexact_) {
+    ifmt_ctx_->flags |= AVFMT_FLAG_BITEXACT;
+  }
 }
 
 InputFile::~InputFile() { av_dict_free(&decoder_opts_); }
 
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
-  AVFormatContext *ifmt_ctx = nullptr;
+  // AVFormatContext *ifmt_ctx = nullptr;
   const AVInputFormat *file_iformat = nullptr;
   int ret = 0;
   if (!format_.empty()) {
@@ -36,17 +52,21 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   }
 
   /* get default parameters from command line */
+  /*
   ifmt_ctx = avformat_alloc_context();
   if (!ifmt_ctx) {
     av_log(this, AV_LOG_ERROR, "failed to alloc avformat context -- %s\n",
            av_err2str(AVERROR(ENOMEM)));
     return AVERROR(ENOMEM);
   }
+  */
 
-  ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
+  /*
+  ifmt_ctx_->flags |= AVFMT_FLAG_NONBLOCK;
   if (bitexact_) {
-    ifmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
+    ifmt_ctx_->flags |= AVFMT_FLAG_BITEXACT;
   }
+  */
 
   bool scan_all_pmts_set = false;
   if (!av_dict_get(format_opts_, "scan_all_pmts", nullptr,
@@ -55,13 +75,13 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     scan_all_pmts_set = true;
   }
 
+  AVFormatContext *ifmt_ctx = ifmt_ctx_.get();
   /* open the input file with generic avformat function */
   ret = avformat_open_input(&ifmt_ctx, filename.c_str(), file_iformat,
                             &format_opts_);
   if (ret < 0) {
     if (ret == AVERROR_PROTOCOL_NOT_FOUND) {
-      av_log(nullptr, AV_LOG_ERROR, "Did you mean file:%s?\n",
-             filename.c_str());
+      av_log(this, AV_LOG_ERROR, "Did you mean file:%s?\n", filename.c_str());
     }
     return ret;
   }
@@ -70,10 +90,12 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     av_dict_set(&format_opts_, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
   }
 
+  /*
   ifmt_ctx_ =
-      std::shared_ptr<AVFormatContext>(ifmt_ctx, [](AVFormatContext *s) {
-        /* avformat_close_input(&s);*/
+      std::shared_ptr<AVFormatContext>(ifmt_ctx, [](AVFormatContext *ctx) {
+        //  avformat_close_input(&ctx);
       });
+      */
 
   if (find_stream_info_) {
     /* If not enough info to get the stream parameters, we decode the
@@ -168,7 +190,13 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
     ist->decoder_opts_ = filter_codec_opts(
         decoder_opts_, st->codecpar->codec_id, ifmt_ctx_.get(), st, ist->dec_);
     ist->discard_ = AVDISCARD_DEFAULT;
-    st->discard = AVDISCARD_NONE;
+    st->discard = AVDISCARD_ALL;
+
+    ret = match_per_stream_opt<int>(this, command_opts_, ifmt_ctx_.get(), st,
+                                    "autorotate", ist->autorotate_);
+    if (ret != 0) {
+      return ret;
+    }
 
     if ((video_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) ||
         (audio_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) ||
@@ -213,7 +241,15 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
 
         // avformat_find_stream_info() doesn't set this for us anymore.
         ist->codec_ctx_->framerate = st->avg_frame_rate;
-        /* Reencode video & audio and remux subtitles etc. */
+
+        /*
+        if (framerate_ &&
+            av_parse_video_rate(&ist->framerate_, framerate) < 0) {
+          av_log(NULL, AV_LOG_ERROR, "Error parsing framerate %s.\n",
+                 framerate);
+          exit_program(1);
+        }
+        */
         if (!ist->codec_ctx_->framerate.num) {
           ist->codec_ctx_->framerate =
               av_guess_frame_rate(ifmt_ctx_.get(), st, nullptr);
@@ -259,8 +295,8 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
                               const AVCodec *&codec) {
   std::string codec_name;
   auto st = ist->st_;
-  int ret = match_per_stream_opt_one(this, command_opts_, ifmt_ctx_.get(),
-                                     st.get(), "c", codec_name);
+  int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st.get(),
+                                 "c", codec_name);
   if (ret != 0) {
     return ret;
   }

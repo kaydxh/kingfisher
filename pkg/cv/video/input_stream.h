@@ -77,7 +77,7 @@ class InputStream : public Stream {
   int top_field_first_ = -1;
   int guess_layout_max_ = INT_MAX;
 
-  bool autorotate = true;
+  int autorotate_ = 1;
 
   int fix_sub_duration = 0;
   const AVCodec *dec_ = nullptr;

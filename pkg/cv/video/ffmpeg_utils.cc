@@ -18,6 +18,7 @@ int check_stream_specifier(AVFormatContext *s, AVStream *st, const char *spec) {
 }
 
 // 多个匹配时,告警提示
+#if 0
 std::string warn_mulitiple_opt_usage(void *avcl, AVStream *st,
                                      const std::string &option_name,
                                      const std::vector<std::string> &vals) {
@@ -31,10 +32,45 @@ std::string warn_mulitiple_opt_usage(void *avcl, AVStream *st,
   av_log(avcl, AV_LOG_WARNING, "%s", warning_msg.c_str());
   return warning_msg;
 }
+#endif
 
+#if 0
 int match_per_stream_opt(void *avcl, AVDictionary *opts, AVFormatContext *s,
                          AVStream *st, const std::string &option_name,
                          std::vector<std::string> &vals) {
+  int ret = 0;
+  AVDictionaryEntry *t = nullptr;
+  while ((t = av_dict_get(opts, "", t, AV_DICT_IGNORE_SUFFIX))) {
+    char *p = strchr(t->key, ':');
+    /* check stream specification in opt name */
+    if (p) {
+      switch (check_stream_specifier(s, st, p + 1)) {
+        case 1:
+          *p = 0;
+          break;
+        case 0:
+          continue;
+        default:
+          break;  //  exit_program(1);
+      }
+    }
+
+    if (!strcmp(t->key, option_name.c_str())) {
+      vals.emplace_back(t->value);
+    }
+
+    if (p) {
+      *p = ':';
+    }
+  }
+
+  if (vals.size() > 1) {
+    warn_mulitiple_opt_usage(avcl, st, option_name, vals);
+  }
+
+  return ret;
+
+#if 0
   int matches = 0;
 
   for (unsigned int i = 0; i < vals.size(); i++) {
@@ -58,8 +94,11 @@ int match_per_stream_opt(void *avcl, AVDictionary *opts, AVFormatContext *s,
   }
 
   return matches;
+#endif
 }
+#endif
 
+/*
 int match_per_stream_opt_one(void *avcl, AVDictionary *opts, AVFormatContext *s,
                              AVStream *st, const std::string &option_name,
                              std::string &val) {
@@ -74,6 +113,7 @@ int match_per_stream_opt_one(void *avcl, AVDictionary *opts, AVFormatContext *s,
   }
   return 0;
 }
+*/
 
 /// https://sourcegraph.com/github.com/FFmpeg/FFmpeg@ae14d9c06bcddc5d4c14de02e049f489ddbf73a4/-/blob/fftools/ffmpeg_opt.c#:~:text=static%20const%20AVCodec%20*find_codec_or_die(const%20char%20*name%2C%20enum%20AVMediaType%20type%2C%20int%20encoder)
 int find_codec(void *avcl, const std::string &name, enum AVMediaType type,
