@@ -98,21 +98,24 @@ std::vector<int64_t> SplitToInt64(const std::string &s, const char delim) {
 
 std::string Join(const std::vector<std::string> &elems,
                  const std::string &sep) {
-  int sz = elems.size();
-  if (sz == 0) {
-    return "";
-  }
-  if (sz == 1) {
-    return elems[0];
-  }
+  return Join<std::string>(elems, sep);
+  /*
+int sz = elems.size();
+if (sz == 0) {
+  return "";
+}
+if (sz == 1) {
+  return elems[0];
+}
 
-  std::string s = elems[0];
-  for (auto i = 1; i < sz; ++i) {
-    s.append(sep);
-    s.append(elems[i]);
-  }
+std::string s = elems[0];
+for (auto i = 1; i < sz; ++i) {
+  s.append(sep);
+  s.append(elems[i]);
+}
 
-  return s;
+return s;
+*/
 }
 
 bool HasPrefix(const std::string &s, const std::string &prefix,

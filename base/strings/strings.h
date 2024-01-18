@@ -3,6 +3,7 @@
 #define KINGFISHER_BASE_STRINGS_STRINGS_H_
 
 #include <cstring>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,34 @@ int ParseUint64(uint64_t &result, const std::string &s, int base = 10);
 std::vector<std::string> Split(const std::string &s, const char delim);
 std::vector<int64_t> SplitToInt64(const std::string &s, const char delim);
 std::string Join(const std::vector<std::string> &elems, const std::string &sep);
+
+template <typename T>
+std::string Join(const std::vector<T> &elems, const std::string &sep) {
+  int sz = elems.size();
+  if (sz == 0) {
+    return "";
+  }
+  std::stringstream ss;
+  ss << elems[0];
+  if (sz == 1) {
+    return ss.str();
+  }
+
+  for (auto i = 1; i < sz; ++i) {
+    ss << sep;
+    ss << elems[i];
+  }
+
+  return ss.str();
+}
+
+template <typename T>
+T StringToType(const std::string &str) {
+  std::istringstream ss(str);
+  T value;
+  ss >> value;
+  return value;
+}
 
 bool HasPrefix(const std::string &s, const std::string &prefix,
                bool case_sensitive = true);
