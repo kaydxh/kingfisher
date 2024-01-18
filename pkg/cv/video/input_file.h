@@ -61,17 +61,21 @@ class InputFile {
 
   AVDictionary *format_opts_ = nullptr;
   AVDictionary *decoder_opts_ = nullptr;
+  AVDictionary *command_opts_ = nullptr;
   std::string format_;
   bool find_stream_info_ = true;
+
   std::vector<std::shared_ptr<InputStream>> input_streams_;
   int file_index_ = 0;
-  AVDictionary *command_opts_ = nullptr;
   int recast_media_ = 0;
 
   bool video_disable_ = false;
   bool audio_disable_ = false;
   bool subtitle_disable_ = false;
   bool data_disable_ = false;
+
+ private:
+  const AVClass *av_class_ = nullptr;
 };
 
 }  // namespace cv

@@ -14,9 +14,7 @@ class Stream {
  public:
   Stream(std::weak_ptr<AVFormatContext> fmtCtx, int file_index,
          unsigned int stream_index);
-
   ~Stream();
-
   virtual AVStream *av_stream() const;
 
  public:
@@ -26,8 +24,8 @@ class Stream {
   std::shared_ptr<AVStream> st_;
   std::shared_ptr<AVCodecContext> codec_ctx_;  // for decode or encode
   std::shared_ptr<AVCodec> codec_;             // for decode or encode
-  std::shared_ptr<AVPacket> pkt_;
   std::shared_ptr<AVFrame> frame_;
+  std::shared_ptr<AVPacket> pkt_;
 };
 
 }  // namespace cv

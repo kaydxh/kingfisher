@@ -5,7 +5,15 @@ namespace cv {
 
 Stream::Stream(std::weak_ptr<AVFormatContext> fmtCtx, int file_index,
                unsigned int stream_index)
-    : fmt_ctx_(fmtCtx), file_index_(file_index), stream_index_(stream_index) {}
+    : fmt_ctx_(fmtCtx),
+      file_index_(file_index),
+      stream_index_(stream_index),
+      frame_(std::shared_ptr<AVFrame>(
+          av_frame_alloc(), [](AVFrame *frame) { av_frame_free(&frame); })),
+      pkt_(std::shared_ptr<AVPacket>(
+          av_packet_alloc(), [](AVPacket *packet) { av_packet_free(&packet); }))
+
+{}
 
 Stream::~Stream(){};
 
