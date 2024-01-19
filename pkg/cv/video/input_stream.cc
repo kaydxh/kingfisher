@@ -3,9 +3,9 @@
 namespace kingfisher {
 namespace cv {
 
-InputStream::InputStream(std::weak_ptr<AVFormatContext> ifmtCtx, int file_index,
-                         unsigned int stream_index)
-    : Stream(ifmtCtx, file_index, stream_index) {}
+InputStream::InputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, AVStream *st,
+                         int file_index, unsigned int stream_index)
+    : Stream(std::move(ifmt_ctx), st, file_index, stream_index) {}
 
 InputStream::~InputStream() { av_dict_free(&decoder_opts_); }
 

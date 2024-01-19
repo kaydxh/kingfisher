@@ -165,7 +165,8 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   /* update the current parameters so that they match the one of the input
    * stream */
-  add_input_streams(ifmt_ctx_.get());
+  // add_input_streams(ifmt_ctx_.get());
+  add_input_streams();
 
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
@@ -173,30 +174,35 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   return 0;
 }
 
-int InputFile::add_input_streams(AVFormatContext *ic) {
+int InputFile::add_input_streams() {
   input_streams_.resize(ifmt_ctx_->nb_streams);
   for (unsigned int stream_id = 0; stream_id < ifmt_ctx_->nb_streams;
        stream_id++) {
     AVStream *st = ifmt_ctx_->streams[stream_id];
-    std::shared_ptr<InputStream> ist =
-        std::make_shared<InputStream>(ifmt_ctx_, file_index_, stream_id);
-    ist->st_.reset(st);
+    std::shared_ptr<InputStream> ist = std::make_shared<InputStream>(
+        std::weak_ptr(ifmt_ctx_), st, file_index_, stream_id);
+    ist->discard_ = AVDISCARD_DEFAULT;
+    st->discard = AVDISCARD_ALL;
+
+    int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st,
+                                   "autorotate", ist->autorotate_);
+    if (ret != 0) {
+      return ret;
+    }
+    ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st,
+                               "ts_scale", ist->ts_scale_);
+    if (ret != 0) {
+      return ret;
+    }
+
     const AVCodec *dec = nullptr;
-    int ret = choose_decoder(ist, dec);
+    ret = choose_decoder(ist, dec);
     if (ret != 0) {
       return ret;
     }
     ist->dec_ = dec;
     ist->decoder_opts_ = filter_codec_opts(
         decoder_opts_, st->codecpar->codec_id, ifmt_ctx_.get(), st, ist->dec_);
-    ist->discard_ = AVDISCARD_DEFAULT;
-    st->discard = AVDISCARD_ALL;
-
-    ret = match_per_stream_opt<int>(this, command_opts_, ifmt_ctx_.get(), st,
-                                    "autorotate", ist->autorotate_);
-    if (ret != 0) {
-      return ret;
-    }
 
     if ((video_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) ||
         (audio_disable_ && st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) ||
@@ -209,27 +215,25 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
     ist->filter_in_rescale_delta_last_ = AV_NOPTS_VALUE;
     ist->prev_pkt_pts_ = AV_NOPTS_VALUE;
 
-    auto codec_ctx = std::shared_ptr<AVCodecContext>(
+    ist->codec_ctx_ = std::shared_ptr<AVCodecContext>(
         avcodec_alloc_context3(ist->dec_),
         [](AVCodecContext *avctx) { avcodec_free_context(&avctx); });
-    if (!codec_ctx) {
+    if (!ist->codec_ctx_) {
       av_log(this, AV_LOG_ERROR,
              "failed to allocate the decoder context#%d:%d\n", file_index_,
              stream_id);
       return AVERROR(ENOMEM);
     }
-    ist->codec_ctx_ = codec_ctx;
 
-    ret = avcodec_parameters_to_context(codec_ctx.get(), st->codecpar);
+    ret = avcodec_parameters_to_context(ist->codec_ctx_.get(), st->codecpar);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR,
              "failed to initialize the decoder context stream#%d:%d -- %s\n",
              file_index_, stream_id, av_err2str(ret));
       return ret;
     }
-
     if (bitexact_) {
-      codec_ctx->flags |= AV_CODEC_FLAG_BITEXACT;
+      ist->codec_ctx_->flags |= AV_CODEC_FLAG_BITEXACT;
     }
 
     AVCodecParameters *par = st->codecpar;
@@ -286,6 +290,16 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
       av_log(this, AV_LOG_ERROR, "Error initializing the decoder context.\n");
       return ret;
     }
+
+    /* init input streams */
+    ret = ist->init_input_stream();
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Failed to init input stream #%d:%d -- %s\n",
+             file_index_, stream_id, av_err2str(ret));
+      return ret;
+    }
+
+    input_streams_[stream_id] = ist;
   }
 
   return 0;
@@ -294,12 +308,14 @@ int InputFile::add_input_streams(AVFormatContext *ic) {
 int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
                               const AVCodec *&codec) {
   std::string codec_name;
-  auto st = ist->st_;
+  auto &st = ist->st_;
+  /*
   int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st.get(),
                                  "c", codec_name);
   if (ret != 0) {
     return ret;
   }
+  */
   if (codec_name.empty()) {
     int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
     if (ret) {

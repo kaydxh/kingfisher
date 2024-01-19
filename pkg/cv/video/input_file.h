@@ -24,11 +24,12 @@ class InputFile {
                      const AVCodec *&codec);
 
  private:
-  int add_input_streams(AVFormatContext *ic);
+  int add_input_streams();
   int find_decoder(const std::string &name, enum AVMediaType type,
                    const AVCodec *&codec) const;
 
  public:
+  int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ifmt_ctx_;
   bool eof_reached_ = false; /* true if eof reached */
   bool eagain_ = false;      /* true if last read attempt returned EAGAIN */
@@ -66,7 +67,6 @@ class InputFile {
   bool find_stream_info_ = true;
 
   std::vector<std::shared_ptr<InputStream>> input_streams_;
-  int file_index_ = 0;
   int recast_media_ = 0;
 
   bool video_disable_ = false;
