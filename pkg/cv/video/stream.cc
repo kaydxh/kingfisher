@@ -3,9 +3,10 @@
 namespace kingfisher {
 namespace cv {
 
-Stream::Stream(std::weak_ptr<AVFormatContext> fmtCtx, int file_index,
-               unsigned int stream_index)
-    : fmt_ctx_(fmtCtx),
+Stream::Stream(std::weak_ptr<AVFormatContext> fmt_ctx, AVStream *st,
+               int file_index, unsigned int stream_index)
+    : fmt_ctx_(std::move(fmt_ctx)),
+      st_(std::shared_ptr<AVStream>(st)),
       file_index_(file_index),
       stream_index_(stream_index),
       frame_(std::shared_ptr<AVFrame>(
