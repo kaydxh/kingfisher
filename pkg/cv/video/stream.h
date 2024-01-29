@@ -19,7 +19,7 @@ class Stream {
 
  public:
   std::weak_ptr<AVFormatContext> fmt_ctx_;
-  std::shared_ptr<AVStream> st_;
+  AVStream *st_;
   int file_index_ = 0;
   unsigned int stream_index_ = 0;
   std::shared_ptr<AVCodecContext> codec_ctx_;  // for decode or encode

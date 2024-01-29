@@ -1,5 +1,7 @@
 #include "input_file.h"
 
+#include <memory>
+
 #include "ffmpeg_error.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
@@ -100,7 +102,7 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   if (find_stream_info_) {
     /* If not enough info to get the stream parameters, we decode the
        first frames to get it. (used in mpeg case for example) */
-    ret = avformat_find_stream_info(ifmt_ctx_.get(), nullptr);
+    ret = avformat_find_stream_info(ifmt_ctx, nullptr);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Cannot find stream information '%s': %s\n",
              filename.c_str(), av_err2str(ret));
@@ -179,8 +181,9 @@ int InputFile::add_input_streams() {
   for (unsigned int stream_id = 0; stream_id < ifmt_ctx_->nb_streams;
        stream_id++) {
     AVStream *st = ifmt_ctx_->streams[stream_id];
-    std::shared_ptr<InputStream> ist = std::make_shared<InputStream>(
-        std::weak_ptr(ifmt_ctx_), st, file_index_, stream_id);
+    std::shared_ptr<InputStream> ist =
+        std::make_shared<InputStream>(ifmt_ctx_, st, file_index_, stream_id);
+
     ist->discard_ = AVDISCARD_DEFAULT;
     st->discard = AVDISCARD_ALL;
 
