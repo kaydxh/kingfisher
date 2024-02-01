@@ -27,6 +27,16 @@ class InputFile {
   int add_input_streams();
   int find_decoder(const std::string &name, enum AVMediaType type,
                    const AVCodec *&codec) const;
+  int process_input_packet(const std::shared_ptr<InputStream> &ist,
+                           AVPacket *pkt, int no_eof);
+
+  int decode_audio(const std::shared_ptr<InputStream> &ist, AVPacket *pkt,
+                   bool &got_output, bool &decode_failed);
+
+  int decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
+             bool &got_frame);
+  int check_decode_result(const std::shared_ptr<InputStream> &ist,
+                          bool &got_output);
 
  public:
   int file_index_ = 0;

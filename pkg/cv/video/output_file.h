@@ -16,11 +16,15 @@ class OutputFile {
   OutputFile();
   ~OutputFile();
 
-  int index_;
+  int open(const std::string &filename, AVFormatContext &format_ctx);
+
+ public:
+  const AVClass *av_class_ = nullptr;
+  int file_index_ = 0;
+  std::shared_ptr<AVFormatContext> ofmt_ctx_;
 
   const AVOutputFormat *format;
 
-  std::shared_ptr<AVFormatContext> ctx_;
   AVDictionary *opts_;
   int ost_index_ = 0; /* index of the first stream in output_streams */
   int64_t recording_time_ =

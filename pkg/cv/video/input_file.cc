@@ -7,6 +7,7 @@
 #include "input_stream.h"
 
 extern "C" {
+#include "libavutil/avassert.h"
 #include "libavutil/parseutils.h"
 }
 
@@ -167,7 +168,6 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   /* update the current parameters so that they match the one of the input
    * stream */
-  // add_input_streams(ifmt_ctx_.get());
   add_input_streams();
 
   /* dump the file content */
@@ -183,7 +183,6 @@ int InputFile::add_input_streams() {
     AVStream *st = ifmt_ctx_->streams[stream_id];
     std::shared_ptr<InputStream> ist =
         std::make_shared<InputStream>(ifmt_ctx_, st, file_index_, stream_id);
-
     ist->discard_ = AVDISCARD_DEFAULT;
     st->discard = AVDISCARD_ALL;
 
@@ -338,6 +337,332 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
 int InputFile::find_decoder(const std::string &name, enum AVMediaType type,
                             const AVCodec *&codec) const {
   return find_codec((void *)this, name, type, false, codec, recast_media_);
+}
+
+// https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg.c?//L2367:12&popover=pinned
+int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
+                                    AVPacket *pkt, int no_eof) {
+  std::shared_ptr<AVPacket> avpkt = ist->pkt_;
+  AVStream *st = ist->av_stream();
+  if (!ist->saw_first_ts_) {
+    ist->first_dts_ = ist->dts_ = ist->codec_ctx_ && st->avg_frame_rate.num
+                                      ? -ist->codec_ctx_->has_b_frames *
+                                            AV_TIME_BASE /
+                                            av_q2d(st->avg_frame_rate)
+                                      : 0;
+    ist->pts_ = 0;
+    if (pkt && pkt->pts != AV_NOPTS_VALUE && !ist->decoding_needed_) {
+      ist->first_dts_ = ist->dts_ +=
+          av_rescale_q(pkt->pts, st->time_base, AV_TIME_BASE_Q);
+      ist->pts_ = ist->dts_;  // unused but better to set it to a value thats
+                              // not totally wrong
+    }
+    ist->saw_first_ts_ = true;
+  }
+
+  if (ist->next_dts_ == AV_NOPTS_VALUE) {
+    ist->next_dts_ = ist->dts_;
+  }
+  if (ist->next_pts_ == AV_NOPTS_VALUE) {
+    ist->next_pts_ = ist->pts_;
+  }
+
+  int ret = 0;
+  if (pkt) {
+    av_packet_unref(avpkt.get());
+    ret = av_packet_ref(avpkt.get(), pkt);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  bool repeating = false;
+  bool eof_reached = false;  // meet decode eof
+  // while we have more to decode or while the decoder did output something on
+  // EOF
+  while (ist->decoding_needed_) {
+    int64_t duration_dts = 0;
+    int64_t duration_pts = 0;
+    bool got_output = false;
+    bool decode_failed = false;
+
+    ist->pts_ = ist->next_pts_;
+    ist->dts_ = ist->next_dts_;
+
+    switch (ist->codec_ctx_->codec_type) {
+      case AVMEDIA_TYPE_AUDIO:
+        ret = decode_audio(ist, repeating ? nullptr : avpkt.get(), got_output,
+                           decode_failed);
+        av_packet_unref(avpkt.get());
+        break;
+      case AVMEDIA_TYPE_VIDEO:
+        // ret =
+        //    decode_video(ist, repeating ? nullptr : avpkt.get(), !pkt,
+        //                          got_output, duration_pts, decode_failed);
+        if (!repeating || !pkt || got_output) {
+          if (pkt && pkt->duration) {
+            duration_dts =
+                av_rescale_q(pkt->duration, st->time_base, AV_TIME_BASE_Q);
+          } else if (ist->codec_ctx_->framerate.num != 0 &&
+                     ist->codec_ctx_->framerate.den != 0) {
+            int ticks = av_stream_get_parser(st)
+                            ? av_stream_get_parser(st)->repeat_pict + 1
+                            : ist->codec_ctx_->ticks_per_frame;
+            duration_dts = ((int64_t)AV_TIME_BASE *
+                            ist->codec_ctx_->framerate.den * ticks) /
+                           ist->codec_ctx_->framerate.num /
+                           ist->codec_ctx_->ticks_per_frame;
+          }
+
+          if (ist->dts_ != AV_NOPTS_VALUE && duration_dts) {
+            ist->next_dts_ += duration_dts;
+          } else {
+            ist->next_dts_ = AV_NOPTS_VALUE;
+          }
+        }
+
+        if (got_output) {
+          if (duration_pts > 0) {
+            ist->next_pts_ +=
+                av_rescale_q(duration_pts, st->time_base, AV_TIME_BASE_Q);
+          } else {
+            ist->next_pts_ += duration_dts;
+          }
+        }
+        av_packet_unref(avpkt.get());
+        break;
+      default:
+        return -1;
+    }
+
+    if (ret == AVERROR_EOF) {
+      eof_reached = 1;
+      break;
+    }
+
+    if (ret < 0) {
+      if (decode_failed) {
+        av_log(this, AV_LOG_ERROR, "Error while decoding stream #%d:%d: %s\n",
+               ist->file_index_, ist->stream_index_, av_err2str(ret));
+      } else {
+        av_log(this, AV_LOG_FATAL,
+               "Error while processing the decoded "
+               "data for stream #%d:%d\n",
+               ist->file_index_, ist->stream_index_);
+      }
+      if (!decode_failed) {
+        return ret;
+      }
+      break;
+    }
+
+    if (got_output) {
+      ist->got_output_ = true;
+    }
+
+    if (!got_output) {
+      break;
+    }
+
+    // During draining, we might get multiple output frames in this loop.
+    // ffmpeg.c does not drain the filter chain on configuration changes,
+    // which means if we send multiple frames at once to the filters, and
+    // one of those frames changes configuration, the buffered frames will
+    // be lost. This can upset certain FATE tests.
+    // Decode only 1 frame per call on EOF to appease these FATE tests.
+    // The ideal solution would be to rewrite decoding to use the new
+    // decoding API in a better way.
+    // FIXME: we will drain all frames if no more packets will be provided, that
+    // is av_read_frame eof
+    if (!pkt && no_eof) {
+      break;
+    }
+
+    repeating = 1;
+  }
+
+  /* after flushing, send an EOF on all the filter inputs attached to the stream
+   */
+  /* except when looping we need to flush but not to send an EOF */
+  if (!pkt && ist->decoding_needed_ && eof_reached && !no_eof) {
+    /*
+     * todo
+  ret = send_filter_eof(ist);
+  if (ret < 0) {
+    av_log(this, AV_LOG_FATAL, "Error marking filters as finished\n");
+    return ret;
+  }
+  */
+  }
+
+  /* handle stream copy */
+  if (!ist->decoding_needed_ && ist->codec_ctx_) {
+    if (pkt) {
+      ist->dts_ = ist->next_dts_;
+      switch (ist->codec_ctx_->codec_type) {
+        case AVMEDIA_TYPE_AUDIO:
+          av_assert1(pkt->duration >= 0);
+          if (ist->codec_ctx_->sample_rate) {
+            ist->next_dts_ +=
+                ((int64_t)AV_TIME_BASE * ist->codec_ctx_->frame_size) /
+                ist->codec_ctx_->sample_rate;
+          } else {
+            ist->next_dts_ +=
+                av_rescale_q(pkt->duration, st->time_base, AV_TIME_BASE_Q);
+          }
+          break;
+        case AVMEDIA_TYPE_VIDEO:
+          if (ist->framerate_.num) {
+            // TODO: Remove work-around for c99-to-c89 issue 7
+            AVRational time_base_q = AV_TIME_BASE_Q;
+            int64_t next_dts = av_rescale_q(ist->next_dts_, time_base_q,
+                                            av_inv_q(ist->framerate_));
+            ist->next_dts_ = av_rescale_q(
+                next_dts + 1, av_inv_q(ist->framerate_), time_base_q);
+          } else if (pkt->duration) {
+            ist->next_dts_ +=
+                av_rescale_q(pkt->duration, st->time_base, AV_TIME_BASE_Q);
+          } else if (ist->codec_ctx_->framerate.num != 0) {
+            int ticks = av_stream_get_parser(st)
+                            ? av_stream_get_parser(st)->repeat_pict + 1
+                            : ist->codec_ctx_->ticks_per_frame;
+            ist->next_dts_ += ((int64_t)AV_TIME_BASE *
+                               ist->codec_ctx_->framerate.den * ticks) /
+                              ist->codec_ctx_->framerate.num /
+                              ist->codec_ctx_->ticks_per_frame;
+          }
+          break;
+        default:
+          break;
+      }
+      ist->pts_ = ist->dts_;
+      ist->next_pts_ = ist->next_dts_;
+    } else {
+      eof_reached = 1;
+    }
+    /* remux this frame without reencoding */
+    /*
+    ret = if_stream_copy_packet(ist, pkt);
+    if (ret < 0) {
+      return ret;
+    }
+    */
+  }
+
+  return !eof_reached;
+}
+
+int InputFile::check_decode_result(const std::shared_ptr<InputStream> &ist,
+                                   bool &got_output) {
+  if (got_output && ist) {
+    if (ist->frame_->decode_error_flags ||
+        (ist->frame_->flags & AV_FRAME_FLAG_CORRUPT)) {
+      av_log(this, AV_LOG_WARNING, "%s: corrupt decoded frame in stream %d\n",
+             ifmt_ctx_->url, ist->st_->index);
+      return AVERROR_INVALIDDATA;
+    }
+  }
+
+  return 0;
+}
+
+int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
+                            AVPacket *pkt, bool &got_output,
+                            bool &decode_failed) {
+  std::shared_ptr<AVFrame> decoded_frame = ist->frame_;
+  std::shared_ptr<AVCodecContext> avctx = ist->codec_ctx_;
+  int ret = decode(avctx.get(), pkt, decoded_frame.get(), got_output);
+  if (ret < 0) {
+    decode_failed = true;
+  }
+
+  if (ret >= 0 && avctx->sample_rate <= 0) {
+    av_log(avctx.get(), AV_LOG_ERROR, "Sample rate %d invalid\n",
+           avctx->sample_rate);
+    ret = AVERROR_INVALIDDATA;
+  }
+
+  if (ret != AVERROR_EOF) {
+    ret = check_decode_result(ist, got_output);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  if (!got_output || ret < 0) {
+    return ret;
+  }
+  ist->samples_decoded_ += decoded_frame->nb_samples;
+  ist->frames_decoded_++;
+
+  /* increment next_dts to use for the case where the input stream does not
+   have timestamps or there are multiple frames in the packet */
+  ist->next_pts_ +=
+      ((int64_t)AV_TIME_BASE * decoded_frame->nb_samples) / avctx->sample_rate;
+  ist->next_dts_ +=
+      ((int64_t)AV_TIME_BASE * decoded_frame->nb_samples) / avctx->sample_rate;
+
+  AVRational decoded_frame_tb;
+  if (decoded_frame->pts != AV_NOPTS_VALUE) {
+    decoded_frame_tb = ist->st_->time_base;
+  } else if (pkt && pkt->pts != AV_NOPTS_VALUE) {
+    decoded_frame->pts = pkt->pts;
+    decoded_frame_tb = ist->st_->time_base;
+  } else {
+    decoded_frame->pts = ist->dts_;
+    decoded_frame_tb = AV_TIME_BASE_Q;
+  }
+  if (pkt && pkt->duration && ist->prev_pkt_pts_ != AV_NOPTS_VALUE &&
+      pkt->pts != AV_NOPTS_VALUE &&
+      pkt->pts - ist->prev_pkt_pts_ > pkt->duration) {
+    ist->filter_in_rescale_delta_last_ = AV_NOPTS_VALUE;
+  }
+  if (pkt) {
+    ist->prev_pkt_pts_ = pkt->pts;
+  }
+  if (decoded_frame->pts != AV_NOPTS_VALUE) {
+    decoded_frame->pts = av_rescale_delta(decoded_frame_tb, decoded_frame->pts,
+                                          (AVRational){1, avctx->sample_rate},
+                                          decoded_frame->nb_samples,
+                                          &ist->filter_in_rescale_delta_last_,
+                                          (AVRational){1, avctx->sample_rate});
+  }
+
+  ist->nb_samples_ = decoded_frame->nb_samples;
+  // todo
+  // err = send_frame_to_filters(ist, decoded_frame);
+  av_frame_unref(decoded_frame.get());
+
+  return ret;
+}
+
+// This does not quite work like avcodec_decode_audio4/avcodec_decode_video2.
+// There is the following difference: if you got a frame, you must call
+// it again with pkt=NULL. pkt==NULL is treated differently from pkt->size==0
+// (pkt==NULL means get more output, pkt->size==0 is a flush/drain packet)
+int InputFile::decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
+                      bool &got_frame) {
+  int ret = 0;
+  got_frame = false;
+
+  if (pkt) {
+    ret = avcodec_send_packet(avctx, pkt);
+    // In particular, we don't expect AVERROR(EAGAIN), because we read all
+    // decoded frames with avcodec_receive_frame() until done.
+    if (ret < 0 && ret != AVERROR_EOF) {
+      return ret;
+    }
+  }
+
+  ret = avcodec_receive_frame(avctx, frame);
+  if (ret < 0 && ret != AVERROR(EAGAIN)) {
+    return ret;
+  }
+  if (ret >= 0) {
+    got_frame = true;
+  }
+
+  return 0;
 }
 
 }  // namespace cv
