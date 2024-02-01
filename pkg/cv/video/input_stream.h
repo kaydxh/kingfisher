@@ -84,6 +84,7 @@ class InputStream : public Stream {
   AVDiscard user_set_discard_ = AVDISCARD_NONE;
 
   std::string canvas_size_;
+  bool got_output_ = false;
 #if 0
   struct { /* previous decoded subtitle and related variables */
     int got_output;
