@@ -7,7 +7,10 @@
 #include "input_stream.h"
 
 extern "C" {
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
 #include "libavutil/avassert.h"
+#include "libavutil/intreadwrite.h"
 #include "libavutil/parseutils.h"
 }
 
@@ -542,7 +545,7 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     }
     /* remux this frame without reencoding */
     /*
-    ret = if_stream_copy_packet(ist, pkt);
+    ret = stream_copy_packet(ist, pkt);
     if (ret < 0) {
       return ret;
     }
@@ -550,6 +553,128 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
   }
 
   return !eof_reached;
+}
+
+int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
+                            AVPacket *pkt, int eof, bool &got_output,
+                            int64_t &duration_pts, bool &decode_failed) {
+  std::shared_ptr<AVPacket> avpkt = ist->pkt_;
+  std::shared_ptr<AVFrame> decoded_frame = ist->frame_;
+  AVStream *st = ist->av_stream();
+  int64_t dts = AV_NOPTS_VALUE;
+
+  // With fate-indeo3-2, we're getting 0-sized packets before EOF for some
+  // reason. This seems like a semi-critical bug. Don't trigger EOF, and
+  // skip the packet.
+  if (!eof && pkt && pkt->size == 0) {
+    return 0;
+  }
+
+  if (ist->dts_ != AV_NOPTS_VALUE) {
+    dts = av_rescale_q(ist->dts_, AV_TIME_BASE_Q, st->time_base);
+  }
+  if (pkt) {
+    pkt->dts = dts;  // ffmpeg.c probably shouldn't do this
+  }
+
+  // The old code used to set dts on the drain packet, which does not work
+  // with the new API anymore.
+  if (eof) {
+    ist->dts_buffer_.emplace_back(dts);
+  }
+
+  int ret = decode(ist->codec_ctx_.get(), pkt, decoded_frame.get(), got_output);
+  if (ret < 0) {
+    decode_failed = true;
+  }
+
+  // The following line may be required in some cases where there is no parser
+  // or the parser does not has_b_frames correctly
+  if (st->codecpar->video_delay < ist->codec_ctx_->has_b_frames) {
+    if (ist->codec_ctx_->codec_id == AV_CODEC_ID_H264) {
+      st->codecpar->video_delay = ist->codec_ctx_->has_b_frames;
+    } else
+      av_log(ist->codec_ctx_.get(), AV_LOG_WARNING,
+             "video_delay is larger in decoder than demuxer %d > %d.\n"
+             "If you want to help, upload a sample "
+             "of this file to https://streams.videolan.org/upload/ "
+             "and contact the ffmpeg-devel mailing list. "
+             "(ffmpeg-devel@ffmpeg.org)\n",
+             ist->codec_ctx_->has_b_frames, st->codecpar->video_delay);
+  }
+
+  if (ret != AVERROR_EOF) {
+    ret = check_decode_result(ist, got_output);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  if (got_output && ret >= 0) {
+    if (ist->codec_ctx_->width != decoded_frame->width ||
+        ist->codec_ctx_->height != decoded_frame->height ||
+        ist->codec_ctx_->pix_fmt != decoded_frame->format) {
+      av_log(this, AV_LOG_DEBUG,
+             "Frame parameters mismatch context %d,%d,%d != %d,%d,%d\n",
+             decoded_frame->width, decoded_frame->height, decoded_frame->format,
+             ist->codec_ctx_->width, ist->codec_ctx_->height,
+             ist->codec_ctx_->pix_fmt);
+    }
+  }
+
+  if (!got_output || ret < 0) {
+    return ret;
+  }
+
+  if (ist->top_field_first_ >= 0) {
+    decoded_frame->top_field_first = ist->top_field_first_;
+  }
+
+  ist->frames_decoded_++;
+
+  int64_t best_effort_timestamp = decoded_frame->best_effort_timestamp;
+  duration_pts = decoded_frame->pkt_duration;
+  if (ist->framerate_.num) {
+    best_effort_timestamp = ist->cfr_next_pts_++;
+  }
+
+  if (eof && best_effort_timestamp == AV_NOPTS_VALUE &&
+      !ist->dts_buffer_.empty()) {
+    best_effort_timestamp = ist->dts_buffer_[0];
+    ist->dts_buffer_.erase(ist->dts_buffer_.begin());
+  }
+
+  if (best_effort_timestamp != AV_NOPTS_VALUE) {
+    int64_t ts = av_rescale_q(decoded_frame->pts = best_effort_timestamp,
+                              st->time_base, AV_TIME_BASE_Q);
+
+    if (ts != AV_NOPTS_VALUE) {
+      ist->next_pts_ = ist->pts_ = ts;
+    }
+  }
+
+  if (debug_ts_) {
+    av_log(
+        this, AV_LOG_DEBUG,
+        "detail: decoder -> ist_index:%d type:video "
+        "frame_pts:%s frame_pts_time:%s best_effort_ts:%" PRId64
+        " best_effort_ts_time:%s keyframe:%d frame_type:%d time_base:%d/%d\n",
+        st->index, av_err2str(decoded_frame->pts),
+        av_ts2timestr(decoded_frame->pts, &st->time_base),
+        best_effort_timestamp,
+        av_ts2timestr(best_effort_timestamp, &st->time_base),
+        decoded_frame->key_frame, decoded_frame->pict_type, st->time_base.num,
+        st->time_base.den);
+  }
+
+  if (st->sample_aspect_ratio.num) {
+    decoded_frame->sample_aspect_ratio = st->sample_aspect_ratio;
+  }
+
+  // todo
+  //  err = send_frame_to_filters(ist, decoded_frame);
+  av_frame_unref(decoded_frame.get());
+  return ret;
 }
 
 int InputFile::check_decode_result(const std::shared_ptr<InputStream> &ist,
