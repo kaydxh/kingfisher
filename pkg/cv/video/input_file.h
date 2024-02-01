@@ -33,6 +33,10 @@ class InputFile {
   int decode_audio(const std::shared_ptr<InputStream> &ist, AVPacket *pkt,
                    bool &got_output, bool &decode_failed);
 
+  int decode_video(const std::shared_ptr<InputStream> &ist, AVPacket *pkt,
+                   int eof, bool &got_output, int64_t &duration_pts,
+                   bool &decode_failed);
+
   int decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
              bool &got_frame);
   int check_decode_result(const std::shared_ptr<InputStream> &ist,
@@ -86,6 +90,7 @@ class InputFile {
 
  private:
   const AVClass *av_class_ = nullptr;
+  bool debug_ts_ = false;
 };
 
 }  // namespace cv
