@@ -31,7 +31,7 @@ class FilterGraph {
   int reconfiguration_ = 0;
   // true when the filtergraph contains only meta filters
   // that do not modify the frame data
-  int is_meta_ = 0;
+  bool is_meta_ = false;
 };
 
 }  // namespace cv

@@ -42,6 +42,10 @@ class InputFile {
   int check_decode_result(const std::shared_ptr<InputStream> &ist,
                           bool &got_output);
 
+  int send_filter_eof(const std::shared_ptr<InputStream> &ist);
+  int send_frame_to_filters(const std::shared_ptr<InputStream> &ist,
+                            const std::shared_ptr<AVFrame> &decoded_frame);
+
  public:
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ifmt_ctx_;
