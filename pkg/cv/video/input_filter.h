@@ -18,14 +18,19 @@ class FilterGraph;
 
 class InputFilter {
  public:
-  InputFilter();
+  InputFilter(const std::shared_ptr<FilterGraph> &fg,
+              const std::weak_ptr<Stream> &ist);
   ~InputFilter();
 
+  int ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
+                         int keep_reference);
+
  public:
+  const AVClass *av_class_ = nullptr;
   std::shared_ptr<AVFilterContext> filter_;
   // 避免相互引用
-  std::weak_ptr<Stream> ist_;
   std::weak_ptr<FilterGraph> graph_;
+  std::weak_ptr<Stream> ist_;
   std::string name_;
   enum AVMediaType type_;  //  AVMEDIA_TYPE_SUBTITLE for sub2video
                            //
@@ -38,8 +43,8 @@ class InputFilter {
 
   AVChannelLayout ch_layout_;
 
-  AVBufferRef *hw_frames_ctx = nullptr;
-  int32_t *displaymatrix = nullptr;
+  AVBufferRef *hw_frames_ctx_ = nullptr;
+  int32_t *display_matrix_ = nullptr;
 
   bool eof_ = false;
 };

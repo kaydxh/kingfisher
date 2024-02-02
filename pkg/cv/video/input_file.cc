@@ -96,13 +96,6 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     av_dict_set(&format_opts_, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
   }
 
-  /*
-  ifmt_ctx_ =
-      std::shared_ptr<AVFormatContext>(ifmt_ctx, [](AVFormatContext *ctx) {
-        //  avformat_close_input(&ctx);
-      });
-      */
-
   if (find_stream_info_) {
     /* If not enough info to get the stream parameters, we decode the
        first frames to get it. (used in mpeg case for example) */
@@ -399,9 +392,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
         av_packet_unref(avpkt.get());
         break;
       case AVMEDIA_TYPE_VIDEO:
-        // ret =
-        //    decode_video(ist, repeating ? nullptr : avpkt.get(), !pkt,
-        //                          got_output, duration_pts, decode_failed);
+        ret = decode_video(ist, repeating ? nullptr : avpkt.get(), !pkt,
+                           got_output, duration_pts, decode_failed);
         if (!repeating || !pkt || got_output) {
           if (pkt && pkt->duration) {
             duration_dts =
@@ -787,6 +779,26 @@ int InputFile::decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
     got_frame = true;
   }
 
+  return 0;
+}
+
+int InputFile::send_filter_eof(const std::shared_ptr<InputStream> &ist) {
+  AVStream *st = ist->av_stream();
+  // int i = 0;
+  // int ret = 0;
+  /* TODO keep pts also in stream time base to avoid converting back */
+  int64_t pts = av_rescale_q_rnd(
+      ist->pts_, AV_TIME_BASE_Q, st->time_base,
+      static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+  pts = pts;
+  return send_frame_to_filters(ist, {});
+}
+
+int InputFile::send_frame_to_filters(
+    const std::shared_ptr<InputStream> &ist,
+    const std::shared_ptr<AVFrame> &decoded_frame) {
+  // const auto &stream_index = ist->stream_index_;
+  //
   return 0;
 }
 

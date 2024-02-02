@@ -26,6 +26,8 @@ class Stream {
   std::shared_ptr<AVCodec> codec_;             // for decode or encode
   std::shared_ptr<AVFrame> frame_;
   std::shared_ptr<AVPacket> pkt_;
+
+  bool reinit_filters_ = false;
 };
 
 }  // namespace cv

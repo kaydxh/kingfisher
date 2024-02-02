@@ -108,7 +108,7 @@ class InputStream : public Stream {
   // InputFilter **filters;
   // int nb_filters;
 
-  int reinit_filters_ = -1;
+  // int reinit_filters_ = -1;
 
   /* hwaccel options */
   enum HWAccelID hwaccel_id_ = HWACCEL_NONE;
