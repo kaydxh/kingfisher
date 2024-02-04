@@ -1,5 +1,6 @@
 #include "input_filter.h"
 
+#include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
 #include "stream.h"
 
@@ -78,7 +79,178 @@ int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
   } else if (display_matrix_) {
     need_reinit = true;
   }
-  return need_reinit;
+
+  int ret = 0;
+  if (need_reinit) {
+    ret = ifilter_parameters_from_frame(frame);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  /* (re)init the graph if possible, otherwise buffer the frame and return */
+  if (need_reinit || !fg->filter_graph_) {
+    if (!ifilter_has_input_format()) {
+      AVFrame *tmp = av_frame_clone(frame.get());
+      if (!tmp) {
+        return AVERROR(ENOMEM);
+      }
+      ret = av_fifo_write(frame_queue_.get(), &tmp, 1);
+      if (ret < 0) {
+        av_frame_free(&tmp);
+      }
+
+      return ret;
+    }
+
+    ret = fg->reap_filters();
+    if (ret < 0 && ret != AVERROR_EOF) {
+      av_log(this, AV_LOG_ERROR, "Error while filtering: %s\n",
+             av_err2str(ret));
+      return ret;
+    }
+
+    ret = fg->configure_filtergraph();
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
+             av_err2str(ret));
+      return ret;
+    }
+  }
+
+  ret =
+      av_buffersrc_add_frame_flags(filter_.get(), frame.get(), buffersrc_flags);
+  if (ret < 0) {
+    if (ret != AVERROR_EOF)
+      av_log(this, AV_LOG_ERROR, "Error while filtering: %s\n",
+             av_err2str(ret));
+    return ret;
+  }
+
+  return 0;
+}
+
+int InputFilter::ifilter_parameters_from_frame(
+    const std::shared_ptr<AVFrame> &frame) {
+  AVFrameSideData *sd = nullptr;
+  int ret = 0;
+
+  av_buffer_unref(&hw_frames_ctx_);
+
+  format_ = frame->format;
+
+  width_ = frame->width;
+  height_ = frame->height;
+  sample_aspect_ratio_ = frame->sample_aspect_ratio;
+
+  sample_rate_ = frame->sample_rate;
+  ret = av_channel_layout_copy(&ch_layout_, &frame->ch_layout);
+  if (ret < 0) {
+    return ret;
+  }
+
+  av_freep(&display_matrix_);
+  sd = av_frame_get_side_data(frame.get(), AV_FRAME_DATA_DISPLAYMATRIX);
+  if (sd) {
+    display_matrix_ =
+        static_cast<int32_t *>(av_memdup(sd->data, sizeof(int32_t) * 9));
+  }
+
+  if (frame->hw_frames_ctx) {
+    hw_frames_ctx_ = av_buffer_ref(frame->hw_frames_ctx);
+    if (!hw_frames_ctx_) {
+      return AVERROR(ENOMEM);
+    }
+  }
+
+  return 0;
+}
+
+bool InputFilter::ifilter_has_input_format() const {
+  return !(format_ < 0 &&
+           (type_ == AVMEDIA_TYPE_AUDIO || type_ == AVMEDIA_TYPE_VIDEO));
+}
+
+int InputFilter::configure_input_filter(AVFilterInOut *in) {
+  auto const &ist = ist_.lock();
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  if (!ist->codec_) {
+    av_log(this, AV_LOG_ERROR, "No decoder, filtering impossible\n");
+    return AVERROR_DECODER_NOT_FOUND;
+  }
+  enum AVMediaType type =
+      avfilter_pad_get_type(in->filter_ctx->input_pads, in->pad_idx);
+  switch (type) {
+    case AVMEDIA_TYPE_VIDEO:
+      return configure_input_video_filter(in);
+    case AVMEDIA_TYPE_AUDIO:
+      return configure_input_audio_filter(in);
+    default:
+      av_log(
+          this, AV_LOG_ERROR,
+          "unsupported media_type %s, Only video and audio filters supported "
+          "currently.\n",
+          av_get_media_type_string(type));
+      return AVERROR_UNKNOWN;
+  }
+}
+
+int InputFilter::configure_input_video_filter(AVFilterInOut *in) { return 0; }
+
+int InputFilter::configure_input_audio_filter(AVFilterInOut *in) { return 0; }
+
+int InputFilter::ifilter_send_eof(int64_t pts) {
+  int ret = 0;
+  eof_ = true;
+
+  if (filter_) {
+    ret = av_buffersrc_close(filter_.get(), pts, AV_BUFFERSRC_FLAG_PUSH);
+    if (ret < 0) {
+      return ret;
+    }
+  } else {
+    auto const &ist = ist_.lock();
+    if (!ist) {
+      return AVERROR_STREAM_NOT_FOUND;
+    }
+    const auto &st = ist->av_stream();
+    if (!st) {
+      return AVERROR_STREAM_NOT_FOUND;
+    }
+    // the filtergraph was never configured
+    if (format_ < 0) {
+      ret = ifilter_parameters_from_codecpar(st->codecpar);
+      if (ret < 0) {
+        return ret;
+      }
+    }
+    if (!ifilter_has_input_format()) {
+      av_log(this, AV_LOG_ERROR,
+             "Cannot determine format of input stream %d:%d after EOF\n",
+             ist->file_index_, st->index);
+      return AVERROR_INVALIDDATA;
+    }
+  }
+
+  return 0;
+}
+
+int InputFilter::ifilter_parameters_from_codecpar(
+    const AVCodecParameters *par) {
+  // We never got any input. Set a fake format, which will
+  // come from libavformat.
+  format_ = par->format;
+  sample_rate_ = par->sample_rate;
+  width_ = par->width;
+  height_ = par->height;
+  sample_aspect_ratio_ = par->sample_aspect_ratio;
+  int ret = av_channel_layout_copy(&ch_layout_, &par->ch_layout);
+  if (ret < 0) {
+    return ret;
+  }
+  return 0;
 }
 
 }  // namespace cv

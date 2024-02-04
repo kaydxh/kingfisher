@@ -19,6 +19,7 @@ set(CXX_FLAGS
  # -Wconversion
  -Wno-unused-parameter
  -Wno-unused-local-typedefs
+ -Wno-unused-function
  -Wno-missing-field-initializers
  # -Wold-style-cast
  # -Woverloaded-virtual

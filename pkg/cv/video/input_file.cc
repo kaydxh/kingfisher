@@ -480,14 +480,11 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
    */
   /* except when looping we need to flush but not to send an EOF */
   if (!pkt && ist->decoding_needed_ && eof_reached && !no_eof) {
-    /*
-     * todo
-  ret = send_filter_eof(ist);
-  if (ret < 0) {
-    av_log(this, AV_LOG_FATAL, "Error marking filters as finished\n");
-    return ret;
-  }
-  */
+    ret = send_filter_eof(ist);
+    if (ret < 0) {
+      av_log(this, AV_LOG_FATAL, "Error marking filters as finished\n");
+      return ret;
+    }
   }
 
   /* handle stream copy */
@@ -535,13 +532,7 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     } else {
       eof_reached = 1;
     }
-    /* remux this frame without reencoding */
-    /*
-    ret = stream_copy_packet(ist, pkt);
-    if (ret < 0) {
-      return ret;
-    }
-    */
+    // todo do_streamcopy
   }
 
   return !eof_reached;
@@ -790,8 +781,8 @@ int InputFile::send_filter_eof(const std::shared_ptr<InputStream> &ist) {
   int64_t pts = av_rescale_q_rnd(
       ist->pts_, AV_TIME_BASE_Q, st->time_base,
       static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
-  pts = pts;
-  return send_frame_to_filters(ist, {});
+
+  return ist->filter_->ifilter_send_eof(pts);
 }
 
 int InputFile::send_frame_to_filters(
