@@ -27,6 +27,9 @@ class Stream {
   std::shared_ptr<AVFrame> frame_;
   std::shared_ptr<AVPacket> pkt_;
 
+  AVDictionary *codec_opts_ = nullptr;
+  AVDictionary *sws_dict_ = nullptr;
+  AVDictionary *swr_opts_ = nullptr;
   bool reinit_filters_ = false;
 };
 

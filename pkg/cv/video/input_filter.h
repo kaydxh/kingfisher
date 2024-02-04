@@ -8,6 +8,7 @@ extern "C" {
 #include "libavfilter/avfilter.h"
 #include "libavformat/avformat.h"
 #include "libavutil/dict.h"
+#include "libavutil/fifo.h"
 };
 
 namespace kingfisher {
@@ -25,12 +26,22 @@ class InputFilter {
   int ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
                          int keep_reference);
 
+  int ifilter_parameters_from_frame(const std::shared_ptr<AVFrame> &frame);
+  bool ifilter_has_input_format() const;
+
+  int configure_input_filter(AVFilterInOut *in);
+  int configure_input_video_filter(AVFilterInOut *in);
+  int configure_input_audio_filter(AVFilterInOut *in);
+  int ifilter_send_eof(int64_t pts);
+  int ifilter_parameters_from_codecpar(const AVCodecParameters *par);
+
  public:
   const AVClass *av_class_ = nullptr;
   std::shared_ptr<AVFilterContext> filter_;
   // 避免相互引用
   std::weak_ptr<FilterGraph> graph_;
   std::weak_ptr<Stream> ist_;
+  std::shared_ptr<AVFifo> frame_queue_;
   std::string name_;
   enum AVMediaType type_;  //  AVMEDIA_TYPE_SUBTITLE for sub2video
                            //

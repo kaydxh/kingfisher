@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "cv/video/input_filter.h"
 #include "stream.h"
 
 extern "C" {
@@ -18,6 +19,8 @@ enum HWAccelID {
   HWACCEL_AUTO,
   HWACCEL_GENERIC,
 };
+
+class InputFilter;
 
 class InputStream : public Stream {
  public:
@@ -71,7 +74,6 @@ class InputStream : public Stream {
   double ts_scale_ = 1.0;
   bool saw_first_ts_ = false;
 
-  // std::shared_ptr<AVDictionary> decoder_opts_ = nullptr;
   AVDictionary *decoder_opts_ = nullptr;
   AVRational framerate_; /* framerate forced with -r */
   int top_field_first_ = -1;
@@ -105,7 +107,7 @@ class InputStream : public Stream {
 
   /* decoded data from this stream goes into all those filters
    * currently video and audio only */
-  // InputFilter **filters;
+  std::shared_ptr<InputFilter> filter_;
   // int nb_filters;
 
   // int reinit_filters_ = -1;
