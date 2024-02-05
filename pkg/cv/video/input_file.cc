@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "ffmpeg_error.h"
+#include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
 
@@ -12,6 +13,7 @@ extern "C" {
 #include "libavutil/avassert.h"
 #include "libavutil/intreadwrite.h"
 #include "libavutil/parseutils.h"
+#include "libavutil/time.h"
 }
 
 namespace kingfisher {
@@ -56,23 +58,6 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
       return ret;
     }
   }
-
-  /* get default parameters from command line */
-  /*
-  ifmt_ctx = avformat_alloc_context();
-  if (!ifmt_ctx) {
-    av_log(this, AV_LOG_ERROR, "failed to alloc avformat context -- %s\n",
-           av_err2str(AVERROR(ENOMEM)));
-    return AVERROR(ENOMEM);
-  }
-  */
-
-  /*
-  ifmt_ctx_->flags |= AVFMT_FLAG_NONBLOCK;
-  if (bitexact_) {
-    ifmt_ctx_->flags |= AVFMT_FLAG_BITEXACT;
-  }
-  */
 
   bool scan_all_pmts_set = false;
   if (!av_dict_get(format_opts_, "scan_all_pmts", nullptr,
@@ -168,6 +153,204 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
+
+  return 0;
+}
+
+int InputFile::read_frames() {
+  int ret = 0;
+  while (true) {
+    int disable_discontinuity_correction = copy_ts_;
+    ret = av_read_frame(ifmt_ctx_.get(), pkt_);
+    if (ret == AVERROR(EAGAIN)) {
+      av_usleep(10000);
+      continue;
+    }
+
+    if (ret == AVERROR_EOF) {
+      av_log(this, AV_LOG_VERBOSE,
+             "av_read_frame all packets finished for input file #%d: %s\n",
+             file_index_, av_err2str(ret));
+      eof_reached_ = true;
+      ret = 0;
+      av_log(this, AV_LOG_DEBUG,
+             "Going to flush all filters for input file #%d\n", file_index_);
+    } else if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "failed to av_read_frame for input file #%d: %s\n", file_index_,
+             av_err2str(ret));
+      return ret;
+    }
+
+    const auto &pkt = pkt_;
+    auto &ist = input_streams_[pkt_->stream_index];
+    const auto is = ifmt_ctx_;
+    const auto st = ist->av_stream();
+    if (!ist->wrap_correction_done_ && is->start_time != AV_NOPTS_VALUE &&
+        st->pts_wrap_bits < 64) {
+      int64_t stime, stime2;
+      // Correcting starttime based on the enabled streams
+      // FIXME this ideally should be done before the first use of starttime but
+      // we do not know which are the enabled streams at that point.
+      //       so we instead do it here as part of discontinuity handling
+      if (ist->next_dts_ == AV_NOPTS_VALUE && ts_offset_ == -is->start_time &&
+          (is->iformat->flags & AVFMT_TS_DISCONT)) {
+        int64_t new_start_time = INT64_MAX;
+        for (unsigned int i = 0; i < is->nb_streams; i++) {
+          AVStream *st = is->streams[i];
+          if (st->discard == AVDISCARD_ALL ||
+              st->start_time == AV_NOPTS_VALUE) {
+            continue;
+          }
+          new_start_time = FFMIN(
+              new_start_time,
+              av_rescale_q(st->start_time, st->time_base, AV_TIME_BASE_Q));
+        }
+        if (new_start_time > is->start_time) {
+          av_log(is.get(), AV_LOG_VERBOSE,
+                 "Correcting start time by %" PRId64 "\n",
+                 new_start_time - is->start_time);
+          ts_offset_ = -new_start_time;
+        }
+      }
+
+      stime = av_rescale_q(is->start_time, AV_TIME_BASE_Q, st->time_base);
+      stime2 = stime + (1ULL << st->pts_wrap_bits);
+      ist->wrap_correction_done_ = 1;
+
+      if (stime2 > stime && pkt->dts != AV_NOPTS_VALUE &&
+          pkt->dts > stime + (1LL << (st->pts_wrap_bits - 1))) {
+        pkt->dts -= 1ULL << st->pts_wrap_bits;
+        ist->wrap_correction_done_ = 0;
+      }
+      if (stime2 > stime && pkt->pts != AV_NOPTS_VALUE &&
+          pkt->pts > stime + (1LL << (st->pts_wrap_bits - 1))) {
+        pkt->pts -= 1ULL << st->pts_wrap_bits;
+        ist->wrap_correction_done_ = 0;
+      }
+    }
+
+    /* add the stream-global side data to the first packet */
+    if (ist->nb_packets_ == 1) {
+      // todo
+    }
+
+    if (pkt->dts != AV_NOPTS_VALUE) {
+      pkt->dts += av_rescale_q(ts_offset_, AV_TIME_BASE_Q, st->time_base);
+    }
+    if (pkt->pts != AV_NOPTS_VALUE) {
+      pkt->pts += av_rescale_q(ts_offset_, AV_TIME_BASE_Q, st->time_base);
+    }
+
+    if (pkt->pts != AV_NOPTS_VALUE) {
+      pkt->pts *= ist->ts_scale_;
+    }
+    if (pkt->dts != AV_NOPTS_VALUE) {
+      pkt->dts *= ist->ts_scale_;
+    }
+
+    int64_t pkt_dts = av_rescale_q_rnd(
+        pkt->dts, st->time_base, AV_TIME_BASE_Q,
+        static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+    if ((ist->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO ||
+         ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) &&
+        pkt_dts != AV_NOPTS_VALUE && ist->next_dts_ == AV_NOPTS_VALUE &&
+        !copy_ts_ && (is->iformat->flags & AVFMT_TS_DISCONT) &&
+        last_ts_ != AV_NOPTS_VALUE) {
+      int64_t delta = pkt_dts - last_ts_;
+      if (delta < -1LL * dts_delta_threshold_ * AV_TIME_BASE ||
+          delta > 1LL * dts_delta_threshold_ * AV_TIME_BASE) {
+        ts_offset_ -= delta;
+        av_log(this, AV_LOG_DEBUG,
+               "Inter stream timestamp discontinuity %" PRId64
+               ", new offset= %" PRId64 "\n",
+               delta, ts_offset_);
+        pkt->dts -= av_rescale_q(delta, AV_TIME_BASE_Q, st->time_base);
+        if (pkt->pts != AV_NOPTS_VALUE) {
+          pkt->pts -= av_rescale_q(delta, AV_TIME_BASE_Q, st->time_base);
+        }
+      }
+    }
+
+    int64_t duration = av_rescale_q(duration_, time_base_, st->time_base);
+    if (pkt->pts != AV_NOPTS_VALUE) {
+      pkt->pts += duration;
+      ist->max_pts_ = FFMAX(pkt->pts, ist->max_pts_);
+      ist->min_pts_ = FFMIN(pkt->pts, ist->min_pts_);
+    }
+
+    if (pkt->dts != AV_NOPTS_VALUE) {
+      pkt->dts += duration;
+    }
+
+    pkt_dts = av_rescale_q_rnd(
+        pkt->dts, st->time_base, AV_TIME_BASE_Q,
+        static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+
+    if (copy_ts_ && pkt_dts != AV_NOPTS_VALUE &&
+        ist->next_dts_ != AV_NOPTS_VALUE &&
+        (is->iformat->flags & AVFMT_TS_DISCONT) && st->pts_wrap_bits < 60) {
+      int64_t wrap_dts = av_rescale_q_rnd(
+          pkt->dts + (1LL << st->pts_wrap_bits), st->time_base, AV_TIME_BASE_Q,
+          static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+      if (FFABS(wrap_dts - ist->next_dts_) <
+          FFABS(pkt_dts - ist->next_dts_) / 10) {
+        disable_discontinuity_correction = 0;
+      }
+    }
+
+    if ((ist->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO ||
+         ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) &&
+        pkt_dts != AV_NOPTS_VALUE && ist->next_dts_ != AV_NOPTS_VALUE &&
+        !disable_discontinuity_correction) {
+      int64_t delta = pkt_dts - ist->next_dts_;
+      if (is->iformat->flags & AVFMT_TS_DISCONT) {
+        if (delta < -1LL * dts_delta_threshold_ * AV_TIME_BASE ||
+            delta > 1LL * dts_delta_threshold_ * AV_TIME_BASE ||
+            pkt_dts + AV_TIME_BASE / 10 < FFMAX(ist->pts_, ist->dts_)) {
+          ts_offset_ -= delta;
+          av_log(nullptr, AV_LOG_DEBUG,
+                 "timestamp discontinuity for stream #%d:%d "
+                 "(id=%d, type=%s): %" PRId64 ", new offset= %" PRId64 "\n",
+                 ist->file_index_, st->index, st->id,
+                 av_get_media_type_string(ist->codec_ctx_->codec_type), delta,
+                 ts_offset_);
+          pkt->dts -= av_rescale_q(delta, AV_TIME_BASE_Q, st->time_base);
+          if (pkt->pts != AV_NOPTS_VALUE) {
+            pkt->pts -= av_rescale_q(delta, AV_TIME_BASE_Q, st->time_base);
+          }
+        }
+      } else {
+        if (delta < -1LL * dts_error_threshold_ * AV_TIME_BASE ||
+            delta > 1LL * dts_error_threshold_ * AV_TIME_BASE) {
+          av_log(nullptr, AV_LOG_WARNING,
+                 "DTS %" PRId64 ", next:%" PRId64 " st:%d invalid dropping\n",
+                 pkt->dts, ist->next_dts_, pkt->stream_index);
+          pkt->dts = AV_NOPTS_VALUE;
+        }
+        if (pkt->pts != AV_NOPTS_VALUE) {
+          int64_t pkt_pts =
+              av_rescale_q(pkt->pts, st->time_base, AV_TIME_BASE_Q);
+          delta = pkt_pts - ist->next_dts_;
+          if (delta < -1LL * dts_error_threshold_ * AV_TIME_BASE ||
+              delta > 1LL * dts_error_threshold_ * AV_TIME_BASE) {
+            av_log(nullptr, AV_LOG_WARNING,
+                   "PTS %" PRId64 ", next:%" PRId64 " invalid dropping st:%d\n",
+                   pkt->pts, ist->next_dts_, pkt->stream_index);
+            pkt->pts = AV_NOPTS_VALUE;
+          }
+        }
+      }
+    }
+
+    if (pkt->dts != AV_NOPTS_VALUE) {
+      last_ts_ = av_rescale_q(pkt->dts, st->time_base, AV_TIME_BASE_Q);
+    }
+    ret = process_input_packet(ist, pkt, true);
+    if (ret < 0 && ret != AVERROR_EOF) {
+      return ret;
+    }
+  }
 
   return 0;
 }
@@ -532,10 +715,41 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     } else {
       eof_reached = 1;
     }
-    // todo do_streamcopy
+    ret = stream_copy(ist, pkt);
+    if (ret < 0) {
+      return ret;
+    }
   }
 
   return !eof_reached;
+}
+
+int InputFile::stream_copy(const std::shared_ptr<InputStream> &ist,
+                           AVPacket *packet) {
+  AVStream *st = ist->av_stream();
+  if (!st) {
+    return -1;
+  }
+
+  if (packet) {
+    ist->frame_number_++;
+    Frame raw_frame;
+    raw_frame.time_base = packet->time_base;
+    raw_frame.pts = packet->pts;
+    raw_frame.frame_number = ist->frame_number_;
+    raw_frame.codec_id = st->codecpar->codec_id;
+    raw_frame.codec_type = st->codecpar->codec_type;
+    raw_frame.packet = std::shared_ptr<AVPacket>(
+        av_packet_clone(packet), [](AVPacket *pkt) { av_packet_free(&pkt); });
+    switch (ist->codec_ctx_->codec_type) {
+      case AVMEDIA_TYPE_VIDEO:
+        ist->video_frames_.push_back(raw_frame);
+        break;
+      default:
+        return 0;
+    }
+  }
+  return 0;
 }
 
 int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,

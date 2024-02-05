@@ -1,6 +1,10 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_STREAM_H_
 #define KINGFISHER_PKG_CV_VIDEO_STREAM_H_
 
+#include <vector>
+
+#include "ffmpeg_types.h"
+
 extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
@@ -31,6 +35,9 @@ class Stream {
   AVDictionary *sws_dict_ = nullptr;
   AVDictionary *swr_opts_ = nullptr;
   bool reinit_filters_ = false;
+
+  int64_t frame_number_ = 0;
+  std::vector<Frame> video_frames_;
 };
 
 }  // namespace cv

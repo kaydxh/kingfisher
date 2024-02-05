@@ -20,6 +20,7 @@ class InputFile {
   ~InputFile();
 
   int open(const std::string &filename, AVFormatContext &format_ctx);
+
   int choose_decoder(const std::shared_ptr<InputStream> &ist,
                      const AVCodec *&codec);
 
@@ -45,6 +46,9 @@ class InputFile {
   int send_filter_eof(const std::shared_ptr<InputStream> &ist);
   int send_frame_to_filters(const std::shared_ptr<InputStream> &ist,
                             const std::shared_ptr<AVFrame> &decoded_frame);
+
+  int read_frames();
+  int stream_copy(const std::shared_ptr<InputStream> &ist, AVPacket *packet);
 
  public:
   int file_index_ = 0;
@@ -95,6 +99,9 @@ class InputFile {
  private:
   const AVClass *av_class_ = nullptr;
   bool debug_ts_ = false;
+  bool copy_ts_ = false;
+  float dts_delta_threshold_ = 10;
+  float dts_error_threshold_ = 3600 * 30;
 };
 
 }  // namespace cv
