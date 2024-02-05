@@ -1,8 +1,11 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_INPUT_FILE_H_
 #define KINGFISHER_PKG_CV_VIDEO_INPUT_FILE_H_
 
+#include <functional>
 #include <memory>
 #include <vector>
+
+#include "ffmpeg_types.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -21,10 +24,12 @@ class InputFile {
 
   int open(const std::string &filename, AVFormatContext &format_ctx);
 
-  int choose_decoder(const std::shared_ptr<InputStream> &ist,
-                     const AVCodec *&codec);
+  int read_video_frames(std::vector<Frame> &video_frames, int32_t batch_size,
+                        bool &finished);
 
  private:
+  int choose_decoder(const std::shared_ptr<InputStream> &ist,
+                     const AVCodec *&codec);
   int add_input_streams();
   int find_decoder(const std::string &name, enum AVMediaType type,
                    const AVCodec *&codec) const;
@@ -47,7 +52,8 @@ class InputFile {
   int send_frame_to_filters(const std::shared_ptr<InputStream> &ist,
                             const std::shared_ptr<AVFrame> &decoded_frame);
 
-  int read_frames();
+  int read_frames(const std::function<bool()> &stop_waiting);
+
   int stream_copy(const std::shared_ptr<InputStream> &ist, AVPacket *packet);
 
  public:
@@ -102,6 +108,8 @@ class InputFile {
   bool copy_ts_ = false;
   float dts_delta_threshold_ = 10;
   float dts_error_threshold_ = 3600 * 30;
+  int first_video_stream_index_ = -1;
+  int first_audio_stream_index_ = -1;
 };
 
 }  // namespace cv

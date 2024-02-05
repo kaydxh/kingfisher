@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
@@ -30,6 +31,7 @@ InputFile::InputFile()
     : ifmt_ctx_(std::shared_ptr<AVFormatContext>(
           avformat_alloc_context(),
           [](AVFormatContext *ctx) { avformat_close_input(&ctx); })),
+      pkt_(av_packet_alloc()),
       av_class_(&input_file_class) {
   av_dict_set(&format_opts_, "rtsp_transport", "tcp", 0);
   av_dict_set(&format_opts_, "buffer_size", "10240000", 0);
@@ -43,7 +45,10 @@ InputFile::InputFile()
   }
 }
 
-InputFile::~InputFile() { av_dict_free(&decoder_opts_); }
+InputFile::~InputFile() {
+  av_dict_free(&decoder_opts_);
+  av_packet_free(&pkt_);
+}
 
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
@@ -157,9 +162,48 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   return 0;
 }
 
-int InputFile::read_frames() {
+int InputFile::read_video_frames(std::vector<Frame> &video_frames,
+                                 int32_t batch_size, bool &finished) {
+  if (batch_size <= 0) {
+    batch_size = 1;
+  }
+  auto &ist = input_streams_[first_video_stream_index_];
+
+  SCOPE_EXIT { finished = eof_reached_ && ist->frames_.empty(); };
+  int ret = read_frames([&]() {
+    if (eof_reached_) {
+      return true;
+    }
+
+    if (ist->frames_.size() >=
+        static_cast<unsigned int>(batch_size)) {  // read batch
+      return true;
+    }
+
+    return false;
+  });
+  if (ret < 0) {
+    return ret;
+  }
+
+  if (ist->frames_.empty()) {
+    return 0;
+  }
+
+  if (ist->frames_.size() <= static_cast<unsigned int>(batch_size)) {
+    video_frames = std::move(ist->frames_);
+  } else {
+    std::copy(ist->frames_.begin(), ist->frames_.begin() + batch_size,
+              video_frames.begin());
+    ist->frames_.erase(ist->frames_.begin(), ist->frames_.begin() + batch_size);
+  }
+
+  return 0;
+}
+
+int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
   int ret = 0;
-  while (true) {
+  while (!stop_waiting()) {
     int disable_discontinuity_correction = copy_ts_;
     ret = av_read_frame(ifmt_ctx_.get(), pkt_);
     if (ret == AVERROR(EAGAIN)) {
@@ -168,13 +212,16 @@ int InputFile::read_frames() {
     }
 
     if (ret == AVERROR_EOF) {
-      av_log(this, AV_LOG_VERBOSE,
+      av_log(nullptr, AV_LOG_VERBOSE,
              "av_read_frame all packets finished for input file #%d: %s\n",
              file_index_, av_err2str(ret));
+
       eof_reached_ = true;
       ret = 0;
-      av_log(this, AV_LOG_DEBUG,
+
+      av_log(nullptr, AV_LOG_DEBUG,
              "Going to flush all filters for input file #%d\n", file_index_);
+
     } else if (ret < 0) {
       av_log(this, AV_LOG_ERROR,
              "failed to av_read_frame for input file #%d: %s\n", file_index_,
@@ -359,6 +406,7 @@ int InputFile::add_input_streams() {
   input_streams_.resize(ifmt_ctx_->nb_streams);
   for (unsigned int stream_id = 0; stream_id < ifmt_ctx_->nb_streams;
        stream_id++) {
+    bool discard_stream = false;
     AVStream *st = ifmt_ctx_->streams[stream_id];
     std::shared_ptr<InputStream> ist =
         std::make_shared<InputStream>(ifmt_ctx_, st, file_index_, stream_id);
@@ -420,6 +468,12 @@ int InputFile::add_input_streams() {
     AVCodecParameters *par = st->codecpar;
     switch (par->codec_type) {
       case AVMEDIA_TYPE_VIDEO:
+        if (first_video_stream_index_ >= 0) {
+          discard_stream = true;
+          break;
+        }
+
+        first_video_stream_index_ = stream_id;
         if (!ist->dec_) {
           ist->dec_ = avcodec_find_decoder(par->codec_id);
         }
@@ -442,6 +496,11 @@ int InputFile::add_input_streams() {
         // TODO support hwcaael options
         break;
       case AVMEDIA_TYPE_AUDIO:
+        if (first_audio_stream_index_ >= 0) {
+          discard_stream = true;
+          break;
+        }
+        first_audio_stream_index_ = stream_id;
         ist->guess_input_channel_layout();
         break;
       case AVMEDIA_TYPE_DATA:
@@ -464,6 +523,10 @@ int InputFile::add_input_streams() {
         break;
       default:
         break;
+    }
+
+    if (discard_stream) {
+      continue;
     }
 
     ret = avcodec_parameters_from_context(par, ist->codec_ctx_.get());
@@ -497,7 +560,7 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
     return ret;
   }
   */
-  if (codec_name.empty()) {
+  if (!codec_name.empty()) {
     int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
     if (ret) {
       return ret;
@@ -743,7 +806,7 @@ int InputFile::stream_copy(const std::shared_ptr<InputStream> &ist,
         av_packet_clone(packet), [](AVPacket *pkt) { av_packet_free(&pkt); });
     switch (ist->codec_ctx_->codec_type) {
       case AVMEDIA_TYPE_VIDEO:
-        ist->video_frames_.push_back(raw_frame);
+        ist->frames_.push_back(raw_frame);
         break;
       default:
         return 0;
