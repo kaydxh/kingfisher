@@ -7,6 +7,8 @@
 #include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
+#include "scripts/pack/ffmpeg/include/libavcodec/defs.h"
+#include "scripts/pack/ffmpeg/include/libavcodec/packet.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -31,6 +33,7 @@ InputFile::InputFile()
     : ifmt_ctx_(std::shared_ptr<AVFormatContext>(
           avformat_alloc_context(),
           [](AVFormatContext *ctx) { avformat_close_input(&ctx); })),
+
       pkt_(av_packet_alloc()),
       av_class_(&input_file_class) {
   av_dict_set(&format_opts_, "rtsp_transport", "tcp", 0);
@@ -52,7 +55,6 @@ InputFile::~InputFile() {
 
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
-  // AVFormatContext *ifmt_ctx = nullptr;
   const AVInputFormat *file_iformat = nullptr;
   int ret = 0;
   if (!format_.empty()) {
@@ -89,7 +91,7 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   if (find_stream_info_) {
     /* If not enough info to get the stream parameters, we decode the
        first frames to get it. (used in mpeg case for example) */
-    ret = avformat_find_stream_info(ifmt_ctx, nullptr);
+    ret = avformat_find_stream_info(ifmt_ctx, &decoder_opts_);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Cannot find stream information '%s': %s\n",
              filename.c_str(), av_err2str(ret));
@@ -167,6 +169,9 @@ int InputFile::read_video_frames(std::vector<Frame> &video_frames,
   if (batch_size <= 0) {
     batch_size = 1;
   }
+  if (first_video_stream_index_ < 0) {
+    return -1;
+  }
   auto &ist = input_streams_[first_video_stream_index_];
 
   SCOPE_EXIT { finished = eof_reached_ && ist->frames_.empty(); };
@@ -205,6 +210,8 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
   int ret = 0;
   while (!stop_waiting()) {
     int disable_discontinuity_correction = copy_ts_;
+
+    av_packet_unref(pkt_);
     ret = av_read_frame(ifmt_ctx_.get(), pkt_);
     if (ret == AVERROR(EAGAIN)) {
       av_usleep(10000);
@@ -227,6 +234,20 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
              "failed to av_read_frame for input file #%d: %s\n", file_index_,
              av_err2str(ret));
       return ret;
+    }
+
+    if (eof_reached_) {
+      for (unsigned int stream_index = 0; stream_index < input_streams_.size();
+           stream_index++) {
+        auto &ist = input_streams_[stream_index];
+        // const auto &st = ist->av_stream();
+        ret = process_input_packet(ist, eof_reached_ ? nullptr : pkt_, false);
+        if (ret < 0) {
+          return ret;
+        }
+      }
+
+      return 0;
     }
 
     const auto &pkt = pkt_;
@@ -408,16 +429,18 @@ int InputFile::add_input_streams() {
        stream_id++) {
     bool discard_stream = false;
     AVStream *st = ifmt_ctx_->streams[stream_id];
+
     std::shared_ptr<InputStream> ist =
         std::make_shared<InputStream>(ifmt_ctx_, st, file_index_, stream_id);
     ist->discard_ = AVDISCARD_DEFAULT;
-    st->discard = AVDISCARD_ALL;
+    st->discard = AVDISCARD_NONE;
 
     int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st,
                                    "autorotate", ist->autorotate_);
     if (ret != 0) {
       return ret;
     }
+
     ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st,
                                "ts_scale", ist->ts_scale_);
     if (ret != 0) {
@@ -429,6 +452,7 @@ int InputFile::add_input_streams() {
     if (ret != 0) {
       return ret;
     }
+
     ist->dec_ = dec;
     ist->decoder_opts_ = filter_codec_opts(
         decoder_opts_, st->codecpar->codec_id, ifmt_ctx_.get(), st, ist->dec_);
