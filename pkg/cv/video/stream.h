@@ -23,6 +23,7 @@ class Stream {
 
  public:
   std::weak_ptr<AVFormatContext> fmt_ctx_;
+  // AVFormatContext *fmt_ctx_;
   AVStream *st_;
   int file_index_ = 0;
   unsigned int stream_index_ = 0;
@@ -35,6 +36,10 @@ class Stream {
   AVDictionary *sws_dict_ = nullptr;
   AVDictionary *swr_opts_ = nullptr;
   bool reinit_filters_ = false;
+
+  AVRational framerate_; /* framerate forced with -r */
+  int top_field_first_ = -1;
+  int autorotate_ = 1;
 
   int64_t frame_number_ = 0;
   std::vector<Frame> frames_;

@@ -7,6 +7,7 @@
 extern "C" {
 #include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
+#include "libavformat/avformat.h"
 #include "libavutil/avassert.h"
 #include "libavutil/bprint.h"
 #include "libavutil/fifo.h"
@@ -197,7 +198,118 @@ int InputFilter::configure_input_filter(AVFilterInOut *in) {
   }
 }
 
-int InputFilter::configure_input_video_filter(AVFilterInOut *in) { return 0; }
+int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
+  auto const &ist = ist_.lock();
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+
+  const auto &st = ist->av_stream();
+  if (!st) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+
+  // AVFilterContext *last_filter;
+  int ret = 0;
+  if (ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) {
+    av_log(this, AV_LOG_ERROR, "Cannot connect video filter to audio input\n");
+    ret = AVERROR(EINVAL);
+    return ret;
+  }
+
+  AVRational fr = ist->codec_ctx_->framerate;
+  if (!fr.num) {
+    //  fr = av_guess_frame_rate(ist->fmt_ctx_.lock(), st, nullptr);
+  }
+  AVRational sar = sample_aspect_ratio_;
+  if (!sar.den) {
+    sar = (AVRational){0, 1};
+  }
+
+  AVBPrint args;
+  AVRational tb = ist->codec_ctx_->time_base;
+  av_bprint_init(&args, 0, AV_BPRINT_SIZE_AUTOMATIC);
+  av_bprintf(&args,
+             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+             width_, height_, format_, tb.num, tb.den, sar.num, sar.den);
+  if (fr.num && fr.den) {
+    av_bprintf(&args, ":frame_rate=%d/%d", fr.num, fr.den);
+  }
+
+  char name[255];
+  snprintf(name, sizeof(name), "buffer_in_%d_%d", ist->file_index_,
+           ist->stream_index_);
+
+  const AVFilter *buffer_filt = avfilter_get_by_name("buffer");
+  // AVFilterContext *ctx;
+
+  auto const &graph = graph_.lock();
+  if (!graph) {
+    return AVERROR_FILTER_NOT_FOUND;
+  }
+
+  auto filter = filter_.get();
+  ret = avfilter_graph_create_filter(&filter, buffer_filt, name, args.str,
+                                     nullptr, graph->filter_graph_.get());
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Cannot create filter %s: %s\n", name,
+           av_err2str(ret));
+    return ret;
+  }
+  AVFilterContext *last_filter;
+  last_filter = filter;
+
+  const AVPixFmtDescriptor *desc =
+      av_pix_fmt_desc_get(static_cast<AVPixelFormat>(format_));
+  av_assert0(desc);
+
+  int pad_idx = 0;
+
+  // TODO: insert hwaccel enabled filters like transpose_vaapi into the graph
+  if (ist->autorotate_ && !(desc->flags & AV_PIX_FMT_FLAG_HWACCEL)) {
+    int32_t *displaymatrix = display_matrix_;
+    if (!displaymatrix) {
+      displaymatrix = (int32_t *)av_stream_get_side_data(
+          st, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+    }
+
+    double theta = FilterGraph::get_rotation(displaymatrix);
+    snprintf(name, sizeof(name), "in-rotation_%d_%d", ist->file_index_,
+             ist->stream_index_);
+    if (fabs(theta - 90) < 1.0) {
+      ret = FilterGraph::insert_filter(
+          &last_filter, &pad_idx, "transpose",
+          displaymatrix && displaymatrix[3] > 0 ? "cclock_flip" : "clock");
+    } else if (fabs(theta - 180) < 1.0) {
+      if (displaymatrix && displaymatrix[0] < 0) {
+        ret = FilterGraph::insert_filter(&last_filter, &pad_idx, "hflip",
+                                         nullptr);
+        if (ret < 0) {
+          return ret;
+        }
+      }
+      if (displaymatrix && displaymatrix[4] < 0) {
+        ret = FilterGraph::insert_filter(&last_filter, &pad_idx, "vflip",
+                                         nullptr);
+      }
+    } else if (fabs(theta - 270) < 1.0) {
+      ret = FilterGraph::insert_filter(
+          &last_filter, &pad_idx, "transpose",
+          displaymatrix && displaymatrix[3] < 0 ? "clock_flip" : "cclock");
+    } else if (fabs(theta) > 1.0) {
+      char rotate_buf[64];
+      snprintf(rotate_buf, sizeof(rotate_buf), "%f*PI/180", theta);
+      ret = FilterGraph::insert_filter(&last_filter, &pad_idx, "rotate",
+                                       rotate_buf);
+    } else if (fabs(theta) < 1.0) {
+      if (displaymatrix && displaymatrix[4] < 0) {
+        ret = FilterGraph::insert_filter(&last_filter, &pad_idx, "vflip",
+                                         nullptr);
+      }
+    }
+  }
+  return ret;
+}
 
 int InputFilter::configure_input_audio_filter(AVFilterInOut *in) { return 0; }
 
