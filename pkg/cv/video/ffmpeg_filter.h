@@ -28,6 +28,10 @@ class FilterGraph {
   int configure_filtergraph();
   int reap_filters();
 
+  static int insert_filter(AVFilterContext **last_filter, int *pad_idx,
+                           const char *filter_name, const char *args);
+  static double get_rotation(int32_t *displaymatrix);
+
  public:
   std::shared_ptr<AVFilterGraph> filter_graph_;
   std::vector<std::shared_ptr<InputFilter>> inputs_;

@@ -5,6 +5,7 @@
 
 extern "C" {
 #include "libavutil/avstring.h"
+#include "libavutil/display.h"
 #include "libavutil/opt.h"
 };
 
@@ -101,6 +102,56 @@ int FilterGraph::configure_filtergraph() {
 }
 
 int FilterGraph::reap_filters() { return 0; }
+
+int FilterGraph::insert_filter(AVFilterContext **last_filter, int *pad_idx,
+                               const char *filter_name, const char *args) {
+  AVFilterGraph *graph = (*last_filter)->graph;
+  int ret = 0;
+  const AVFilter *filter = avfilter_get_by_name(filter_name);
+  if (!filter) {
+    av_log(nullptr, AV_LOG_ERROR, "filtering %s element not found\n",
+           filter_name);
+    return AVERROR_UNKNOWN;
+  }
+
+  AVFilterContext *ctx;
+  ret = avfilter_graph_create_filter(&ctx, filter, filter_name, args, nullptr,
+                                     graph);
+  if (ret < 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Cannot create filter %s: %s\n", filter_name,
+           av_err2str(ret));
+    return ret;
+  }
+
+  ret = avfilter_link(*last_filter, *pad_idx, ctx, 0);
+  if (ret < 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Cannot link filter %s: %s\n", filter_name,
+           av_err2str(ret));
+    return ret;
+  }
+  *last_filter = ctx;
+  *pad_idx = 0;
+  return 0;
+}
+
+double FilterGraph::get_rotation(int32_t *displaymatrix) {
+  double theta = 0;
+  if (displaymatrix) {
+    theta = -round(av_display_rotation_get((int32_t *)displaymatrix));
+  }
+
+  theta -= 360 * floor(theta / 360 + 0.9 / 360);
+
+  if (fabs(theta - 90 * round(theta / 90)) > 2) {
+    av_log(nullptr, AV_LOG_WARNING,
+           "Odd rotation angle.\n"
+           "If you want to help, upload a sample "
+           "of this file to https://streams.videolan.org/upload/ "
+           "and contact the ffmpeg-devel mailing list. "
+           "(ffmpeg-devel@ffmpeg.org)\n");
+  }
+  return theta;
+}
 
 }  // namespace cv
 }  // namespace kingfisher

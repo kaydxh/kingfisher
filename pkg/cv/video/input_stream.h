@@ -75,11 +75,9 @@ class InputStream : public Stream {
   bool saw_first_ts_ = false;
 
   AVDictionary *decoder_opts_ = nullptr;
-  AVRational framerate_; /* framerate forced with -r */
-  int top_field_first_ = -1;
+  // AVRational framerate_; /* framerate forced with -r */
+  // int top_field_first_ = -1;
   int guess_layout_max_ = INT_MAX;
-
-  int autorotate_ = 1;
 
   int fix_sub_duration = 0;
   const AVCodec *dec_ = nullptr;
