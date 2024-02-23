@@ -1,6 +1,7 @@
 #include "ffmpeg_filter.h"
 
 #include "ffmpeg_error.h"
+#include "input_filter.h"
 #include "stream.h"
 
 extern "C" {
@@ -12,7 +13,7 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
-FilterGraph::FilterGraph() {}
+FilterGraph::FilterGraph(std::weak_ptr<Stream> stream) : stream_(stream) {}
 FilterGraph::~FilterGraph() {}
 
 void FilterGraph::cleanup_filtergraph() {
@@ -20,6 +21,14 @@ void FilterGraph::cleanup_filtergraph() {
   outputs_.clear();
   AVFilterGraph *fg = filter_graph_.get();
   avfilter_graph_free(&fg);
+}
+
+int FilterGraph::init_simple_filtergraph() {
+  inputs_.emplace_back(
+      std::make_shared<InputFilter>(shared_from_this(), stream_));
+  // outputs_.emplace_back(
+  //    std::make_shared<OutputFilter>(shared_from_this(), stream_));
+  return 0;
 }
 
 static int filter_is_buffersrc(const AVFilterContext *f) {
@@ -52,7 +61,7 @@ int FilterGraph::configure_filtergraph() {
   int ret = 0;
   const AVDictionaryEntry *e = nullptr;
 
-  const std::shared_ptr<Stream> &ost = output_stream_.lock();
+  const std::shared_ptr<Stream> &ost = stream_.lock();
   if (!ost) {
     return AVERROR_STREAM_NOT_FOUND;
   }
@@ -151,6 +160,41 @@ double FilterGraph::get_rotation(int32_t *displaymatrix) {
            "(ffmpeg-devel@ffmpeg.org)\n");
   }
   return theta;
+}
+
+int FilterGraph::send_frame_to_filters(
+    const std::shared_ptr<AVFrame> &decoded_frame) {
+  int ret = 0;
+  for (unsigned int i = 0; i < inputs_.size(); i++) {
+    ret = inputs_[i]->ifilter_send_frame(decoded_frame, i < inputs_.size() - 1);
+    if (ret == AVERROR_EOF) {
+      ret = 0; /* ignore */
+    }
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR,
+             "Failed to inject frame into filter network: %s\n",
+             av_err2str(ret));
+      break;
+    }
+  }
+  return ret;
+}
+
+int FilterGraph::send_filter_eof(int64_t pts) {
+  int ret = 0;
+  for (unsigned int i = 0; i < inputs_.size(); i++) {
+    ret = inputs_[i]->ifilter_send_eof(pts);
+    if (ret == AVERROR_EOF) {
+      ret = 0; /* ignore */
+    }
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR,
+             "Failed to inject frame into filter network: %s\n",
+             av_err2str(ret));
+      break;
+    }
+  }
+  return ret;
 }
 
 }  // namespace cv

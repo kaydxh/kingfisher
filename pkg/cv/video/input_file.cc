@@ -4,6 +4,7 @@
 
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
+#include "ffmpeg_filter.h"
 #include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
@@ -156,12 +157,15 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   /* update the current parameters so that they match the one of the input
    * stream */
-  add_input_streams();
+  ret = add_input_streams();
+  if (ret < 0) {
+    return ret;
+  }
 
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
 
-  return 0;
+  return init_filters();
 }
 
 int InputFile::read_video_frames(std::vector<Frame> &video_frames,
@@ -170,9 +174,12 @@ int InputFile::read_video_frames(std::vector<Frame> &video_frames,
     batch_size = 1;
   }
   if (first_video_stream_index_ < 0) {
-    return -1;
+    return AVERROR_STREAM_NOT_FOUND;
   }
   auto &ist = input_streams_[first_video_stream_index_];
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
 
   SCOPE_EXIT { finished = eof_reached_ && ist->frames_.empty(); };
   int ret = read_frames([&]() {
@@ -230,7 +237,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
              "Going to flush all filters for input file #%d\n", file_index_);
 
     } else if (ret < 0) {
-      av_log(this, AV_LOG_ERROR,
+      av_log(nullptr, AV_LOG_ERROR,
              "failed to av_read_frame for input file #%d: %s\n", file_index_,
              av_err2str(ret));
       return ret;
@@ -562,8 +569,9 @@ int InputFile::add_input_streams() {
     /* init input streams */
     ret = ist->init_input_stream();
     if (ret < 0) {
-      av_log(this, AV_LOG_ERROR, "Failed to init input stream #%d:%d -- %s\n",
-             file_index_, stream_id, av_err2str(ret));
+      av_log(nullptr, AV_LOG_ERROR,
+             "Failed to init input stream #%d:%d -- %s\n", file_index_,
+             stream_id, av_err2str(ret));
       return ret;
     }
 
@@ -955,8 +963,7 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     decoded_frame->sample_aspect_ratio = st->sample_aspect_ratio;
   }
 
-  // todo
-  //  err = send_frame_to_filters(ist, decoded_frame);
+  ret = send_frame_to_filters(ist, decoded_frame);
   av_frame_unref(decoded_frame.get());
   return ret;
 }
@@ -1038,8 +1045,7 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
   }
 
   ist->nb_samples_ = decoded_frame->nb_samples;
-  // todo
-  // err = send_frame_to_filters(ist, decoded_frame);
+  ret = send_frame_to_filters(ist, decoded_frame);
   av_frame_unref(decoded_frame.get());
 
   return ret;
@@ -1079,18 +1085,46 @@ int InputFile::send_filter_eof(const std::shared_ptr<InputStream> &ist) {
   // int i = 0;
   // int ret = 0;
   /* TODO keep pts also in stream time base to avoid converting back */
+  const auto &stream_index = ist->stream_index_;
+  const auto &ifilt = input_streams_[stream_index]->ifilt_;
   int64_t pts = av_rescale_q_rnd(
       ist->pts_, AV_TIME_BASE_Q, st->time_base,
       static_cast<AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 
-  return ist->filter_->ifilter_send_eof(pts);
+  return ifilt->send_filter_eof(pts);
 }
 
 int InputFile::send_frame_to_filters(
     const std::shared_ptr<InputStream> &ist,
     const std::shared_ptr<AVFrame> &decoded_frame) {
-  // const auto &stream_index = ist->stream_index_;
-  //
+  const auto &stream_index = ist->stream_index_;
+  const auto &ifilt = input_streams_[stream_index]->ifilt_;
+  if (ifilt) {
+    ifilt->send_frame_to_filters(decoded_frame);
+  }
+  return 0;
+}
+
+int InputFile::init_filters() {
+  int ret = 0;
+  for (unsigned int i = 0; i < ifmt_ctx_->nb_streams; i++) {
+    if (!(ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO ||
+          ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)) {
+      continue;
+    }
+    auto &ist = input_streams_[i];
+    auto fg = std::make_shared<FilterGraph>(ist);
+    ret = fg->init_simple_filtergraph();
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Failed to init simple filtergraph"
+             "%d:%d\n",
+             ist->file_index_, ist->stream_index_);
+      return ret;
+    }
+    ist->ifilt_ = fg;
+  }
+
   return 0;
 }
 
