@@ -12,7 +12,7 @@ InputStream::~InputStream() { av_dict_free(&decoder_opts_); }
 int InputStream::init_input_stream() {
   if (decoding_needed_) {
     // const AVCodec *codec = codec_;
-    if (!codec_) {
+    if (!dec_) {
       return AVERROR(EINVAL);
     }
 
@@ -26,7 +26,7 @@ int InputStream::init_input_stream() {
     }
 
     // todo  hw
-    int ret = avcodec_open2(codec_ctx_.get(), codec_.get(), &decoder_opts_);
+    int ret = avcodec_open2(codec_ctx_.get(), dec_, &decoder_opts_);
     if (ret < 0) {
       /*
     snprintf(error, error_len,

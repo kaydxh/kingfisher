@@ -56,6 +56,8 @@ class InputFile {
 
   int stream_copy(const std::shared_ptr<InputStream> &ist, AVPacket *packet);
 
+  int init_filters();
+
  public:
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ifmt_ctx_;

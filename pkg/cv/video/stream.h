@@ -28,7 +28,7 @@ class Stream {
   int file_index_ = 0;
   unsigned int stream_index_ = 0;
   std::shared_ptr<AVCodecContext> codec_ctx_;  // for decode or encode
-  std::shared_ptr<AVCodec> codec_;             // for decode or encode
+  // std::shared_ptr<AVCodec> codec_;             // for decode or encode
   std::shared_ptr<AVFrame> frame_;
   std::shared_ptr<AVPacket> pkt_;
 

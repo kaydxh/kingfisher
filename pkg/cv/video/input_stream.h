@@ -33,9 +33,9 @@ class InputStream : public Stream {
   int guess_input_channel_layout();
 
  public:
-  bool discard_ = false;         /* true if stream data should be discarded */
-  bool decoding_needed_ = false; /* non zero if the packets must be decoded in
-                          'raw_fifo', see DECODING_FOR_* */
+  bool discard_ = false;        /* true if stream data should be discarded */
+  bool decoding_needed_ = true; /* non zero if the packets must be decoded in
+                         'raw_fifo', see DECODING_FOR_* */
 #define DECODING_FOR_OST 1
 #define DECODING_FOR_FILTER 2
   int processing_needed_ = 0; /* non zero if the packets must be processed */
@@ -85,30 +85,11 @@ class InputStream : public Stream {
 
   std::string canvas_size_;
   bool got_output_ = false;
-#if 0
-  struct { /* previous decoded subtitle and related variables */
-    int got_output;
-    int ret;
-    AVSubtitle subtitle;
-  } prev_sub;
-
-  struct sub2video {
-    int64_t last_pts;
-    int64_t end_pts;
-    AVFifo *sub_queue;  ///< queue of AVSubtitle* before filter init
-    AVFrame *frame;
-    int w, h;
-    unsigned int initialize;  ///< marks if sub2video_update should force an
-                              ///< initialization
-  } sub2video;
-#endif
+  std::shared_ptr<FilterGraph> ifilt_;
 
   /* decoded data from this stream goes into all those filters
    * currently video and audio only */
-  std::shared_ptr<InputFilter> filter_;
-  // int nb_filters;
-
-  // int reinit_filters_ = -1;
+  // std::shared_ptr<InputFilter> filter_;
 
   /* hwaccel options */
   enum HWAccelID hwaccel_id_ = HWACCEL_NONE;

@@ -177,7 +177,7 @@ int InputFilter::configure_input_filter(AVFilterInOut *in) {
   if (!ist) {
     return AVERROR_STREAM_NOT_FOUND;
   }
-  if (!ist->codec_) {
+  if (!ist->codec_ctx_) {
     av_log(this, AV_LOG_ERROR, "No decoder, filtering impossible\n");
     return AVERROR_DECODER_NOT_FOUND;
   }
@@ -209,7 +209,6 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
     return AVERROR_STREAM_NOT_FOUND;
   }
 
-  // AVFilterContext *last_filter;
   int ret = 0;
   if (ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) {
     av_log(this, AV_LOG_ERROR, "Cannot connect video filter to audio input\n");
@@ -308,6 +307,12 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
       }
     }
   }
+
+  if ((ret = avfilter_link(last_filter, pad_idx, in->filter_ctx, in->pad_idx)) <
+      0) {
+    return ret;
+  }
+
   return ret;
 }
 

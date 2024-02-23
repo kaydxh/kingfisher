@@ -18,9 +18,9 @@ class InputFilter;
 class OutputFilter;
 class Stream;
 
-class FilterGraph {
+class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
  public:
-  FilterGraph();
+  FilterGraph(std::weak_ptr<Stream> stream);
   ~FilterGraph();
 
   int filtergraph_is_simple();
@@ -32,12 +32,18 @@ class FilterGraph {
                            const char *filter_name, const char *args);
   static double get_rotation(int32_t *displaymatrix);
 
+  int send_frame_to_filters(const std::shared_ptr<AVFrame> &decoded_frame);
+
+  int send_filter_eof(int64_t pts);
+
+  int init_simple_filtergraph();
+
  public:
   std::shared_ptr<AVFilterGraph> filter_graph_;
   std::vector<std::shared_ptr<InputFilter>> inputs_;
   std::vector<std::shared_ptr<OutputFilter>> outputs_;
 
-  std::weak_ptr<Stream> output_stream_;
+  std::weak_ptr<Stream> stream_;
 
   std::string graph_desc_;
   int reconfiguration_ = 0;
