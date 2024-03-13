@@ -37,7 +37,8 @@ class InputFilter {
 
  public:
   const AVClass *av_class_ = nullptr;
-  std::shared_ptr<AVFilterContext> filter_;
+  // std::shared_ptr<AVFilterContext> filter_;
+  AVFilterContext *filter_;
   // 避免相互引用
   std::weak_ptr<FilterGraph> graph_;
   std::weak_ptr<Stream> ist_;

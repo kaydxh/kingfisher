@@ -113,14 +113,13 @@ int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
 
     ret = fg->configure_filtergraph();
     if (ret < 0) {
-      av_log(this, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
+      av_log(nullptr, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
              av_err2str(ret));
       return ret;
     }
   }
 
-  ret =
-      av_buffersrc_add_frame_flags(filter_.get(), frame.get(), buffersrc_flags);
+  ret = av_buffersrc_add_frame_flags(filter_, frame.get(), buffersrc_flags);
   if (ret < 0) {
     if (ret != AVERROR_EOF)
       av_log(this, AV_LOG_ERROR, "Error while filtering: %s\n",
@@ -209,6 +208,8 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
     return AVERROR_STREAM_NOT_FOUND;
   }
 
+  AVFilterContext *last_filter = nullptr;
+
   int ret = 0;
   if (ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) {
     av_log(this, AV_LOG_ERROR, "Cannot connect video filter to audio input\n");
@@ -240,23 +241,21 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
            ist->stream_index_);
 
   const AVFilter *buffer_filt = avfilter_get_by_name("buffer");
-  // AVFilterContext *ctx;
+  filter_ = in->filter_ctx;
 
   auto const &graph = graph_.lock();
   if (!graph) {
     return AVERROR_FILTER_NOT_FOUND;
   }
 
-  auto filter = filter_.get();
-  ret = avfilter_graph_create_filter(&filter, buffer_filt, name, args.str,
+  ret = avfilter_graph_create_filter(&last_filter, buffer_filt, name, args.str,
                                      nullptr, graph->filter_graph_.get());
   if (ret < 0) {
     av_log(this, AV_LOG_ERROR, "Cannot create filter %s: %s\n", name,
            av_err2str(ret));
     return ret;
   }
-  AVFilterContext *last_filter;
-  last_filter = filter;
+  filter_ = last_filter;
 
   const AVPixFmtDescriptor *desc =
       av_pix_fmt_desc_get(static_cast<AVPixelFormat>(format_));
@@ -323,7 +322,7 @@ int InputFilter::ifilter_send_eof(int64_t pts) {
   eof_ = true;
 
   if (filter_) {
-    ret = av_buffersrc_close(filter_.get(), pts, AV_BUFFERSRC_FLAG_PUSH);
+    ret = av_buffersrc_close(filter_, pts, AV_BUFFERSRC_FLAG_PUSH);
     if (ret < 0) {
       return ret;
     }
