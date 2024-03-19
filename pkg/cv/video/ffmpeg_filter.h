@@ -20,7 +20,7 @@ class Stream;
 
 class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
  public:
-  FilterGraph(std::weak_ptr<Stream> stream);
+  FilterGraph(std::weak_ptr<Stream> stream, const std::string &graph_desc);
   ~FilterGraph();
 
   int filtergraph_is_simple();
@@ -39,6 +39,7 @@ class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
   int init_simple_filtergraph();
 
  public:
+  const AVClass *av_class_ = nullptr;
   std::shared_ptr<AVFilterGraph> filter_graph_;
   std::vector<std::shared_ptr<InputFilter>> inputs_;
   std::vector<std::shared_ptr<OutputFilter>> outputs_;
@@ -46,11 +47,12 @@ class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
   std::weak_ptr<Stream> stream_;
 
   std::string graph_desc_;
-  int reconfiguration_ = 0;
+  bool reconfiguration_ = false;
   // true when the filtergraph contains only meta filters
   // that do not modify the frame data
   bool is_meta_ = false;
   int filter_nbthreads_ = 0;
+  bool auto_conversion_filters_ = true;
 };
 
 }  // namespace cv

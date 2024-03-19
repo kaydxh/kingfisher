@@ -1112,8 +1112,15 @@ int InputFile::init_filters() {
           ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)) {
       continue;
     }
+    std::string filter_spec;
+    if (ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+      filter_spec = "null"; /* passthrough (dummy) filter for video */
+    } else {
+      filter_spec = "anull";
+    }
+
     auto &ist = input_streams_[i];
-    auto fg = std::make_shared<FilterGraph>(ist);
+    auto fg = std::make_shared<FilterGraph>(ist, filter_spec);
     ret = fg->init_simple_filtergraph();
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR,

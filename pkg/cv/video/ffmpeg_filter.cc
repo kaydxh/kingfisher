@@ -5,15 +5,27 @@
 #include "stream.h"
 
 extern "C" {
+#include "libavfilter/buffersrc.h"
 #include "libavutil/avstring.h"
 #include "libavutil/display.h"
 #include "libavutil/opt.h"
+
+static const AVClass filter_graph_class = {
+    .class_name = "Filter Graph",
+    .item_name = av_default_item_name,
+    .option = nullptr,
+    .version = LIBAVUTIL_VERSION_INT,
+};
 };
 
 namespace kingfisher {
 namespace cv {
 
-FilterGraph::FilterGraph(std::weak_ptr<Stream> stream) : stream_(stream) {}
+FilterGraph::FilterGraph(std::weak_ptr<Stream> stream,
+                         const std::string &graph_desc)
+    : av_class_(&filter_graph_class),
+      stream_(stream),
+      graph_desc_(graph_desc) {}
 FilterGraph::~FilterGraph() {}
 
 void FilterGraph::cleanup_filtergraph() {
@@ -105,6 +117,48 @@ int FilterGraph::configure_filtergraph() {
   if ((ret = avfilter_graph_parse2(filter_graph_.get(), graph_desc_.c_str(),
                                    &inputs, &outputs)) < 0) {
     return ret;
+  }
+  // todo
+  //
+  AVFilterInOut *cur = nullptr;
+  int i;
+  for (cur = inputs, i = 0; cur; cur = cur->next, i++) {
+    if ((ret = inputs_[i]->configure_input_filter(cur)) < 0) {
+      return ret;
+    }
+  }
+
+  if (!auto_conversion_filters_) {
+    avfilter_graph_set_auto_convert(filter_graph_.get(),
+                                    AVFILTER_AUTO_CONVERT_NONE);
+  }
+  if ((ret = avfilter_graph_config(filter_graph_.get(), nullptr)) < 0) {
+    return ret;
+  }
+
+  is_meta_ = graph_is_meta(filter_graph_.get());
+
+  reconfiguration_ = true;
+
+  for (auto &ifilter : inputs_) {
+    AVFrame *tmp;
+    while (av_fifo_read(ifilter->frame_queue_.get(), &tmp, 1) >= 0) {
+      ret = av_buffersrc_add_frame(ifilter->filter_, tmp);
+      av_frame_free(&tmp);
+      if (ret < 0) {
+        return ret;
+      }
+    }
+  }
+
+  /* send the EOFs for the finished inputs */
+  for (auto &ifilter : inputs_) {
+    if (ifilter->eof_) {
+      ret = av_buffersrc_add_frame(ifilter->filter_, nullptr);
+      if (ret < 0) {
+        return ret;
+      }
+    }
   }
 
   return 0;
