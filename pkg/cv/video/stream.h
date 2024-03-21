@@ -7,6 +7,7 @@
 
 extern "C" {
 #include "libavcodec/avcodec.h"
+#include "libavfilter/avfilter.h"
 #include "libavformat/avformat.h"
 };
 #include <memory>
@@ -20,6 +21,8 @@ class Stream {
          unsigned int stream_index);
   ~Stream();
   virtual AVStream *av_stream() const;
+
+  std::string choose_pix_fmts(AVFilterGraph *graph) const;
 
  public:
   std::weak_ptr<AVFormatContext> fmt_ctx_;
@@ -40,9 +43,11 @@ class Stream {
   AVRational framerate_; /* framerate forced with -r */
   int top_field_first_ = -1;
   int autorotate_ = 1;
+  bool autoscale_ = true;
 
   int64_t frame_number_ = 0;
   std::vector<Frame> frames_;
+  bool keep_pix_fmt_ = false;
 };
 
 }  // namespace cv

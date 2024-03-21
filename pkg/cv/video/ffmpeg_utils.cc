@@ -4,6 +4,13 @@
 extern "C" {
 #include "libavutil/avutil.h"
 #include "libavutil/opt.h"
+#include "libavutil/pixdesc.h"
+static const AVClass ffmpeg_util_class = {
+    .class_name = "FFmpeg Util",
+    .item_name = av_default_item_name,
+    .option = nullptr,
+    .version = LIBAVUTIL_VERSION_INT,
+};
 }
 
 namespace kingfisher {
@@ -131,6 +138,55 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
     }
   }
   return ret;
+}
+
+// FIXME: YUV420P etc. are actually supported with full color range,
+// yet the latter information isn't available here.
+const AVPixelFormat *get_compliance_normal_pix_fmts(
+    const AVCodec *codec, const AVPixelFormat default_formats[]) {
+  static const enum AVPixelFormat mjpeg_formats[] = {
+      AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ444P,
+      AV_PIX_FMT_NONE};
+
+  if (!strcmp(codec->name, "mjpeg")) {
+    return mjpeg_formats;
+  } else {
+    return default_formats;
+  }
+}
+
+AVPixelFormat choose_pixel_fmt(const AVStream *st, AVCodecContext *enc_ctx,
+                               const AVCodec *codec,
+                               enum AVPixelFormat target) {
+  if (codec && codec->pix_fmts) {
+    // FIXME: take null as all pix fmts
+    const enum AVPixelFormat *p = codec->pix_fmts;
+
+    const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(target);
+    // FIXME: This should check for AV_PIX_FMT_FLAG_ALPHA after PAL8 pixel
+    // format without alpha is implemented
+    int has_alpha = desc ? desc->nb_components % 2 == 0 : 0;
+    enum AVPixelFormat best = AV_PIX_FMT_NONE;
+
+    if (enc_ctx->strict_std_compliance > FF_COMPLIANCE_UNOFFICIAL) {
+      p = get_compliance_normal_pix_fmts(codec, p);
+    }
+    for (; *p != AV_PIX_FMT_NONE; p++) {
+      best = av_find_best_pix_fmt_of_2(best, *p, target, has_alpha, nullptr);
+      if (*p == target) break;
+    }
+    if (*p == AV_PIX_FMT_NONE) {
+      if (target != AV_PIX_FMT_NONE) {
+        av_log(nullptr, AV_LOG_WARNING,
+               "Incompatible pixel format '%s' for codec '%s', auto-selecting "
+               "format '%s'\n",
+               av_get_pix_fmt_name(target), codec->name,
+               av_get_pix_fmt_name(best));
+      }
+      return best;
+    }
+  }
+  return target;
 }
 
 }  // namespace cv
