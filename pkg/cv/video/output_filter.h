@@ -18,11 +18,18 @@ class FilterGraph;
 
 class OutputFilter {
  public:
-  OutputFilter();
+  OutputFilter(const std::shared_ptr<FilterGraph> &fg,
+               const std::weak_ptr<Stream> &ost);
   ~OutputFilter();
 
+  int configure_output_filter(AVFilterInOut *out);
+  int configure_output_video_filter(AVFilterInOut *in);
+  int configure_output_audio_filter(AVFilterInOut *in);
+
  public:
-  std::shared_ptr<AVFilterContext> filter_;
+  const AVClass *av_class_ = nullptr;
+  AVFilterContext *filter_;
+  std::weak_ptr<FilterGraph> graph_;
   std::weak_ptr<Stream> ost_;
   std::string name_;
   enum AVMediaType type_;  //  AVMEDIA_TYPE_SUBTITLE for sub2video

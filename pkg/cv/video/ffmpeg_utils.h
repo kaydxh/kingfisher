@@ -142,6 +142,12 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
                                 AVFormatContext *s, AVStream *st,
                                 const AVCodec *codec);
 
+const AVPixelFormat *get_compliance_normal_pix_fmts(
+    const AVCodec *codec, const AVPixelFormat default_formats[]);
+
+AVPixelFormat choose_pixel_fmt(const AVStream *st, AVCodecContext *enc_ctx,
+                               const AVCodec *codec, AVPixelFormat target);
+
 }  // namespace cv
 }  // namespace kingfisher
 

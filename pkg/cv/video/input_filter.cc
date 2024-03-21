@@ -315,7 +315,66 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
   return ret;
 }
 
-int InputFilter::configure_input_audio_filter(AVFilterInOut *in) { return 0; }
+int InputFilter::configure_input_audio_filter(AVFilterInOut *in) {
+  auto const &ist = ist_.lock();
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  const auto &st = ist->av_stream();
+  if (!st) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+
+  AVFilterContext *last_filter;
+  int ret = 0;
+  if (ist->codec_ctx_->codec_type != AVMEDIA_TYPE_AUDIO) {
+    av_log(this, AV_LOG_ERROR,
+           "Cannot connect audio filter to non audio input\n");
+    ret = AVERROR(EINVAL);
+    return ret;
+  }
+
+  AVBPrint args;
+  av_bprint_init(&args, 0, AV_BPRINT_SIZE_AUTOMATIC);
+  av_bprintf(&args, "time_base=%d/%d:sample_rate=%d:sample_fmt=%s",
+             ist->codec_ctx_->time_base.num, ist->codec_ctx_->time_base.den,
+             sample_rate_,
+             av_get_sample_fmt_name(static_cast<AVSampleFormat>(format_)));
+
+  if (av_channel_layout_check(&ch_layout_) &&
+      ch_layout_.order != AV_CHANNEL_ORDER_UNSPEC) {
+    av_bprintf(&args, ":channel_layout=");
+    av_channel_layout_describe_bprint(&ch_layout_, &args);
+  } else {
+    av_bprintf(&args, ":channels=%d", ch_layout_.nb_channels);
+  }
+  last_filter = in->filter_ctx;
+
+  char name[255];
+  snprintf(name, sizeof(name), "abuffer_in_%d_%d", ist->file_index_,
+           ist->stream_index_);
+  const AVFilter *abuffer_filt = avfilter_get_by_name("abuffer");
+
+  auto const &graph = graph_.lock();
+  if (!graph) {
+    return AVERROR_FILTER_NOT_FOUND;
+  }
+
+  ret = avfilter_graph_create_filter(&last_filter, abuffer_filt, name, args.str,
+                                     nullptr, graph->filter_graph_.get());
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Cannot create filter %s: %s\n", name,
+           av_err2str(ret));
+    return ret;
+  }
+  filter_ = last_filter;
+
+  if ((ret = avfilter_link(last_filter, 0, in->filter_ctx, in->pad_idx)) < 0) {
+    return ret;
+  }
+
+  return 0;
+}
 
 int InputFilter::ifilter_send_eof(int64_t pts) {
   int ret = 0;
