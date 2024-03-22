@@ -1,5 +1,6 @@
 #include "input_filter.h"
 
+#include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
 #include "stream.h"
@@ -26,9 +27,13 @@ namespace cv {
 
 InputFilter::InputFilter(const std::shared_ptr<FilterGraph> &fg,
                          const std::weak_ptr<Stream> &ist)
-    : av_class_(&input_filter_class), graph_(fg), ist_(ist) {}
+    : av_class_(&input_filter_class), graph_(fg), ist_(ist) {
+  frame_queue_ = std::shared_ptr<AVFifo>(
+      av_fifo_alloc2(8, sizeof(AVFifo *), AV_FIFO_FLAG_AUTO_GROW),
+      [](AVFifo *p) { av_fifo_freep2(&p); });
+}
 
-InputFilter::~InputFilter() {}
+InputFilter::~InputFilter() { av_freep(&display_matrix_); }
 
 int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
                                     int keep_reference) {
@@ -219,7 +224,7 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
 
   AVRational fr = ist->codec_ctx_->framerate;
   if (!fr.num) {
-    //  fr = av_guess_frame_rate(ist->fmt_ctx_.lock(), st, nullptr);
+    // fr = av_guess_frame_rate(ist->fmt_ctx_.lock(), st, nullptr);
   }
   AVRational sar = sample_aspect_ratio_;
   if (!sar.den) {
@@ -227,6 +232,8 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
   }
 
   AVBPrint args;
+  SCOPE_EXIT { av_bprint_finalize(&args, nullptr); };
+
   AVRational tb = ist->codec_ctx_->time_base;
   av_bprint_init(&args, 0, AV_BPRINT_SIZE_AUTOMATIC);
   av_bprintf(&args,
@@ -335,6 +342,9 @@ int InputFilter::configure_input_audio_filter(AVFilterInOut *in) {
   }
 
   AVBPrint args;
+  const auto &defer = std::shared_ptr<void>(
+      nullptr, [&args](void *p) { av_bprint_finalize(&args, nullptr); });
+
   av_bprint_init(&args, 0, AV_BPRINT_SIZE_AUTOMATIC);
   av_bprintf(&args, "time_base=%d/%d:sample_rate=%d:sample_fmt=%s",
              ist->codec_ctx_->time_base.num, ist->codec_ctx_->time_base.den,

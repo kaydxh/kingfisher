@@ -1,10 +1,13 @@
 #include "ffmpeg_filter.h"
 
+#include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "input_filter.h"
+#include "output_filter.h"
 #include "stream.h"
 
 extern "C" {
+#include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
 #include "libavutil/avstring.h"
 #include "libavutil/display.h"
@@ -26,6 +29,7 @@ FilterGraph::FilterGraph(std::weak_ptr<Stream> stream,
     : av_class_(&filter_graph_class),
       stream_(stream),
       graph_desc_(graph_desc) {}
+
 FilterGraph::~FilterGraph() {}
 
 void FilterGraph::cleanup_filtergraph() {
@@ -38,8 +42,8 @@ void FilterGraph::cleanup_filtergraph() {
 int FilterGraph::init_simple_filtergraph() {
   inputs_.emplace_back(
       std::make_shared<InputFilter>(shared_from_this(), stream_));
-  // outputs_.emplace_back(
-  //    std::make_shared<OutputFilter>(shared_from_this(), stream_));
+  outputs_.emplace_back(
+      std::make_shared<OutputFilter>(shared_from_this(), stream_));
   return 0;
 }
 
@@ -66,13 +70,16 @@ static int graph_is_meta(AVFilterGraph *graph) {
 int FilterGraph::filtergraph_is_simple() { return !graph_desc_.empty(); }
 
 int FilterGraph::configure_filtergraph() {
+  int ret = 0;
   filter_graph_ = std::shared_ptr<AVFilterGraph>(
       avfilter_graph_alloc(),
       [](AVFilterGraph *graph) { avfilter_graph_free(&graph); });
+  if (!filter_graph_) {
+    ret = AVERROR(ENOMEM);
+    return ret;
+  }
 
-  int ret = 0;
   const AVDictionaryEntry *e = nullptr;
-
   const std::shared_ptr<Stream> &ost = stream_.lock();
   if (!ost) {
     return AVERROR_STREAM_NOT_FOUND;
@@ -114,6 +121,11 @@ int FilterGraph::configure_filtergraph() {
   AVFilterInOut *inputs = nullptr;
   AVFilterInOut *outputs = nullptr;
 
+  SCOPE_EXIT {
+    avfilter_inout_free(&inputs);
+    avfilter_inout_free(&outputs);
+  };
+
   if ((ret = avfilter_graph_parse2(filter_graph_.get(), graph_desc_.c_str(),
                                    &inputs, &outputs)) < 0) {
     return ret;
@@ -127,6 +139,11 @@ int FilterGraph::configure_filtergraph() {
       return ret;
     }
   }
+  for (cur = outputs, i = 0; cur; cur = cur->next, i++) {
+    if ((ret = outputs_[i]->configure_output_filter(cur)) < 0) {
+      return ret;
+    }
+  }
 
   if (!auto_conversion_filters_) {
     avfilter_graph_set_auto_convert(filter_graph_.get(),
@@ -137,6 +154,24 @@ int FilterGraph::configure_filtergraph() {
   }
 
   is_meta_ = graph_is_meta(filter_graph_.get());
+
+  /* limit the lists of allowed formats to the ones selected, to
+   * make sure they stay the same if the filtergraph is reconfigured later */
+  for (auto &ofilter : outputs_) {
+    const auto &sink = ofilter->filter_;
+
+    ofilter->format_ = av_buffersink_get_format(sink);
+
+    ofilter->width_ = av_buffersink_get_w(sink);
+    ofilter->height_ = av_buffersink_get_h(sink);
+
+    ofilter->sample_rate_ = av_buffersink_get_sample_rate(sink);
+    av_channel_layout_uninit(&ofilter->ch_layout_);
+    ret = av_buffersink_get_ch_layout(sink, &ofilter->ch_layout_);
+    if (ret < 0) {
+      return ret;
+    }
+  }
 
   reconfiguration_ = true;
 
@@ -164,7 +199,23 @@ int FilterGraph::configure_filtergraph() {
   return 0;
 }
 
-int FilterGraph::reap_filters() { return 0; }
+int FilterGraph::reap_filters() {
+  int ret = 0;
+  for (size_t i = 0; i < outputs_.size(); i++) {
+    ret = outputs_[i]->reap_filters();
+    if (ret == AVERROR_EOF) {
+      ret = 0; /* ignore */
+    }
+    if (ret < 0) {
+      av_log((void *)(&(this->av_class_)), AV_LOG_ERROR,
+             "Failed to inject frame into filter network: %s\n",
+             av_err2str(ret));
+      break;
+    }
+  }
+
+  return 0;
+}
 
 int FilterGraph::insert_filter(AVFilterContext **last_filter, int *pad_idx,
                                const char *filter_name, const char *args) {
@@ -235,6 +286,7 @@ int FilterGraph::send_frame_to_filters(
 }
 
 int FilterGraph::send_filter_eof(int64_t pts) {
+  return 0;
   int ret = 0;
   for (unsigned int i = 0; i < inputs_.size(); i++) {
     ret = inputs_[i]->ifilter_send_eof(pts);
