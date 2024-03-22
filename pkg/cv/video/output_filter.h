@@ -2,6 +2,7 @@
 #define KINGFISHER_PKG_CV_VIDEO_OUTPUT_FILTER_H_
 
 #include <memory>
+#include <vector>
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -23,8 +24,10 @@ class OutputFilter {
   ~OutputFilter();
 
   int configure_output_filter(AVFilterInOut *out);
-  int configure_output_video_filter(AVFilterInOut *in);
-  int configure_output_audio_filter(AVFilterInOut *in);
+  int configure_output_video_filter(AVFilterInOut *out);
+  int configure_output_audio_filter(AVFilterInOut *out);
+
+  int reap_filters();
 
  public:
   const AVClass *av_class_ = nullptr;
@@ -50,6 +53,10 @@ class OutputFilter {
   const int *formats_ = nullptr;
   const AVChannelLayout *ch_layouts_ = nullptr;
   const int *sample_rates_ = nullptr;
+
+ private:
+  std::shared_ptr<AVFrame> filtered_frame_;
+  // std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
 };
 
 }  // namespace cv

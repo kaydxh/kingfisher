@@ -221,7 +221,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
     av_packet_unref(pkt_);
     ret = av_read_frame(ifmt_ctx_.get(), pkt_);
     if (ret == AVERROR(EAGAIN)) {
-      av_usleep(10000);
+      // av_usleep(10000);
       continue;
     }
 
@@ -810,10 +810,11 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     } else {
       eof_reached = 1;
     }
-    ret = stream_copy(ist, pkt);
-    if (ret < 0) {
-      return ret;
-    }
+  }
+
+  ret = stream_copy(ist, pkt);
+  if (ret < 0) {
+    return ret;
   }
 
   return !eof_reached;
