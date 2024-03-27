@@ -221,7 +221,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
     av_packet_unref(pkt_);
     ret = av_read_frame(ifmt_ctx_.get(), pkt_);
     if (ret == AVERROR(EAGAIN)) {
-      // av_usleep(10000);
+      av_usleep(10000);
       continue;
     }
 
@@ -585,13 +585,30 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
                               const AVCodec *&codec) {
   std::string codec_name;
   auto &st = ist->st_;
-  /*
-  int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st.get(),
-                                 "c", codec_name);
+  ist->decoding_needed_ = true;
+  int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st, "c",
+                                 codec_name);
   if (ret != 0) {
     return ret;
   }
-  */
+
+  if (codec_name.empty() || codec_name == "copy") {
+    codec = avcodec_find_decoder(st->codecpar->codec_id);
+    ist->decoding_needed_ = false;
+  } else {
+    int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
+    if (ret) {
+      return ret;
+    }
+    st->codecpar->codec_id = codec->id;
+    if (recast_media_ && st->codecpar->codec_type != codec->type) {
+      st->codecpar->codec_type = codec->type;
+    }
+  }
+
+  return 0;
+
+#if 0
   if (!codec_name.empty()) {
     int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
     if (ret) {
@@ -606,6 +623,7 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
     codec = avcodec_find_decoder(st->codecpar->codec_id);
   }
   return 0;
+#endif
 }
 
 int InputFile::find_decoder(const std::string &name, enum AVMediaType type,
@@ -810,11 +828,11 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     } else {
       eof_reached = 1;
     }
-  }
 
-  ret = stream_copy(ist, pkt);
-  if (ret < 0) {
-    return ret;
+    ret = stream_copy(ist, pkt);
+    if (ret < 0) {
+      return ret;
+    }
   }
 
   return !eof_reached;

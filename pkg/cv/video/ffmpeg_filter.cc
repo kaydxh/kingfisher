@@ -1,5 +1,7 @@
 #include "ffmpeg_filter.h"
 
+#include <iostream>
+
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "input_filter.h"
@@ -35,8 +37,8 @@ FilterGraph::~FilterGraph() {}
 void FilterGraph::cleanup_filtergraph() {
   inputs_.clear();
   outputs_.clear();
-  AVFilterGraph *fg = filter_graph_.get();
-  avfilter_graph_free(&fg);
+  // AVFilterGraph *fg = filter_graph_.get();
+  // avfilter_graph_free(&fg);
 }
 
 int FilterGraph::init_simple_filtergraph() {
@@ -61,8 +63,9 @@ static int graph_is_meta(AVFilterGraph *graph) {
      * since they introduce data we are not aware of)
      */
     if (!((f->filter->flags & AVFILTER_FLAG_METADATA_ONLY) ||
-          f->nb_outputs == 0 || filter_is_buffersrc(f)))
+          f->nb_outputs == 0 || filter_is_buffersrc(f))) {
       return 0;
+    }
   }
   return 1;
 }
@@ -175,6 +178,32 @@ int FilterGraph::configure_filtergraph() {
 
   reconfiguration_ = true;
 
+  for (auto &ofilter : outputs_) {
+    const auto &ost = ofilter->ost_.lock();
+    if (ost) {
+      const auto &st = ost->av_stream();
+      if (!st) {
+        return AVERROR_STREAM_NOT_FOUND;
+      }
+      if (!ost->codec_ctx_->codec) {
+        /* identical to the same check in ffmpeg.c, needed because
+           complex filter graphs are initialized earlier */
+        av_log((void *)(&(this->av_class_)), AV_LOG_ERROR,
+               "Encoder (codec %s) not found for output stream #%d:%d\n",
+               avcodec_get_name(st->codecpar->codec_id), ost->file_index_,
+               ost->stream_index_);
+        ret = AVERROR(EINVAL);
+        return ret;
+      }
+      if (ost->codec_ctx_->codec->type == AVMEDIA_TYPE_AUDIO &&
+          !(ost->codec_ctx_->codec->capabilities &
+            AV_CODEC_CAP_VARIABLE_FRAME_SIZE)) {
+        av_buffersink_set_frame_size(ofilter->filter_,
+                                     ost->codec_ctx_->frame_size);
+      }
+    }
+  }
+
   for (auto &ifilter : inputs_) {
     AVFrame *tmp;
     while (av_fifo_read(ifilter->frame_queue_.get(), &tmp, 1) >= 0) {
@@ -286,7 +315,6 @@ int FilterGraph::send_frame_to_filters(
 }
 
 int FilterGraph::send_filter_eof(int64_t pts) {
-  return 0;
   int ret = 0;
   for (unsigned int i = 0; i < inputs_.size(); i++) {
     ret = inputs_[i]->ifilter_send_eof(pts);

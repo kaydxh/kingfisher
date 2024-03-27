@@ -1,5 +1,7 @@
 #include "input_filter.h"
 
+#include <iostream>
+
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
@@ -115,7 +117,6 @@ int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
              av_err2str(ret));
       return ret;
     }
-
     ret = fg->configure_filtergraph();
     if (ret < 0) {
       av_log(nullptr, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
@@ -214,7 +215,6 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
   }
 
   AVFilterContext *last_filter = nullptr;
-
   int ret = 0;
   if (ist->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) {
     av_log(this, AV_LOG_ERROR, "Cannot connect video filter to audio input\n");
@@ -248,15 +248,20 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
            ist->stream_index_);
 
   const AVFilter *buffer_filt = avfilter_get_by_name("buffer");
-  filter_ = in->filter_ctx;
+  last_filter = in->filter_ctx;
 
+#if 0
   auto const &graph = graph_.lock();
   if (!graph) {
     return AVERROR_FILTER_NOT_FOUND;
   }
+#endif
 
+  // ret = avfilter_graph_create_filter(&last_filter, buffer_filt, name,
+  // args.str,
+  //                                   nullptr, graph->filter_graph_.get());
   ret = avfilter_graph_create_filter(&last_filter, buffer_filt, name, args.str,
-                                     nullptr, graph->filter_graph_.get());
+                                     nullptr, last_filter->graph);
   if (ret < 0) {
     av_log(this, AV_LOG_ERROR, "Cannot create filter %s: %s\n", name,
            av_err2str(ret));
@@ -269,7 +274,6 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
   av_assert0(desc);
 
   int pad_idx = 0;
-
   // TODO: insert hwaccel enabled filters like transpose_vaapi into the graph
   if (ist->autorotate_ && !(desc->flags & AV_PIX_FMT_FLAG_HWACCEL)) {
     int32_t *displaymatrix = display_matrix_;
@@ -319,7 +323,7 @@ int InputFilter::configure_input_video_filter(AVFilterInOut *in) {
     return ret;
   }
 
-  return ret;
+  return 0;
 }
 
 int InputFilter::configure_input_audio_filter(AVFilterInOut *in) {
@@ -342,8 +346,7 @@ int InputFilter::configure_input_audio_filter(AVFilterInOut *in) {
   }
 
   AVBPrint args;
-  const auto &defer = std::shared_ptr<void>(
-      nullptr, [&args](void *p) { av_bprint_finalize(&args, nullptr); });
+  SCOPE_EXIT { av_bprint_finalize(&args, nullptr); };
 
   av_bprint_init(&args, 0, AV_BPRINT_SIZE_AUTOMATIC);
   av_bprintf(&args, "time_base=%d/%d:sample_rate=%d:sample_fmt=%s",
@@ -365,13 +368,18 @@ int InputFilter::configure_input_audio_filter(AVFilterInOut *in) {
            ist->stream_index_);
   const AVFilter *abuffer_filt = avfilter_get_by_name("abuffer");
 
+#if 0
   auto const &graph = graph_.lock();
   if (!graph) {
     return AVERROR_FILTER_NOT_FOUND;
   }
+#endif
 
+  // ret = avfilter_graph_create_filter(&last_filter, abuffer_filt, name,
+  // args.str,
+  //                                   nullptr, graph->filter_graph_.get());
   ret = avfilter_graph_create_filter(&last_filter, abuffer_filt, name, args.str,
-                                     nullptr, graph->filter_graph_.get());
+                                     nullptr, last_filter->graph);
   if (ret < 0) {
     av_log(this, AV_LOG_ERROR, "Cannot create filter %s: %s\n", name,
            av_err2str(ret));
