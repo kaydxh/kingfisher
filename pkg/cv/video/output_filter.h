@@ -56,7 +56,9 @@ class OutputFilter {
 
  private:
   std::shared_ptr<AVFrame> filtered_frame_;
-  // std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
+  // AVFrame *filtered_frame_ = nullptr;
+  std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
+  //  std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
 };
 
 }  // namespace cv

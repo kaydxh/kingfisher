@@ -78,6 +78,9 @@ int OutputFilter::configure_output_video_filter(AVFilterInOut *out) {
     return AVERROR_FILTER_NOT_FOUND;
   }
 
+  width_ = ost->codec_ctx_->width;
+  height_ = ost->codec_ctx_->height;
+
   AVFilterContext *last_filter = out->filter_ctx;
   char name[255];
   int last_pad_idx = out->pad_idx;
@@ -167,6 +170,13 @@ int OutputFilter::configure_output_audio_filter(AVFilterInOut *out) {
   }
   filter_ = last_filter;
 
+  if (codec_ctx) {
+    if (codec_ctx->codec &&
+        !(codec_ctx->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE)) {
+      av_buffersink_set_frame_size(filter_, codec_ctx->frame_size);
+    }
+  }
+
   return 0;
 }
 
@@ -191,6 +201,11 @@ int OutputFilter::reap_filters() {
       filtered_frame->time_base = tb;
     }
 
+#if 0
+    filtered_frames_.emplace_back(av_frame_clone(filtered_frame),
+                                  [](AVFrame *pkt) { av_frame_free(&pkt); });
+#endif
+    // av_frame_free(const_cast<AVFrame **>(&filtered_frame));
     av_frame_unref(filtered_frame);
   }
   return 0;
