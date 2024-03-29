@@ -168,8 +168,36 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   return init_filters();
 }
 
+int InputFile::read_frames(std::vector<Frame> &video_frames,
+                           std::vector<Frame> &audio_frames, int32_t batch_size,
+                           bool &finished) {
+  bool video_finished = false;
+  int ret = 0;
+  ret = read_video_frames(video_frames, batch_size, video_finished);
+  if (ret != 0) {
+    return ret;
+  }
+
+  bool audio_finished = false;
+  ret = read_audio_frames(audio_frames, batch_size, audio_finished);
+  if (ret != 0) {
+    return ret;
+  }
+  finished = video_finished && audio_finished;
+  return 0;
+}
+
 int InputFile::read_video_frames(std::vector<Frame> &video_frames,
                                  int32_t batch_size, bool &finished) {
+  if (first_video_stream_index_ < 0) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  auto &ist = input_streams_[first_video_stream_index_];
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  return read_batch_frames(ist->frames_, video_frames, batch_size, finished);
+#if 0
   if (batch_size <= 0) {
     batch_size = 1;
   }
@@ -181,13 +209,13 @@ int InputFile::read_video_frames(std::vector<Frame> &video_frames,
     return AVERROR_STREAM_NOT_FOUND;
   }
 
-  SCOPE_EXIT { finished = eof_reached_ && ist->frames_.empty(); };
+  SCOPE_EXIT { finished = eof_reached_ && ist->video_frames_.empty(); };
   int ret = read_frames([&]() {
     if (eof_reached_) {
       return true;
     }
 
-    if (ist->frames_.size() >=
+    if (ist->video_frames_.size() >=
         static_cast<unsigned int>(batch_size)) {  // read batch
       return true;
     }
@@ -198,22 +226,83 @@ int InputFile::read_video_frames(std::vector<Frame> &video_frames,
     return ret;
   }
 
-  if (ist->frames_.empty()) {
+  if (ist->video_frames_.empty()) {
     return 0;
   }
 
-  if (ist->frames_.size() <= static_cast<unsigned int>(batch_size)) {
-    video_frames = std::move(ist->frames_);
+  if (ist->video_frames_.size() <= static_cast<unsigned int>(batch_size)) {
+    video_frames = std::move(ist->video_frames_);
   } else {
-    std::copy(ist->frames_.begin(), ist->frames_.begin() + batch_size,
-              video_frames.begin());
-    ist->frames_.erase(ist->frames_.begin(), ist->frames_.begin() + batch_size);
+    std::copy(ist->video_frames_.begin(),
+              ist->video_frames_.begin() + batch_size, video_frames.begin());
+    ist->video_frames_.erase(ist->video_frames_.begin(),
+                             ist->video_frames_.begin() + batch_size);
+  }
+
+  return 0;
+#endif
+}
+
+int InputFile::read_audio_frames(std::vector<Frame> &audio_frames,
+                                 int32_t batch_size, bool &finished) {
+  if (first_audio_stream_index_ < 0) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  auto &ist = input_streams_[first_audio_stream_index_];
+  if (!ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+
+  return read_batch_frames(ist->frames_, audio_frames, batch_size, finished);
+}
+
+int InputFile::read_batch_frames(std::vector<Frame> &frames_buffer,
+                                 std::vector<Frame> &frames, int32_t batch_size,
+                                 bool &finished) {
+  if (batch_size <= 0) {
+    batch_size = 1;
+  }
+  frames.clear();
+
+  SCOPE_EXIT { finished = eof_reached_ && frames_buffer.empty(); };
+  int ret = read_frames([&]() {
+    if (eof_reached_) {
+      return true;
+    }
+
+    if (frames_buffer.size() >=
+        static_cast<unsigned int>(batch_size)) {  // read batch
+      return true;
+    }
+
+    return false;
+  });
+  if (ret < 0) {
+    return ret;
+  }
+
+  if (frames_buffer.empty()) {
+    return 0;
+  }
+
+  if (frames_buffer.size() <= static_cast<unsigned int>(batch_size)) {
+    frames = std::move(frames_buffer);
+  } else {
+    frames.resize(batch_size);
+    std::copy(frames_buffer.begin(), frames_buffer.begin() + batch_size,
+              frames.begin());
+    frames_buffer.erase(frames_buffer.begin(),
+                        frames_buffer.begin() + batch_size);
   }
 
   return 0;
 }
 
 int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
+  if (stop_waiting()) {
+    return 0;
+  }
+
   int ret = 0;
   while (!stop_waiting()) {
     int disable_discontinuity_correction = copy_ts_;
@@ -265,8 +354,8 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
         st->pts_wrap_bits < 64) {
       int64_t stime, stime2;
       // Correcting starttime based on the enabled streams
-      // FIXME this ideally should be done before the first use of starttime but
-      // we do not know which are the enabled streams at that point.
+      // FIXME this ideally should be done before the first use of starttime
+      // but we do not know which are the enabled streams at that point.
       //       so we instead do it here as part of discontinuity handling
       if (ist->next_dts_ == AV_NOPTS_VALUE && ts_offset_ == -is->start_time &&
           (is->iformat->flags & AVFMT_TS_DISCONT)) {
@@ -594,7 +683,9 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
 
   if (codec_name.empty() || codec_name == "copy") {
     codec = avcodec_find_decoder(st->codecpar->codec_id);
-    ist->decoding_needed_ = false;
+    if (codec_name == "copy") {
+      ist->decoding_needed_ = false;
+    }
   } else {
     int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
     if (ret) {
@@ -646,8 +737,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     if (pkt && pkt->pts != AV_NOPTS_VALUE && !ist->decoding_needed_) {
       ist->first_dts_ = ist->dts_ +=
           av_rescale_q(pkt->pts, st->time_base, AV_TIME_BASE_Q);
-      ist->pts_ = ist->dts_;  // unused but better to set it to a value thats
-                              // not totally wrong
+      ist->pts_ = ist->dts_;  // unused but better to set it to a value
+                              // thats not totally wrong
     }
     ist->saw_first_ts_ = true;
   }
@@ -670,8 +761,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
 
   bool repeating = false;
   bool eof_reached = false;  // meet decode eof
-  // while we have more to decode or while the decoder did output something on
-  // EOF
+  // while we have more to decode or while the decoder did output something
+  // on EOF
   while (ist->decoding_needed_) {
     int64_t duration_dts = 0;
     int64_t duration_pts = 0;
@@ -763,8 +854,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     // Decode only 1 frame per call on EOF to appease these FATE tests.
     // The ideal solution would be to rewrite decoding to use the new
     // decoding API in a better way.
-    // FIXME: we will drain all frames if no more packets will be provided, that
-    // is av_read_frame eof
+    // FIXME: we will drain all frames if no more packets will be provided,
+    // that is av_read_frame eof
     if (!pkt && no_eof) {
       break;
     }
@@ -772,7 +863,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     repeating = 1;
   }
 
-  /* after flushing, send an EOF on all the filter inputs attached to the stream
+  /* after flushing, send an EOF on all the filter inputs attached to the
+   * stream
    */
   /* except when looping we need to flush but not to send an EOF */
   if (!pkt && ist->decoding_needed_ && eof_reached && !no_eof) {
@@ -859,6 +951,40 @@ int InputFile::stream_copy(const std::shared_ptr<InputStream> &ist,
       case AVMEDIA_TYPE_VIDEO:
         ist->frames_.push_back(raw_frame);
         break;
+      case AVMEDIA_TYPE_AUDIO:
+        ist->frames_.push_back(raw_frame);
+        break;
+      default:
+        return 0;
+    }
+  }
+  return 0;
+}
+
+int InputFile::stream_copy_frame(const std::shared_ptr<InputStream> &ist,
+                                 AVFrame *frame) {
+  AVStream *st = ist->av_stream();
+  if (!st) {
+    return -1;
+  }
+
+  if (frame) {
+    ist->frame_number_++;
+    Frame raw_frame;
+    raw_frame.time_base = frame->time_base;
+    raw_frame.pts = frame->pts;
+    raw_frame.frame_number = ist->frame_number_;
+    raw_frame.codec_id = st->codecpar->codec_id;
+    raw_frame.codec_type = st->codecpar->codec_type;
+    raw_frame.frame = std::shared_ptr<AVFrame>(
+        av_frame_clone(frame), [](AVFrame *pkt) { av_frame_free(&pkt); });
+    switch (ist->codec_ctx_->codec_type) {
+      case AVMEDIA_TYPE_VIDEO:
+        ist->frames_.push_back(raw_frame);
+        break;
+      case AVMEDIA_TYPE_AUDIO:
+        ist->frames_.push_back(raw_frame);
+        break;
       default:
         return 0;
     }
@@ -899,8 +1025,8 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     decode_failed = true;
   }
 
-  // The following line may be required in some cases where there is no parser
-  // or the parser does not has_b_frames correctly
+  // The following line may be required in some cases where there is no
+  // parser or the parser does not has_b_frames correctly
   if (st->codecpar->video_delay < ist->codec_ctx_->has_b_frames) {
     if (ist->codec_ctx_->codec_id == AV_CODEC_ID_H264) {
       st->codecpar->video_delay = ist->codec_ctx_->has_b_frames;
@@ -965,17 +1091,17 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
   }
 
   if (debug_ts_) {
-    av_log(
-        this, AV_LOG_DEBUG,
-        "detail: decoder -> ist_index:%d type:video "
-        "frame_pts:%s frame_pts_time:%s best_effort_ts:%" PRId64
-        " best_effort_ts_time:%s keyframe:%d frame_type:%d time_base:%d/%d\n",
-        st->index, av_err2str(decoded_frame->pts),
-        av_ts2timestr(decoded_frame->pts, &st->time_base),
-        best_effort_timestamp,
-        av_ts2timestr(best_effort_timestamp, &st->time_base),
-        decoded_frame->key_frame, decoded_frame->pict_type, st->time_base.num,
-        st->time_base.den);
+    av_log(this, AV_LOG_DEBUG,
+           "detail: decoder -> ist_index:%d type:video "
+           "frame_pts:%s frame_pts_time:%s best_effort_ts:%" PRId64
+           " best_effort_ts_time:%s keyframe:%d frame_type:%d "
+           "time_base:%d/%d\n",
+           st->index, av_err2str(decoded_frame->pts),
+           av_ts2timestr(decoded_frame->pts, &st->time_base),
+           best_effort_timestamp,
+           av_ts2timestr(best_effort_timestamp, &st->time_base),
+           decoded_frame->key_frame, decoded_frame->pict_type,
+           st->time_base.num, st->time_base.den);
   }
 
   if (st->sample_aspect_ratio.num) {
@@ -1070,10 +1196,11 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
   return ret;
 }
 
-// This does not quite work like avcodec_decode_audio4/avcodec_decode_video2.
-// There is the following difference: if you got a frame, you must call
-// it again with pkt=NULL. pkt==NULL is treated differently from pkt->size==0
-// (pkt==NULL means get more output, pkt->size==0 is a flush/drain packet)
+// This does not quite work like
+// avcodec_decode_audio4/avcodec_decode_video2. There is the following
+// difference: if you got a frame, you must call it again with pkt=NULL.
+// pkt==NULL is treated differently from pkt->size==0 (pkt==NULL means get
+// more output, pkt->size==0 is a flush/drain packet)
 int InputFile::decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
                       bool &got_frame) {
   int ret = 0;
@@ -1119,7 +1246,21 @@ int InputFile::send_frame_to_filters(
   const auto &stream_index = ist->stream_index_;
   const auto &ifilt = input_streams_[stream_index]->ifilt_;
   if (ifilt) {
+    std::vector<std::shared_ptr<AVFrame>> filtered_frames;
     ifilt->send_frame_to_filters(decoded_frame);
+    int ret = ifilt->reap_filters(filtered_frames, true);
+    if (ret != 0) {
+      return ret;
+    }
+
+    for (const auto &filtered_frame : filtered_frames) {
+      stream_copy_frame(ist, filtered_frame.get());
+
+      if (int(stream_index) == first_video_stream_index_) {
+      } else if (int(stream_index) == first_audio_stream_index_) {
+      } else {
+      }
+    }
   }
   return 0;
 }
@@ -1153,6 +1294,5 @@ int InputFile::init_filters() {
 
   return 0;
 }
-
 }  // namespace cv
 }  // namespace kingfisher

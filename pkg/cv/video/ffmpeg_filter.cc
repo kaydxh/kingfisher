@@ -228,10 +228,13 @@ int FilterGraph::configure_filtergraph() {
   return 0;
 }
 
-int FilterGraph::reap_filters() {
+int FilterGraph::reap_filters(
+    std::vector<std::shared_ptr<AVFrame>> &filtered_frames,
+    bool need_filtered_frames) {
+  filtered_frames.clear();
   int ret = 0;
   for (size_t i = 0; i < outputs_.size(); i++) {
-    ret = outputs_[i]->reap_filters();
+    ret = outputs_[i]->reap_filters(filtered_frames, need_filtered_frames);
     if (ret == AVERROR_EOF) {
       ret = 0; /* ignore */
     }
@@ -295,6 +298,13 @@ double FilterGraph::get_rotation(int32_t *displaymatrix) {
   }
   return theta;
 }
+
+/*
+int FilterGraph::reap_filters(std::vector<std::shared_ptr<AVFrame>>
+&filtered_frames) {
+
+}
+*/
 
 int FilterGraph::send_frame_to_filters(
     const std::shared_ptr<AVFrame> &decoded_frame) {

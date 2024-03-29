@@ -27,6 +27,13 @@ class InputFile {
   int read_video_frames(std::vector<Frame> &video_frames, int32_t batch_size,
                         bool &finished);
 
+  int read_audio_frames(std::vector<Frame> &audio_frames, int32_t batch_size,
+                        bool &finished);
+
+  int read_frames(std::vector<Frame> &video_frames,
+                  std::vector<Frame> &audio_frames, int32_t batch_size,
+                  bool &finished);
+
  private:
   int choose_decoder(const std::shared_ptr<InputStream> &ist,
                      const AVCodec *&codec);
@@ -53,8 +60,13 @@ class InputFile {
                             const std::shared_ptr<AVFrame> &decoded_frame);
 
   int read_frames(const std::function<bool()> &stop_waiting);
+  int read_batch_frames(std::vector<Frame> &frames_buffer,
+                        std::vector<Frame> &frames, int32_t batch_size,
+                        bool &finished);
 
   int stream_copy(const std::shared_ptr<InputStream> &ist, AVPacket *packet);
+  int stream_copy_frame(const std::shared_ptr<InputStream> &ist,
+                        AVFrame *frame);
 
   int init_filters();
 
