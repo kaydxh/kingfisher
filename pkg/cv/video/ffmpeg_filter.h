@@ -26,7 +26,8 @@ class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
   int filtergraph_is_simple();
   void cleanup_filtergraph();
   int configure_filtergraph();
-  int reap_filters();
+  int reap_filters(std::vector<std::shared_ptr<AVFrame>> &filtered_frames,
+                   bool need_filtered_frames);
 
   static int insert_filter(AVFilterContext **last_filter, int *pad_idx,
                            const char *filter_name, const char *args);

@@ -180,7 +180,9 @@ int OutputFilter::configure_output_audio_filter(AVFilterInOut *out) {
   return 0;
 }
 
-int OutputFilter::reap_filters() {
+int OutputFilter::reap_filters(
+    std::vector<std::shared_ptr<AVFrame>> &filtered_frames,
+    bool need_filtered_frames) {
   const auto &filtered_frame = filtered_frame_.get();
   while (filter_) {
     int ret = av_buffersink_get_frame_flags(filter_, filtered_frame,
@@ -201,11 +203,10 @@ int OutputFilter::reap_filters() {
       filtered_frame->time_base = tb;
     }
 
-#if 0
-    filtered_frames_.emplace_back(av_frame_clone(filtered_frame),
-                                  [](AVFrame *pkt) { av_frame_free(&pkt); });
-#endif
-    // av_frame_free(const_cast<AVFrame **>(&filtered_frame));
+    if (need_filtered_frames) {
+      filtered_frames.emplace_back(av_frame_clone(filtered_frame),
+                                   [](AVFrame *pkt) { av_frame_free(&pkt); });
+    }
     av_frame_unref(filtered_frame);
   }
   return 0;

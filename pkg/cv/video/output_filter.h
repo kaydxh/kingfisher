@@ -27,11 +27,12 @@ class OutputFilter {
   int configure_output_video_filter(AVFilterInOut *out);
   int configure_output_audio_filter(AVFilterInOut *out);
 
-  int reap_filters();
+  int reap_filters(std::vector<std::shared_ptr<AVFrame>> &filtered_frames,
+                   bool need_filtered_frames);
 
  public:
   const AVClass *av_class_ = nullptr;
-  AVFilterContext *filter_;
+  AVFilterContext *filter_ = nullptr;
   std::weak_ptr<FilterGraph> graph_;
   std::weak_ptr<Stream> ost_;
   std::string name_;
@@ -41,8 +42,8 @@ class OutputFilter {
   std::shared_ptr<AVFilterInOut> out_tmp_;
 
   /* desired output stream properties */
-  int width_;
-  int height_;
+  int width_ = 0;
+  int height_ = 0;
   AVRational frame_rate_;
   int format_ = -1;
   int sample_rate_ = 0;
@@ -56,9 +57,6 @@ class OutputFilter {
 
  private:
   std::shared_ptr<AVFrame> filtered_frame_;
-  // AVFrame *filtered_frame_ = nullptr;
-  std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
-  //  std::vector<std::shared_ptr<AVFrame>> filtered_frames_;
 };
 
 }  // namespace cv

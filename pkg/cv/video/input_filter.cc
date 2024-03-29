@@ -111,7 +111,8 @@ int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
       return ret;
     }
 
-    ret = fg->reap_filters();
+    std::vector<std::shared_ptr<AVFrame>> filtered_frames;
+    ret = fg->reap_filters(filtered_frames, false);
     if (ret < 0 && ret != AVERROR_EOF) {
       av_log(this, AV_LOG_ERROR, "Error while filtering: %s\n",
              av_err2str(ret));
