@@ -47,6 +47,8 @@ class Stream {
 
   int64_t frame_number_ = 0;
   std::vector<Frame> frames_;
+  std::vector<Frame> video_frames_;
+  std::vector<Frame> audio_frames_;
   bool keep_pix_fmt_ = false;
 };
 
