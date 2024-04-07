@@ -18,40 +18,47 @@ class test_Video : public testing::Test {
 
 //./kingfisher_base_test --gtest_filter=test_Video.*
 TEST_F(test_Video, Transcode) {
-  {
-    std::string input_url = "./testdata/bodyhead.mp4";
+  std::string input_url = "./testdata/bodyhead.mp4";
 
-    InputFile input_file;
-    // av_dict_set(&input_file.command_opts_, "c:v", "", 0);
-    //  av_dict_set(&input_file.command_opts_, "c:a", true ? "" : "copy", 0);
-    //  av_dict_set_int(&input_file.decoder_opts_, "udu_sei", 1, 0);
-    AVFormatContext format_ctx;
-    int ret = input_file.open(input_url, format_ctx);
-    if (ret != 0) {
-      av_log(nullptr, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
+  InputFile input_file;
+  // av_dict_set(&input_file.command_opts_, "c:v", "copy", 0);
+  //    av_dict_set(&input_file.command_opts_, "c:a", true ? "" : "copy", 0);
+  //    av_dict_set_int(&input_file.decoder_opts_, "udu_sei", 1, 0);
+  AVFormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
+    return;
+  }
+
+  bool finished = false;
+  std::vector<Frame> video_frames;
+  std::vector<Frame> audio_frames;
+
+  while (!finished) {
+    int ret = input_file.read_frames(video_frames, audio_frames, 8, finished);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "failed to read_video_frames: %s\n",
+             av_err2str(ret));
       return;
     }
 
-    bool finished = false;
-    std::vector<Frame> video_frames;
+    av_log(nullptr, AV_LOG_INFO, "read frame size %lu\n", video_frames.size());
 
-    while (!finished) {
-      int ret = input_file.read_video_frames(video_frames, 8, finished);
-      if (ret < 0) {
-        av_log(nullptr, AV_LOG_ERROR, "failed to read_video_frames: %s\n",
-               av_err2str(ret));
-        return;
-      }
+    for (unsigned int i = 0; i < video_frames.size(); ++i) {
+      av_log(nullptr, AV_LOG_INFO,
+             "read video frame number %ld,packet size: %d, codec_id: %d, "
+             "pts: %ld \n",
+             video_frames[i].frame_number, video_frames[i].frame->width,
+             video_frames[i].codec_id, video_frames[i].pts);
+    }
 
-      av_log(nullptr, AV_LOG_INFO, "read frame size %lu\n",
-             video_frames.size());
-
-      for (unsigned int i = 0; i < video_frames.size(); ++i) {
-        av_log(nullptr, AV_LOG_INFO,
-               "read frame number %ld, codec_id: %d, pts: %ld \n",
-               video_frames[i].frame_number, video_frames[i].codec_id,
-               video_frames[i].pts);
-      }
+    for (unsigned int i = 0; i < audio_frames.size(); ++i) {
+      av_log(nullptr, AV_LOG_INFO,
+             "read audio frame number %ld,packet size: %d, codec_id: %d, "
+             "pts: %ld \n",
+             audio_frames[i].frame_number, audio_frames[i].frame->pkt_size,
+             audio_frames[i].codec_type, audio_frames[i].pts);
     }
   }
 
