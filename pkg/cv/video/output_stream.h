@@ -1,7 +1,9 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_OUTPUT_STREAM_H_
 #define KINGFISHER_PKG_CV_VIDEO_OUTPUT_STREAM_H_
 
+#include "cv/video/input_filter.h"
 #include "cv/video/stream.h"
+
 extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavcodec/bsf.h"
@@ -31,13 +33,17 @@ enum forced_keyframes_const {
 
 class OutputStream : public Stream {
  public:
-  OutputStream(int file_index);
+  OutputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, AVStream *st,
+               int file_index, unsigned int stream_index);
+
   ~OutputStream();
 
  public:
-  int index;                     /* stream index in the output file */
-  int source_index;              /* InputStream index */
-  AVStream *st;                  /* stream in the output file */
+  const AVClass *av_class_ = nullptr;
+  std::shared_ptr<FilterGraph> ofilt_;
+  // int index;        /* stream index in the output file */
+  int source_index; /* InputStream index */
+  // AVStream *st;                  /* stream in the output file */
   bool encoding_needed_ = false; /* true if encoding needed for this stream */
   int64_t frame_number_ = 0;
   /* input pts and corresponding output pts
@@ -55,13 +61,13 @@ class OutputStream : public Stream {
   int64_t last_mux_dts;
   // the timebase of the packets sent to the muxer
   AVRational mux_timebase;
-  AVRational enc_timebase;
+  AVRational enc_timebase_;
 
   AVBSFContext *bsf_ctx;
 
   AVCodecContext *enc_ctx;
-  AVCodecParameters *ref_par; /* associated input codec parameters with encoders
-                                 options applied */
+  AVCodecParameters *ref_par_; /* associated input codec parameters with
+                                 encoders options applied */
   int64_t max_frames_ = 0;
   /*
   AVFrame *filtered_frame;
@@ -75,7 +81,7 @@ class OutputStream : public Stream {
 
   /* video only */
   AVRational frame_rate;
-  AVRational max_frame_rate;
+  AVRational max_frame_rate_;
   // enum VideoSyncMethod vsync_method;
   bool is_cfr_ = false;
   const char *fps_mode_ = nullptr;
@@ -124,7 +130,7 @@ class OutputStream : public Stream {
   // init_output_stream() has been called for this stream
   // The encoder and the bitstream filters have been initialized and the stream
   // parameters are set in the AVStream.
-  int initialized;
+  int initialized_;
 
   int inputs_done;
 
