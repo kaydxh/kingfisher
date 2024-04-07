@@ -171,22 +171,27 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 int InputFile::read_frames(std::vector<Frame> &video_frames,
                            std::vector<Frame> &audio_frames, int32_t batch_size,
                            bool &finished) {
-  bool video_finished = false;
-  int ret = 0;
-  ret = read_video_frames(video_frames, batch_size, video_finished);
-  if (ret != 0) {
-    return ret;
+  if (first_video_stream_index_ < 0) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+  auto &v_ist = input_streams_[first_video_stream_index_];
+  if (!v_ist) {
+    return AVERROR_STREAM_NOT_FOUND;
   }
 
-  bool audio_finished = false;
-  ret = read_audio_frames(audio_frames, batch_size, audio_finished);
-  if (ret != 0) {
-    return ret;
+  if (first_audio_stream_index_ < 0) {
+    return AVERROR_STREAM_NOT_FOUND;
   }
-  finished = video_finished && audio_finished;
-  return 0;
+  auto &a_ist = input_streams_[first_audio_stream_index_];
+  if (!a_ist) {
+    return AVERROR_STREAM_NOT_FOUND;
+  }
+
+  return read_batch_frames(v_ist->frames_, a_ist->frames_, video_frames,
+                           audio_frames, batch_size, finished);
 }
 
+#if 0
 int InputFile::read_video_frames(std::vector<Frame> &video_frames,
                                  int32_t batch_size, bool &finished) {
   if (first_video_stream_index_ < 0) {
@@ -256,22 +261,32 @@ int InputFile::read_audio_frames(std::vector<Frame> &audio_frames,
   return read_batch_frames(ist->frames_, audio_frames, batch_size, finished);
 }
 
-int InputFile::read_batch_frames(std::vector<Frame> &frames_buffer,
-                                 std::vector<Frame> &frames, int32_t batch_size,
-                                 bool &finished) {
+#endif
+
+// first arrived batch for video or audio
+int InputFile::read_batch_frames(std::vector<Frame> &video_frames_buffer,
+                                 std::vector<Frame> &audio_frames_buffer,
+                                 std::vector<Frame> &video_frames,
+                                 std::vector<Frame> &audio_frames,
+                                 int32_t batch_size, bool &finished) {
   if (batch_size <= 0) {
     batch_size = 1;
   }
-  frames.clear();
+  video_frames.clear();
+  audio_frames.clear();
 
-  SCOPE_EXIT { finished = eof_reached_ && frames_buffer.empty(); };
+  SCOPE_EXIT {
+    finished = eof_reached_ && video_frames_buffer.empty() &&
+               audio_frames_buffer.empty();
+  };
   int ret = read_frames([&]() {
     if (eof_reached_) {
       return true;
     }
 
-    if (frames_buffer.size() >=
-        static_cast<unsigned int>(batch_size)) {  // read batch
+    if (video_frames_buffer.size() >= static_cast<unsigned int>(batch_size) ||
+        audio_frames_buffer.size() >=
+            static_cast<unsigned int>(batch_size)) {  // read batch
       return true;
     }
 
@@ -281,6 +296,20 @@ int InputFile::read_batch_frames(std::vector<Frame> &frames_buffer,
     return ret;
   }
 
+  ret = read_to_frames(video_frames_buffer, video_frames, batch_size);
+  if (ret < 0) {
+    return ret;
+  }
+  ret = read_to_frames(audio_frames_buffer, audio_frames, batch_size);
+  if (ret < 0) {
+    return ret;
+  }
+
+  return 0;
+}
+
+int InputFile::read_to_frames(std::vector<Frame> &frames_buffer,
+                              std::vector<Frame> &frames, int32_t batch_size) {
   if (frames_buffer.empty()) {
     return 0;
   }
@@ -1294,5 +1323,6 @@ int InputFile::init_filters() {
 
   return 0;
 }
+
 }  // namespace cv
 }  // namespace kingfisher
