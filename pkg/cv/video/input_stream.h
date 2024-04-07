@@ -24,7 +24,7 @@ class InputFilter;
 
 class InputStream : public Stream {
  public:
-  InputStream(std::weak_ptr<AVFormatContext> ifmtCtx, AVStream *st,
+  InputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, AVStream *st,
               int file_index, unsigned int stream_index);
 
   ~InputStream();

@@ -299,13 +299,6 @@ double FilterGraph::get_rotation(int32_t *displaymatrix) {
   return theta;
 }
 
-/*
-int FilterGraph::reap_filters(std::vector<std::shared_ptr<AVFrame>>
-&filtered_frames) {
-
-}
-*/
-
 int FilterGraph::send_frame_to_filters(
     const std::shared_ptr<AVFrame> &decoded_frame) {
   int ret = 0;

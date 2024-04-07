@@ -11,6 +11,8 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
+class OutputStream;
+
 class OutputFile {
  public:
   OutputFile();
@@ -18,12 +20,27 @@ class OutputFile {
 
   int open(const std::string &filename, AVFormatContext &format_ctx);
 
+ private:
+  int init_output_stream_wrapper(const std::shared_ptr<OutputStream> &ost,
+                                 AVFrame *frame);
+
+  int init_output_stream_encode(const std::shared_ptr<OutputStream> &ost,
+                                AVFrame *frame);
+
+  int init_output_stream(const std::shared_ptr<OutputStream> &ost,
+                         AVFrame *frame);
+
+  void set_encoder_id(const std::shared_ptr<OutputStream> &ost);
+
+  void init_encoder_time_base(const std::shared_ptr<OutputStream> &ost,
+                              AVRational default_time_base);
+
  public:
   const AVClass *av_class_ = nullptr;
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ofmt_ctx_;
 
-  const AVOutputFormat *format;
+  const AVOutputFormat *format_;
 
   AVDictionary *opts_;
   int ost_index_ = 0; /* index of the first stream in output_streams */
