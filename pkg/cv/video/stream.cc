@@ -13,10 +13,9 @@ extern "C" {
 namespace kingfisher {
 namespace cv {
 
-Stream::Stream(std::weak_ptr<AVFormatContext> fmt_ctx, AVStream *st,
-               int file_index, unsigned int stream_index)
+Stream::Stream(std::weak_ptr<AVFormatContext> fmt_ctx, int file_index,
+               unsigned int stream_index)
     : fmt_ctx_(std::move(fmt_ctx)),
-      st_(st),
       file_index_(file_index),
       stream_index_(stream_index),
       frame_(std::shared_ptr<AVFrame>(
@@ -24,7 +23,9 @@ Stream::Stream(std::weak_ptr<AVFormatContext> fmt_ctx, AVStream *st,
       pkt_(std::shared_ptr<AVPacket>(
           av_packet_alloc(), [](AVPacket *packet) { av_packet_free(&packet); }))
 
-{}
+{
+  st_ = av_stream();
+}
 
 Stream::~Stream(){};
 

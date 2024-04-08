@@ -17,7 +17,7 @@ namespace cv {
 
 class Stream {
  public:
-  Stream(std::weak_ptr<AVFormatContext> fmt_ctx, AVStream *st, int file_index,
+  Stream(std::weak_ptr<AVFormatContext> fmt_ctx, int file_index,
          unsigned int stream_index);
   ~Stream();
   virtual AVStream *av_stream() const;

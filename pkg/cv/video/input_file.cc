@@ -484,7 +484,7 @@ int InputFile::add_input_streams() {
     AVStream *st = ifmt_ctx_->streams[stream_id];
 
     std::shared_ptr<InputStream> ist =
-        std::make_shared<InputStream>(ifmt_ctx_, st, file_index_, stream_id);
+        std::make_shared<InputStream>(ifmt_ctx_, file_index_, stream_id);
     ist->discard_ = AVDISCARD_DEFAULT;
     st->discard = AVDISCARD_NONE;
 

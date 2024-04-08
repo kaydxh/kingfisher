@@ -263,5 +263,265 @@ void OutputFile::init_encoder_time_base(
   enc_ctx->time_base = default_time_base;
 }
 
+int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
+                                   AVFrame *frame) {
+  int ret = 0;
+  if (ost->encoding_needed_) {
+    if (bitexact_) {
+      ost->codec_ctx_->flags |= AV_CODEC_FLAG_BITEXACT;
+    }
+
+    if (ofmt_ctx_->oformat->flags & AVFMT_GLOBALHEADER) {
+      ost->codec_ctx_->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    }
+
+    ret = init_output_stream_encode(ost, frame);
+    if (ret < 0) {
+      return ret;
+    }
+
+    if (!av_dict_get(ost->codec_opts_, "threads", nullptr, 0)) {
+      av_dict_set(&ost->codec_opts_, "threads", "auto", 0);
+    }
+
+    // todo hw_device_setup_for_encode
+
+    const AVCodec *codec = ost->codec_ctx_->codec;
+    auto st = ost->av_stream();
+    ret = avcodec_open2(ost->codec_ctx_.get(), codec, &ost->codec_opts_);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Error while opening encoder for output stream #%d:%d -- %s - "
+             "maybe incorrect parameters such as bit_rate, rate, width or "
+             "height\n",
+             file_index_, ost->stream_index_, av_err2str(ret));
+      return ret;
+    }
+    if (codec->type == AVMEDIA_TYPE_AUDIO &&
+        !(codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE)) {
+      AVFilterContext *filter_ctx =
+          !ost->ofilt_ || ost->ofilt_->outputs_.empty()
+              ? nullptr
+              : ost->ofilt_->outputs_[0]->filter_;
+      if (filter_ctx) {
+        av_buffersink_set_frame_size(filter_ctx, ost->codec_ctx_->frame_size);
+      }
+    }
+
+    // assert_avoptions(ost->codec_opts_);
+    if (ost->codec_ctx_->bit_rate && ost->codec_ctx_->bit_rate < 1000 &&
+        ost->codec_ctx_->codec_id !=
+            AV_CODEC_ID_CODEC2 /* don't complain about 700 bit/s modes */) {
+      av_log(this, AV_LOG_WARNING,
+             "The bitrate parameter is set too low."
+             " It takes bits/s as argument, not kbits/s\n");
+    }
+
+    ret = avcodec_parameters_from_context(st->codecpar, ost->codec_ctx_.get());
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Error initializing the output stream codec context for output "
+             "stream #%d:%d -- %s\n",
+             file_index_, st->index, av_err2str(ret));
+      return ret;
+    }
+
+    if (ost->codec_ctx_->nb_coded_side_data) {
+      int i;
+      for (i = 0; i < ost->codec_ctx_->nb_coded_side_data; i++) {
+        const AVPacketSideData *sd_src = &ost->codec_ctx_->coded_side_data[i];
+        uint8_t *dst_data;
+
+        dst_data = av_stream_new_side_data(st, sd_src->type, sd_src->size);
+        if (!dst_data) {
+          return AVERROR(ENOMEM);
+        }
+        memcpy(dst_data, sd_src->data, sd_src->size);
+      }
+    }
+
+    /*
+     * Add global input side data. For now this is naive, and copies it
+     * from the input stream's global side data. All side data should
+     * really be funneled over AVFrame and libavfilter, then added back to
+     * packet side data, and then potentially using the first packet for
+     * global side data.
+     */
+
+    // copy timebase while removing common factors
+    if (st->time_base.num <= 0 || st->time_base.den <= 0) {
+      st->time_base = av_add_q(ost->codec_ctx_->time_base, (AVRational){0, 1});
+    }
+
+    // copy estimated duration as a hint to the muxer
+    if (st->duration <= 0 && ost->st_ && ost->st_->duration > 0) {
+      st->duration =
+          av_rescale_q(ost->st_->duration, ost->st_->time_base, st->time_base);
+    }
+  } else if (ost->stream_copy_) {
+    ret = init_output_stream_streamcopy(ost);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  /* initialize bitstream filters for the output stream
+   * needs to be done here, because the codec id for streamcopy is not
+   * known until now */
+#if 0
+  ret = init_output_bsfs(ost);
+  if (ret < 0) return ret;
+
+  ost->initialized = true;
+
+  ret = of_check_init(output_files[ost->file_index]);
+  if (ret < 0) return ret;
+#endif
+
+  return ret;
+}
+
+int OutputFile::init_output_stream_streamcopy(
+    const std::shared_ptr<OutputStream> &ost) {
+  const auto &ist = ost->st_;
+  const auto &st = ost->av_stream();
+  AVCodecParameters *par_dst = st->codecpar;
+  AVCodecParameters *par_src = ost->ref_par_;
+  AVRational sar;
+  uint32_t codec_tag = par_dst->codec_tag;
+  int ret = 0;
+  av_assert0(ist && !ost->filter_);
+
+  ret = avcodec_parameters_from_context(par_src, ost->enc_ctx);
+  if (ret < 0) {
+    av_log(NULL, AV_LOG_FATAL, "Error getting reference codec parameters.\n");
+    return ret;
+  }
+
+  const AVOutputFormat *oformat = ofmt_ctx_->oformat;
+  if (!codec_tag) {
+    unsigned int codec_tag_tmp;
+    if (!oformat->codec_tag ||
+        av_codec_get_id(oformat->codec_tag, par_src->codec_tag) ==
+            par_src->codec_id ||
+        !av_codec_get_tag2(oformat->codec_tag, par_src->codec_id,
+                           &codec_tag_tmp)) {
+      codec_tag = par_src->codec_tag;
+    }
+  }
+
+  ret = avcodec_parameters_copy(par_dst, par_src);
+  if (ret < 0) {
+    return ret;
+  }
+
+  if (!ost->framerate_.num) {
+    ost->framerate_ = ist->r_frame_rate;
+  }
+
+  if (ost->framerate_.num) {
+    st->avg_frame_rate = ost->framerate_;
+  } else {
+    st->avg_frame_rate = ist->avg_frame_rate;
+  }
+
+  // todo avformat_transfer_internal_stream_timing_info
+
+  /*
+  ret = avformat_transfer_internal_stream_timing_info(oformat, st, ist->st, -1);
+  if (ret < 0) {
+    return ret;
+  }
+  */
+
+  // copy timebase while removing common factors
+  if (st->time_base.num <= 0 || st->time_base.den <= 0) {
+    if (ost->frame_rate.num) {
+      st->time_base = av_add_q(ost->codec_ctx_->time_base, (AVRational){0, 1});
+    } else {
+      st->time_base =
+          av_add_q(av_stream_get_codec_timebase(st), (AVRational){0, 1});
+    }
+  }
+
+  // copy estimated duration as a hint to the muxer
+  if (st->duration <= 0 && ost->st_ && ost->st_->duration > 0) {
+    st->duration =
+        av_rescale_q(ost->st_->duration, ost->st_->time_base, st->time_base);
+  }
+
+  switch (par_dst->codec_type) {
+    case AVMEDIA_TYPE_AUDIO:
+      if ((par_dst->block_align == 1 || par_dst->block_align == 1152 ||
+           par_dst->block_align == 576) &&
+          par_dst->codec_id == AV_CODEC_ID_MP3) {
+        par_dst->block_align = 0;
+      }
+      if (par_dst->codec_id == AV_CODEC_ID_AC3) {
+        par_dst->block_align = 0;
+      }
+      break;
+    case AVMEDIA_TYPE_VIDEO:
+      if (ist->sample_aspect_ratio
+              .num) {  // overridden by the -aspect cli option
+        sar = av_mul_q(ist->sample_aspect_ratio,
+                       (AVRational){par_dst->height, par_dst->width});
+        av_log(this, AV_LOG_WARNING,
+               "Overriding aspect ratio "
+               "with stream copy may produce invalid files\n");
+      } else if (st->sample_aspect_ratio.num) {
+        sar = st->sample_aspect_ratio;
+      } else {
+        sar = par_src->sample_aspect_ratio;
+      }
+      st->sample_aspect_ratio = par_dst->sample_aspect_ratio = sar;
+      st->avg_frame_rate = ist->avg_frame_rate;
+      st->r_frame_rate = ist->r_frame_rate;
+      break;
+    default:
+      break;
+  }
+
+  return 0;
+}
+
+/* open the muxer when all the streams are initialized */
+int OutputFile::of_check_init() {
+  for (unsigned int i = 0; i < ofmt_ctx_->nb_streams; i++) {
+    const auto &ost = output_streams_[i];
+    if (!ost->initialized_) {
+      return 0;
+    }
+  }
+
+  int ret = avformat_write_header(ofmt_ctx_.get(), &opts_);
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR,
+           "Could not write header for output file #%d "
+           "(incorrect codec parameters ?): %s\n",
+           file_index_, av_err2str(ret));
+    return ret;
+  }
+  header_written_ = true;
+
+  av_dump_format(ofmt_ctx_.get(), file_index_, ofmt_ctx_->url, 1);
+
+#if 0
+  /* flush the muxing queues */
+  for (auto ib = muxing_queue_.begin(); ib != muxing_queue_.end();) {
+    const auto &pkt = *ib;
+    if (pkt->stream_index >= 0 && pkt->stream_index < output_streams_.size()) {
+      const auto &ost = output_streams_[pkt->stream_index];
+      ret = of_write_packet(ost, pkt.get());
+      if (ret < 0) {
+        return ret;
+      }
+    }
+    ib = muxing_queue_.erase(ib);
+  }
+#endif
+  return 0;
+}
+
 }  // namespace cv
 }  // namespace kingfisher
