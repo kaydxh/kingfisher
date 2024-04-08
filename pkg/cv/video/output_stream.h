@@ -33,8 +33,8 @@ enum forced_keyframes_const {
 
 class OutputStream : public Stream {
  public:
-  OutputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, AVStream *st,
-               int file_index, unsigned int stream_index);
+  OutputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, int file_index,
+               unsigned int stream_index);
 
   ~OutputStream();
 

@@ -13,9 +13,8 @@ namespace kingfisher {
 namespace cv {
 
 OutputStream::OutputStream(std::weak_ptr<AVFormatContext> ofmt_ctx,
-                           AVStream *st, int file_index,
-                           unsigned int stream_index)
-    : Stream(std::move(ofmt_ctx), st, file_index, stream_index),
+                           int file_index, unsigned int stream_index)
+    : Stream(std::move(ofmt_ctx), file_index, stream_index),
       av_class_(&output_stream_class) {}
 
 OutputStream::~OutputStream() { avcodec_parameters_free(&ref_par_); }

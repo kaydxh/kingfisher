@@ -2,6 +2,7 @@
 #define KINGFISHER_PKG_CV_VIDEO_OUTPUT_FILE_H_
 
 #include <memory>
+#include <vector>
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -35,6 +36,9 @@ class OutputFile {
   void init_encoder_time_base(const std::shared_ptr<OutputStream> &ost,
                               AVRational default_time_base);
 
+  int init_output_stream_streamcopy(const std::shared_ptr<OutputStream> &ost);
+  int of_check_init();
+
  public:
   const AVClass *av_class_ = nullptr;
   int file_index_ = 0;
@@ -53,7 +57,11 @@ class OutputFile {
 
   int shortest_ = 0;
 
-  int header_written = 1;
+  bool header_written_ = true;
+  bool bitexact_ = true;
+
+ private:
+  std::vector<std::shared_ptr<OutputStream>> output_streams_;
 };
 
 }  // namespace cv
