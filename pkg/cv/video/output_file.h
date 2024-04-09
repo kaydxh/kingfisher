@@ -38,6 +38,7 @@ class OutputFile {
 
   int init_output_stream_streamcopy(const std::shared_ptr<OutputStream> &ost);
   int of_check_init();
+  int of_write_packet(const std::shared_ptr<OutputStream> &ost, AVPacket *pkt);
 
  public:
   const AVClass *av_class_ = nullptr;
@@ -59,9 +60,11 @@ class OutputFile {
 
   bool header_written_ = true;
   bool bitexact_ = true;
+  bool debug_ts_ = false;
 
  private:
   std::vector<std::shared_ptr<OutputStream>> output_streams_;
+  std::vector<std::shared_ptr<AVPacket>> muxing_queue_;
 };
 
 }  // namespace cv

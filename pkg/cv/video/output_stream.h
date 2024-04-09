@@ -33,16 +33,20 @@ enum forced_keyframes_const {
 
 class OutputStream : public Stream {
  public:
-  OutputStream(std::weak_ptr<AVFormatContext> ifmt_ctx, int file_index,
+  OutputStream(std::shared_ptr<AVFormatContext> ifmt_ctx,
+               std::weak_ptr<AVFormatContext> ofmt_ctx, int file_index,
                unsigned int stream_index);
 
   ~OutputStream();
 
+  AVStream *input_av_stream() const;
+
  public:
   const AVClass *av_class_ = nullptr;
+  std::shared_ptr<AVFormatContext> ifmt_ctx_;
   std::shared_ptr<FilterGraph> ofilt_;
   // int index;        /* stream index in the output file */
-  int source_index; /* InputStream index */
+  int source_index_; /* InputStream index */
   // AVStream *st;                  /* stream in the output file */
   bool encoding_needed_ = false; /* true if encoding needed for this stream */
   int64_t frame_number_ = 0;
@@ -56,11 +60,11 @@ class OutputStream : public Stream {
                                                                        // frame_number
   /* pts of the first frame encoded for this stream, used for limiting
    * recording time */
-  int64_t first_pts;
+  int64_t first_pts_ = AV_NOPTS_VALUE;
   /* dts of the last packet sent to the muxer */
-  int64_t last_mux_dts;
+  int64_t last_mux_dts_ = AV_NOPTS_VALUE;
   // the timebase of the packets sent to the muxer
-  AVRational mux_timebase;
+  AVRational mux_timebase_;
   AVRational enc_timebase_;
 
   AVBSFContext *bsf_ctx;
@@ -122,7 +126,8 @@ class OutputStream : public Stream {
   AVDictionary *sws_dict_ = nullptr;
   AVDictionary *swr_opts_ = nullptr;
   char *apad;
-  OSTFinished finished; /* no more packets should be written for this stream */
+  // OSTFinished finished_ =
+  //    false;       /* no more packets should be written for this stream */
   int unavailable; /* true if the steram is unavailable (possibly temporarily)
                     */
   int stream_copy_;
@@ -144,9 +149,9 @@ class OutputStream : public Stream {
 
   /* stats */
   // combined size of all the packets written
-  uint64_t data_size;
+  uint64_t data_size_ = 0;
   // number of packets send to the muxer
-  uint64_t packets_written;
+  uint64_t packets_written_ = 0;
   // number of frames/samples sent to the encoder
   uint64_t frames_encoded;
   uint64_t samples_encoded;

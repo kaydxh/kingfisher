@@ -50,7 +50,7 @@ int OutputFile::init_output_stream_wrapper(
 
 int OutputFile::init_output_stream_encode(
     const std::shared_ptr<OutputStream> &ost, AVFrame *frame) {
-  const auto &ist = ost->st_;
+  const auto &ist = ost->input_av_stream();
   const auto enc = ost->codec_ctx_->codec;
   const auto &filter_ctx = ost->filter_->filter_;
   AVCodecContext *enc_ctx = ost->codec_ctx_.get();
@@ -240,7 +240,7 @@ void OutputFile::set_encoder_id(const std::shared_ptr<OutputStream> &ost) {
 
 void OutputFile::init_encoder_time_base(
     const std::shared_ptr<OutputStream> &ost, AVRational default_time_base) {
-  const auto &ist = ost->st_;
+  const auto &ist = ost->input_av_stream();
   auto enc_ctx = ost->codec_ctx_;
 
   // > 0 : set as this timebase for encode_context
@@ -377,13 +377,17 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
   ret = of_check_init(output_files[ost->file_index]);
   if (ret < 0) return ret;
 #endif
+  ret = of_check_init();
+  if (ret < 0) {
+    return ret;
+  }
 
-  return ret;
+  return 0;
 }
 
 int OutputFile::init_output_stream_streamcopy(
     const std::shared_ptr<OutputStream> &ost) {
-  const auto &ist = ost->st_;
+  const auto &ist = ost->input_av_stream();
   const auto &st = ost->av_stream();
   AVCodecParameters *par_dst = st->codecpar;
   AVCodecParameters *par_src = ost->ref_par_;
@@ -426,11 +430,15 @@ int OutputFile::init_output_stream_streamcopy(
   }
 
   // todo avformat_transfer_internal_stream_timing_info
-
-  /*
-  ret = avformat_transfer_internal_stream_timing_info(oformat, st, ist->st, -1);
+  ret = avformat_transfer_internal_stream_timing_info(oformat, st, ist,
+                                                      AVFMT_TBCF_AUTO);
   if (ret < 0) {
     return ret;
+  }
+
+  /*
+  if (ist->time_base.den) {
+    st->time_base = ist->time_base;
   }
   */
 
@@ -506,11 +514,11 @@ int OutputFile::of_check_init() {
 
   av_dump_format(ofmt_ctx_.get(), file_index_, ofmt_ctx_->url, 1);
 
-#if 0
   /* flush the muxing queues */
   for (auto ib = muxing_queue_.begin(); ib != muxing_queue_.end();) {
     const auto &pkt = *ib;
-    if (pkt->stream_index >= 0 && pkt->stream_index < output_streams_.size()) {
+    if (pkt->stream_index >= 0 &&
+        pkt->stream_index < static_cast<int>(output_streams_.size())) {
       const auto &ost = output_streams_[pkt->stream_index];
       ret = of_write_packet(ost, pkt.get());
       if (ret < 0) {
@@ -519,7 +527,95 @@ int OutputFile::of_check_init() {
     }
     ib = muxing_queue_.erase(ib);
   }
-#endif
+  return 0;
+}
+
+int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
+                                AVPacket *pkt) {
+  const auto &s = ofmt_ctx_;
+  AVStream *st = ost->av_stream();
+  int ret;
+
+  if (!pkt) {
+    return 0;
+  }
+
+  if (!header_written_) {
+    /* the muxer is not initialized yet, buffer the packet */
+    muxing_queue_.push_back(std::shared_ptr<AVPacket>(
+        av_packet_clone(pkt), [](AVPacket *pkt) { av_packet_free(&pkt); }));
+    return 0;
+  }
+
+  av_packet_rescale_ts(pkt, ost->mux_timebase_, st->time_base);
+
+  if (!(s->oformat->flags & AVFMT_NOTIMESTAMPS)) {
+    if (pkt->dts != AV_NOPTS_VALUE && pkt->pts != AV_NOPTS_VALUE &&
+        pkt->dts > pkt->pts) {
+      av_log(s.get(), AV_LOG_WARNING,
+             "Invalid DTS: %" PRId64 " PTS: %" PRId64
+             " in output stream %d:%d, replacing by guess\n",
+             pkt->dts, pkt->pts, ost->file_index_, ost->av_stream()->index);
+      pkt->pts = pkt->dts = pkt->pts + pkt->dts + ost->last_mux_dts_ + 1 -
+                            FFMIN3(pkt->pts, pkt->dts, ost->last_mux_dts_ + 1) -
+                            FFMAX3(pkt->pts, pkt->dts, ost->last_mux_dts_ + 1);
+    }
+    if ((st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO ||
+         st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO ||
+         st->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE) &&
+        pkt->dts != AV_NOPTS_VALUE && ost->last_mux_dts_ != AV_NOPTS_VALUE) {
+      int64_t max =
+          ost->last_mux_dts_ + !(s->oformat->flags & AVFMT_TS_NONSTRICT);
+      if (pkt->dts < max) {
+        int loglevel =
+            max - pkt->dts > 2 || st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO
+                ? AV_LOG_WARNING
+                : AV_LOG_DEBUG;
+
+        av_log(s.get(), loglevel,
+               "Non-monotonous DTS in output stream "
+               "%d:%d; previous: %" PRId64 ", current: %" PRId64 "; ",
+               ost->file_index_, ost->av_stream()->index, ost->last_mux_dts_,
+               pkt->dts);
+        av_log(s.get(), loglevel,
+               "changing to %" PRId64
+               ". This may result "
+               "in incorrect timestamps in the output file.\n",
+               max);
+        if (pkt->pts >= pkt->dts) {
+          pkt->pts = FFMAX(pkt->pts, max);
+        }
+        pkt->dts = max;
+      }
+    }
+  }
+
+  ost->last_mux_dts_ = pkt->dts;
+  ost->data_size_ += pkt->size;
+  ost->packets_written_++;
+
+  pkt->stream_index = static_cast<int>(st->index);
+
+  if (debug_ts_) {
+    av_log(NULL, AV_LOG_INFO,
+           "muxer <- type:%s "
+           "pkt_pts:%s pkt_pts_time:%s pkt_dts:%s pkt_dts_time:%s duration:%s "
+           "duration_time:%s size:%d\n",
+           av_get_media_type_string(ost->enc_ctx->codec_type),
+           av_ts2str(pkt->pts), av_ts2timestr(pkt->pts, &st->time_base),
+           av_ts2str(pkt->dts), av_ts2timestr(pkt->dts, &st->time_base),
+           av_ts2str(pkt->duration),
+           av_ts2timestr(pkt->duration, &st->time_base), pkt->size);
+  }
+
+  ret = av_interleaved_write_frame(ofmt_ctx_.get(), pkt);
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR,
+           "av_interleaved_write_frame failed for output stream #%d:%d -- %s\n",
+           file_index_, st->index, av_err2str(ret));
+    return ret;
+  }
+
   return 0;
 }
 
