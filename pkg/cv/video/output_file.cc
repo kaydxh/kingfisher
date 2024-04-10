@@ -3,6 +3,7 @@
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
+#include "ffmpeg_utils.h"
 #include "output_filter.h"
 #include "output_stream.h"
 
@@ -27,7 +28,140 @@ static const AVClass output_file_class = {
 };
 
 OutputFile::OutputFile() : av_class_(&output_file_class) {}
-OutputFile::~OutputFile() {}
+OutputFile::~OutputFile() { av_dict_free(&command_opts_); }
+
+int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
+  int ret = 0;
+  AVFormatContext *ofmt_ctx = nullptr;
+  std::string fn = filename;
+  if (fn == "-") {
+    fn = "pipe:";
+  }
+  if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, fn.c_str(),
+                                            filename.c_str())) < 0) {
+    av_log(this, AV_LOG_ERROR,
+           "Cannot open output context by file name %s: %s\n", fn.c_str(),
+           av_err2str(ret));
+    return ret;
+  }
+
+  ofmt_ctx_ =
+      std::shared_ptr<AVFormatContext>(ofmt_ctx, [](AVFormatContext *ofmt_ctx) {
+        if (ofmt_ctx && !(ofmt_ctx->oformat->flags & AVFMT_NOFILE)) {
+          avio_closep(&ofmt_ctx->pb);
+        }
+        avformat_free_context(ofmt_ctx);
+      });
+
+  if (bitexact_) {
+    ofmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
+  }
+
+  return 0;
+}
+
+int OutputFile::create_streams(const AVFormatContext &format_ctx) {
+  output_streams_.resize(ofmt_ctx_->nb_streams);
+  for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
+  }
+
+  return 0;
+}
+
+int OutputFile::new_output_stream(
+    const std::shared_ptr<AVFormatContext> &ifmt_ctx, enum AVMediaType type) {
+  AVStream *st = avformat_new_stream(ofmt_ctx_.get(), nullptr);
+  if (!st) {
+    av_log(this, AV_LOG_ERROR, "Could not alloc output stream -- %s\n",
+           av_err2str(AVERROR(ENOMEM)));
+    return AVERROR(ENOMEM);
+  }
+
+  st->codecpar->codec_type = type;
+  std::shared_ptr<OutputStream> ost = std::make_shared<OutputStream>(
+      ifmt_ctx, ofmt_ctx_, file_index_, ofmt_ctx_->nb_streams - 1);
+
+  const AVCodec *enc = nullptr;
+  int ret = choose_encoder(ost, enc);
+  if (ret) {
+    av_log(this, AV_LOG_ERROR,
+           "Error selecting an encoder for stream "
+           "%d:%d\n",
+           ost->file_index_, ost->stream_index_);
+    return ret;
+  }
+
+  auto enc_ctx = std::shared_ptr<AVCodecContext>(
+      avcodec_alloc_context3(enc),
+      [](AVCodecContext *avctx) { avcodec_free_context(&avctx); });
+  if (!enc_ctx) {
+    av_log(this, AV_LOG_ERROR,
+           "Failed to allocate the encoder context for output stream #%d:%d\n",
+           file_index_, ost->stream_index_);
+    return AVERROR(ENOMEM);
+  }
+
+  ost->codec_ctx_ = enc_ctx;
+  enc_ctx->codec_type = type;
+  ost->ref_par_ = avcodec_parameters_alloc();
+  if (!ost->ref_par_) {
+    av_log(this, AV_LOG_ERROR, "Error allocating the encoding parameters.\n");
+    return AVERROR(ENOMEM);
+  }
+
+  return 0;
+}
+
+int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
+                               const AVCodec *&codec) {
+  std::string codec_name;
+  auto &st = ost->st_;
+  ost->encoding_needed_ = true;
+  int ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st, "c",
+                                 codec_name);
+  if (ret != 0) {
+    return ret;
+  }
+
+  AVMediaType type = st->codecpar->codec_type;
+  if (type == AVMEDIA_TYPE_VIDEO || type == AVMEDIA_TYPE_AUDIO ||
+      type == AVMEDIA_TYPE_SUBTITLE) {
+    if (!codec_name.empty()) {
+      st->codecpar->codec_id =
+          av_guess_codec(ofmt_ctx_->oformat, nullptr, ofmt_ctx_->url, nullptr,
+                         st->codecpar->codec_type);
+      codec = avcodec_find_encoder(st->codecpar->codec_id);
+      if (!codec) {
+        av_log(
+            NULL, AV_LOG_FATAL,
+            "Automatic encoder selection failed for "
+            "output stream #%d:%d. Default encoder for format %s (codec %s) is "
+            "probably disabled. Please choose an encoder manually.\n",
+            ost->file_index_, ost->stream_index_, ofmt_ctx_->oformat->name,
+            avcodec_get_name(st->codecpar->codec_id));
+        return AVERROR_ENCODER_NOT_FOUND;
+      } else if (codec_name == "copy") {
+        ost->encoding_needed_ = false;
+      } else {
+        ret = find_encoder(codec_name, st->codecpar->codec_type, codec);
+        if (ret) {
+          return ret;
+        }
+        st->codecpar->codec_id = codec->id;
+        if (recast_media_ && st->codecpar->codec_type != codec->type) {
+          st->codecpar->codec_type = codec->type;
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+
+int OutputFile::find_encoder(const std::string &name, enum AVMediaType type,
+                             const AVCodec *&codec) const {
+  return find_codec((void *)this, name, type, true, codec, recast_media_);
+}
 
 int OutputFile::init_output_stream_wrapper(
     const std::shared_ptr<OutputStream> &ost, AVFrame *frame) {
@@ -258,8 +392,8 @@ void OutputFile::init_encoder_time_base(
            "Input stream data not available, using default time base\n");
   }
 
-  // = 0 : set default timebase (1/(frame_rate or sample_rate in input stream))
-  // for encode_context
+  // = 0 : set default timebase (1/(frame_rate or sample_rate in input
+  // stream)) for encode_context
   enc_ctx->time_base = default_time_base;
 }
 

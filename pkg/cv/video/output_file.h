@@ -40,12 +40,25 @@ class OutputFile {
   int of_check_init();
   int of_write_packet(const std::shared_ptr<OutputStream> &ost, AVPacket *pkt);
 
+  int create_streams(const AVFormatContext &format_ctx);
+
+  int find_encoder(const std::string &name, enum AVMediaType type,
+                   const AVCodec *&codec) const;
+
+  int choose_encoder(const std::shared_ptr<OutputStream> &ost,
+                     const AVCodec *&codec);
+
+  int new_output_stream(const std::shared_ptr<AVFormatContext> &ifmt_ctx,
+                        enum AVMediaType type);
+
  public:
   const AVClass *av_class_ = nullptr;
+  AVDictionary *command_opts_ = nullptr;
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ofmt_ctx_;
 
-  const AVOutputFormat *format_;
+  const AVOutputFormat *format_ = nullptr;
+  int recast_media_ = 0;
 
   AVDictionary *opts_;
   int ost_index_ = 0; /* index of the first stream in output_streams */
