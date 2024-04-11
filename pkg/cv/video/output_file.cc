@@ -28,7 +28,10 @@ static const AVClass output_file_class = {
 };
 
 OutputFile::OutputFile() : av_class_(&output_file_class) {}
-OutputFile::~OutputFile() { av_dict_free(&command_opts_); }
+OutputFile::~OutputFile() {
+  av_dict_free(&command_opts_);
+  av_dict_free(&encoder_opts_);
+}
 
 int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   int ret = 0;
@@ -60,9 +63,56 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   return 0;
 }
 
+int OutputFile::init_filter(std::shared_ptr<OutputStream> &ost) {
+  AVStream *st = ost->av_stream();
+  if (!(st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO ||
+        st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)) {
+    return 0;
+  }
+
+  std::string filter_spec;
+  if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+    filter_spec = "null"; /* passthrough (dummy) filter for video */
+  } else {
+    filter_spec = "anull";
+  }
+
+  auto fg = std::make_shared<FilterGraph>(ost, filter_spec);
+  int ret = fg->init_simple_filtergraph();
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR,
+           "Error initializing a simple filtergraph for output stream #%d:%d "
+           "failed: %s\n",
+           file_index_, ost->stream_index_, av_err2str(ret));
+    return ret;
+  }
+  ost->ofilt_ = fg;
+  return 0;
+}
+
+int OutputFile::init_filters() {
+  int ret = 0;
+  for (auto &ost : output_streams_) {
+    ret = init_filter(ost);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  return 0;
+}
+
 int OutputFile::create_streams(const AVFormatContext &format_ctx) {
+  int ret = 0;
   output_streams_.resize(ofmt_ctx_->nb_streams);
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
+    // new_output_stream(output_streams_[i]->ifmt_ctx_);
+    ret = init_filters();
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
+             av_err2str(ret));
+      return ret;
+    }
   }
 
   return 0;
@@ -107,6 +157,51 @@ int OutputFile::new_output_stream(
   if (!ost->ref_par_) {
     av_log(this, AV_LOG_ERROR, "Error allocating the encoding parameters.\n");
     return AVERROR(ENOMEM);
+  }
+
+  if (enc_ctx->codec) {
+    // if (type == AVMEDIA_TYPE_VIDEO) {
+    ost->codec_opts_ = filter_codec_opts(encoder_opts_, enc_ctx->codec->id,
+                                         ofmt_ctx_.get(), st, enc_ctx->codec);
+
+    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                               "autorotate", ost->autorotate_);
+    if (ret < 0) {
+      return ret;
+    }
+    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                               "autoscale", ost->autoscale_);
+    if (ret < 0) {
+      return ret;
+    }
+
+#if 0
+    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                               "fpsmax", ost->max_frame_rate_);
+    if (ret < 0) {
+      return ret;
+    }
+#endif
+
+    std::string preset;
+    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                               "presets", preset);
+    if (ret < 0) {
+      return ret;
+    }
+    if (!preset.empty()) {
+      av_log(this, AV_LOG_WARNING,
+             "Preset %s specified for stream %d:%d, but not implemented.\n",
+             preset.c_str(), ost->file_index_, st->index);
+    }
+    // }
+  } else {
+    ost->codec_opts_ = filter_codec_opts(encoder_opts_, AV_CODEC_ID_NONE,
+                                         ofmt_ctx_.get(), st, nullptr);
+  }
+
+  if (bitexact_) {
+    ost->codec_ctx_->flags |= AV_CODEC_FLAG_BITEXACT;
   }
 
   return 0;
@@ -530,7 +625,7 @@ int OutputFile::init_output_stream_streamcopy(
   int ret = 0;
   av_assert0(ist && !ost->filter_);
 
-  ret = avcodec_parameters_from_context(par_src, ost->enc_ctx);
+  ret = avcodec_parameters_from_context(par_src, ost->codec_ctx_.get());
   if (ret < 0) {
     av_log(NULL, AV_LOG_FATAL, "Error getting reference codec parameters.\n");
     return ret;
@@ -735,7 +830,7 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
            "muxer <- type:%s "
            "pkt_pts:%s pkt_pts_time:%s pkt_dts:%s pkt_dts_time:%s duration:%s "
            "duration_time:%s size:%d\n",
-           av_get_media_type_string(ost->enc_ctx->codec_type),
+           av_get_media_type_string(ost->codec_ctx_->codec_type),
            av_ts2str(pkt->pts), av_ts2timestr(pkt->pts, &st->time_base),
            av_ts2str(pkt->dts), av_ts2timestr(pkt->dts, &st->time_base),
            av_ts2str(pkt->duration),

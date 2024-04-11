@@ -69,7 +69,7 @@ class OutputStream : public Stream {
 
   AVBSFContext *bsf_ctx;
 
-  AVCodecContext *enc_ctx;
+  // AVCodecContext *enc_ctx;
   AVCodecParameters *ref_par_; /* associated input codec parameters with
                                  encoders options applied */
   int64_t max_frames_ = 0;

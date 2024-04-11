@@ -50,10 +50,15 @@ class OutputFile {
 
   int new_output_stream(const std::shared_ptr<AVFormatContext> &ifmt_ctx,
                         enum AVMediaType type);
+  int init_filter(std::shared_ptr<OutputStream> &ost);
+  int init_filters();
 
  public:
   const AVClass *av_class_ = nullptr;
+
   AVDictionary *command_opts_ = nullptr;
+  AVDictionary *encoder_opts_ = nullptr;
+
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ofmt_ctx_;
 
