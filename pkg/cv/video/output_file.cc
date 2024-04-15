@@ -15,17 +15,18 @@ extern "C" {
 #include "libavutil/display.h"
 #include "libavutil/opt.h"
 #include "libavutil/pixdesc.h"
-}
 
-namespace kingfisher {
-namespace cv {
-
+extern int ff_mkdir_p(const char *path);
 static const AVClass output_file_class = {
     .class_name = "OutputFile",
     .item_name = av_default_item_name,
     .option = nullptr,
     .version = LIBAVUTIL_VERSION_INT,
 };
+}
+
+namespace kingfisher {
+namespace cv {
 
 OutputFile::OutputFile() : av_class_(&output_file_class) {}
 OutputFile::~OutputFile() {
@@ -58,6 +59,79 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   if (bitexact_) {
     ofmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
+  }
+
+  ret = create_streams(format_ctx);
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Failed to add streams: %s\n", av_err2str(ret));
+    return ret;
+  }
+
+  ret = init_filters();
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
+           av_err2str(ret));
+    return ret;
+  }
+
+  if (!(ofmt_ctx_->oformat->flags & AVFMT_NOFILE)) {
+    {
+      const char *dir;
+      char *fn_copy = av_strdup(ofmt_ctx_->url);
+      if (!fn_copy) {
+        av_log(this, AV_LOG_ERROR,
+               "Failed to allocate the url of output file\n");
+        return AVERROR(ENOMEM);
+      }
+      dir = av_dirname(fn_copy);
+      if (ff_mkdir_p(dir) == -1 && errno != EEXIST) {
+        av_log(ofmt_ctx_.get(), AV_LOG_ERROR,
+               "Could not create directory %s with use_localtime_mkdir\n", dir);
+        av_freep(&fn_copy);
+        return AVERROR(errno);
+      }
+      av_freep(&fn_copy);
+    }
+    /* open the file */
+    ret = avio_open(&ofmt_ctx_->pb, filename.c_str(), AVIO_FLAG_WRITE);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR, "Could not open output file '%s': %s\n",
+             filename.c_str(), av_err2str(ret));
+      return ret;
+    }
+  }
+
+  /*
+   * initialize stream copy and subtitle/data streams.
+   * Encoded AVFrame based streams will get initialized as follows:
+   * - when the first AVFrame is received in do_video_out
+   * - just before the first AVFrame is received in either transcode_step
+   *   or reap_filters due to us requiring the filter chain buffer sink
+   *   to be configured with the correct audio frame size, which is only
+   *   known after the encoder is initialized.
+   */
+  //  https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg.c#:~:text=*/-,for%20(i%20%3D%200%3B%20i%20%3C%20nb_output_streams%3B%20i%2B%2B)%20%7B,-if%20(!
+  //
+  for (auto &ost : output_streams_) {
+    if (!ost->stream_copy_ &&
+        (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO ||
+         ost->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO)) {
+      continue;
+    }
+
+    ret = init_output_stream_wrapper(ost, nullptr);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  /* write headers for files with no streams */
+  if (ofmt_ctx_->oformat->flags & AVFMT_NOSTREAMS &&
+      ofmt_ctx_->nb_streams == 0) {
+    ret = of_check_init();
+    if (ret < 0) {
+      return ret;
+    }
   }
 
   return 0;
