@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "ffmpeg_types.h"
+
 extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
@@ -20,6 +22,7 @@ class OutputFile {
   ~OutputFile();
 
   int open(const std::string &filename, AVFormatContext &format_ctx);
+  int write_frames(const std::vector<Frame> &raw_frames);
 
  private:
   int init_output_stream_wrapper(const std::shared_ptr<OutputStream> &ost,
@@ -53,6 +56,12 @@ class OutputFile {
   int init_filter(std::shared_ptr<OutputStream> &ost);
   int init_filters();
 
+  int write_packet(const std::shared_ptr<AVPacket> &enc_pkt,
+                   std::shared_ptr<OutputStream> &ost);
+
+  int write_frame(int stream_index, const Frame &frame);
+  int write_frame(const Frame &raw_frame);
+
  public:
   const AVClass *av_class_ = nullptr;
 
@@ -83,6 +92,8 @@ class OutputFile {
  private:
   std::vector<std::shared_ptr<OutputStream>> output_streams_;
   std::vector<std::shared_ptr<AVPacket>> muxing_queue_;
+  int video_stream_index_ = -1;
+  int audio_stream_index_ = -1;
 };
 
 }  // namespace cv
