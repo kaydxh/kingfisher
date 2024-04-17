@@ -16,7 +16,7 @@ extern "C" {
 #include "libavutil/opt.h"
 #include "libavutil/pixdesc.h"
 
-extern int ff_mkdir_p(const char *path);
+// extern int ff_mkdir_p(const char *path);
 static const AVClass output_file_class = {
     .class_name = "OutputFile",
     .item_name = av_default_item_name,
@@ -41,7 +41,7 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   if (fn == "-") {
     fn = "pipe:";
   }
-  if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, fn.c_str(),
+  if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, nullptr,
                                             filename.c_str())) < 0) {
     av_log(this, AV_LOG_ERROR,
            "Cannot open output context by file name %s: %s\n", fn.c_str(),
@@ -76,20 +76,22 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
 
   if (!(ofmt_ctx_->oformat->flags & AVFMT_NOFILE)) {
     {
-      const char *dir;
+      // const char *dir;
       char *fn_copy = av_strdup(ofmt_ctx_->url);
       if (!fn_copy) {
         av_log(this, AV_LOG_ERROR,
                "Failed to allocate the url of output file\n");
         return AVERROR(ENOMEM);
       }
-      dir = av_dirname(fn_copy);
+      // dir = av_dirname(fn_copy);
+      /*
       if (ff_mkdir_p(dir) == -1 && errno != EEXIST) {
         av_log(ofmt_ctx_.get(), AV_LOG_ERROR,
                "Could not create directory %s with use_localtime_mkdir\n", dir);
         av_freep(&fn_copy);
         return AVERROR(errno);
       }
+      */
       av_freep(&fn_copy);
     }
     /* open the file */
@@ -180,8 +182,8 @@ int OutputFile::create_streams(const AVFormatContext &format_ctx) {
   int ret = 0;
   output_streams_.resize(ofmt_ctx_->nb_streams);
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
-    // new_output_stream(output_streams_[i]->ifmt_ctx_);
-    ret = init_filters();
+    ret = new_output_stream(output_streams_[i]->ifmt_ctx_, AVMEDIA_TYPE_VIDEO);
+    // ret = init_filters();
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
              av_err2str(ret));
@@ -276,6 +278,19 @@ int OutputFile::new_output_stream(
 
   if (bitexact_) {
     ost->codec_ctx_->flags |= AV_CODEC_FLAG_BITEXACT;
+  }
+
+  output_streams_[st->index] = ost;
+
+  if (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO) {
+    video_stream_index_ = st->index;
+  } else if (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_AUDIO) {
+    audio_stream_index_ = st->index;
+  } else if (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_UNKNOWN) {
+    av_log(this, AV_LOG_ERROR,
+           "Elementary stream #%d:%d is of unknown type, cannot proceed\n",
+           file_index_, st->index);
+    return AVERROR_INVALIDDATA;
   }
 
   return 0;
@@ -680,6 +695,7 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
   ret = of_check_init(output_files[ost->file_index]);
   if (ret < 0) return ret;
 #endif
+  ost->initialized_ = true;
   ret = of_check_init();
   if (ret < 0) {
     return ret;
@@ -919,6 +935,62 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
     return ret;
   }
 
+  return 0;
+}
+
+int OutputFile::write_packet(const std::shared_ptr<AVPacket> &enc_pkt,
+                             std::shared_ptr<OutputStream> &ost) {
+  int ret = 0;
+  if (!ost->initialized_) {
+    ost->stream_copy_ = true;       // remux for write_paket
+    ost->encoding_needed_ = false;  // remux for write_paket
+  }
+  ret = init_output_stream_wrapper(ost, nullptr);
+  if (ret < 0) {
+    return ret;
+  }
+
+  ret = of_write_packet(ost, enc_pkt.get());
+  if (ret < 0) {
+    return ret;
+  }
+  return 0;
+}
+
+int OutputFile::write_frame(int stream_index, const Frame &frame) {
+  auto &ost = output_streams_[stream_index];
+  if (frame.packet) {
+    return write_packet(frame.packet, ost);
+  }
+
+  return 0;
+}
+
+int OutputFile::write_frame(const Frame &raw_frame) {
+  switch (raw_frame.codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+      if (video_stream_index_ >= 0) {
+        return write_frame(video_stream_index_, raw_frame);
+      }
+      break;
+    case AVMEDIA_TYPE_AUDIO:
+      if (audio_stream_index_ >= 0) {
+        return write_frame(audio_stream_index_, raw_frame);
+      }
+      break;
+    default:
+      break;
+  }
+  return 0;
+}
+
+int OutputFile::write_frames(const std::vector<Frame> &raw_frames) {
+  int ret = 0;
+  for (const auto &raw_frame : raw_frames) {
+    if ((ret = write_frame(raw_frame)) < 0) {
+      return ret;
+    }
+  }
   return 0;
 }
 

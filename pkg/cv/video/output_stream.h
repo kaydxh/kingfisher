@@ -130,12 +130,12 @@ class OutputStream : public Stream {
   //    false;       /* no more packets should be written for this stream */
   int unavailable; /* true if the steram is unavailable (possibly temporarily)
                     */
-  int stream_copy_;
+  bool stream_copy_ = false;
 
   // init_output_stream() has been called for this stream
   // The encoder and the bitstream filters have been initialized and the stream
   // parameters are set in the AVStream.
-  int initialized_;
+  bool initialized_ = false;
 
   int inputs_done;
 
