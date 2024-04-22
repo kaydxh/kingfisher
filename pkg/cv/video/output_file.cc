@@ -37,14 +37,16 @@ OutputFile::~OutputFile() {
 int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   int ret = 0;
   AVFormatContext *ofmt_ctx = nullptr;
+  /*
   std::string fn = filename;
   if (fn == "-") {
     fn = "pipe:";
   }
+  */
   if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, nullptr,
                                             filename.c_str())) < 0) {
     av_log(this, AV_LOG_ERROR,
-           "Cannot open output context by file name %s: %s\n", fn.c_str(),
+           "Cannot open output context by file name %s: %s\n", filename.c_str(),
            av_err2str(ret));
     return ret;
   }
@@ -61,7 +63,10 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     ofmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
   }
 
-  ret = create_streams(format_ctx);
+  std::shared_ptr<AVFormatContext> ifmt_ctx = std::shared_ptr<AVFormatContext>(
+      &format_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
+
+  ret = create_streams(ifmt_ctx);
   if (ret < 0) {
     av_log(this, AV_LOG_ERROR, "Failed to add streams: %s\n", av_err2str(ret));
     return ret;
@@ -178,11 +183,19 @@ int OutputFile::init_filters() {
   return 0;
 }
 
-int OutputFile::create_streams(const AVFormatContext &format_ctx) {
+int OutputFile::create_streams(
+    const std::shared_ptr<AVFormatContext> &format_ctx) {
   int ret = 0;
   output_streams_.resize(ofmt_ctx_->nb_streams);
-  for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
-    ret = new_output_stream(output_streams_[i]->ifmt_ctx_, AVMEDIA_TYPE_VIDEO);
+  /*
+  std::shared_ptr<AVFormatContext> ifmt_ctx = std::shared_ptr<AVFormatContext>(
+      &format_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
+      */
+
+  for (unsigned int i = 0; i < format_ctx->nb_streams; ++i) {
+    AVStream *st = format_ctx->streams[i];
+
+    ret = new_output_stream(format_ctx, st->codecpar->codec_type);
     // ret = init_filters();
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
@@ -236,20 +249,20 @@ int OutputFile::new_output_stream(
   }
 
   if (enc_ctx->codec) {
-    // if (type == AVMEDIA_TYPE_VIDEO) {
-    ost->codec_opts_ = filter_codec_opts(encoder_opts_, enc_ctx->codec->id,
-                                         ofmt_ctx_.get(), st, enc_ctx->codec);
+    if (type == AVMEDIA_TYPE_VIDEO) {
+      ost->codec_opts_ = filter_codec_opts(encoder_opts_, enc_ctx->codec->id,
+                                           ofmt_ctx_.get(), st, enc_ctx->codec);
 
-    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
-                               "autorotate", ost->autorotate_);
-    if (ret < 0) {
-      return ret;
-    }
-    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
-                               "autoscale", ost->autoscale_);
-    if (ret < 0) {
-      return ret;
-    }
+      ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                                 "autorotate", ost->autorotate_);
+      if (ret < 0) {
+        return ret;
+      }
+      ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                                 "autoscale", ost->autoscale_);
+      if (ret < 0) {
+        return ret;
+      }
 
 #if 0
     ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
@@ -259,18 +272,18 @@ int OutputFile::new_output_stream(
     }
 #endif
 
-    std::string preset;
-    ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
-                               "presets", preset);
-    if (ret < 0) {
-      return ret;
+      std::string preset;
+      ret = match_per_stream_opt(this, command_opts_, ofmt_ctx_.get(), st,
+                                 "presets", preset);
+      if (ret < 0) {
+        return ret;
+      }
+      if (!preset.empty()) {
+        av_log(this, AV_LOG_WARNING,
+               "Preset %s specified for stream %d:%d, but not implemented.\n",
+               preset.c_str(), ost->file_index_, st->index);
+      }
     }
-    if (!preset.empty()) {
-      av_log(this, AV_LOG_WARNING,
-             "Preset %s specified for stream %d:%d, but not implemented.\n",
-             preset.c_str(), ost->file_index_, st->index);
-    }
-    // }
   } else {
     ost->codec_opts_ = filter_codec_opts(encoder_opts_, AV_CODEC_ID_NONE,
                                          ofmt_ctx_.get(), st, nullptr);

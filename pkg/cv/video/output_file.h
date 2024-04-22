@@ -43,7 +43,7 @@ class OutputFile {
   int of_check_init();
   int of_write_packet(const std::shared_ptr<OutputStream> &ost, AVPacket *pkt);
 
-  int create_streams(const AVFormatContext &format_ctx);
+  int create_streams(const std::shared_ptr<AVFormatContext> &format_ctx);
 
   int find_encoder(const std::string &name, enum AVMediaType type,
                    const AVCodec *&codec) const;
