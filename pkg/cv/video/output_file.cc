@@ -37,12 +37,6 @@ OutputFile::~OutputFile() {
 int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   int ret = 0;
   AVFormatContext *ofmt_ctx = nullptr;
-  /*
-  std::string fn = filename;
-  if (fn == "-") {
-    fn = "pipe:";
-  }
-  */
   if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, nullptr,
                                             filename.c_str())) < 0) {
     av_log(this, AV_LOG_ERROR,
@@ -63,10 +57,12 @@ int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
     ofmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
   }
 
-  std::shared_ptr<AVFormatContext> ifmt_ctx = std::shared_ptr<AVFormatContext>(
-      &format_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
+  /*
+  std::shared_ptr<AVFormatContext> ifmt_ctx =
+      std::shared_ptr<AVFormatContext>(&format_ctx);
+      */
 
-  ret = create_streams(ifmt_ctx);
+  ret = create_streams(format_ctx);
   if (ret < 0) {
     av_log(this, AV_LOG_ERROR, "Failed to add streams: %s\n", av_err2str(ret));
     return ret;
@@ -183,21 +179,12 @@ int OutputFile::init_filters() {
   return 0;
 }
 
-int OutputFile::create_streams(
-    const std::shared_ptr<AVFormatContext> &format_ctx) {
+int OutputFile::create_streams(const AVFormatContext &format_ctx) {
   int ret = 0;
-  output_streams_.resize(ofmt_ctx_->nb_streams);
-  /*
-  std::shared_ptr<AVFormatContext> ifmt_ctx = std::shared_ptr<AVFormatContext>(
-      &format_ctx, [](AVFormatContext *s) { avformat_close_input(&s); });
-      */
-
-  for (unsigned int i = 0; i < format_ctx->nb_streams; ++i) {
-    AVStream *st = format_ctx->streams[i];
-
+  for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
+    AVStream *st = format_ctx.streams[i];
     ret = new_output_stream(format_ctx, st->codecpar->codec_type);
-    // ret = init_filters();
-    if (ret < 0) {
+    if (ret != 0) {
       av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
              av_err2str(ret));
       return ret;
@@ -206,9 +193,13 @@ int OutputFile::create_streams(
 
   return 0;
 }
-
+/*
 int OutputFile::new_output_stream(
     const std::shared_ptr<AVFormatContext> &ifmt_ctx, enum AVMediaType type) {
+    */
+
+int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
+                                  enum AVMediaType type) {
   AVStream *st = avformat_new_stream(ofmt_ctx_.get(), nullptr);
   if (!st) {
     av_log(this, AV_LOG_ERROR, "Could not alloc output stream -- %s\n",
@@ -217,6 +208,8 @@ int OutputFile::new_output_stream(
   }
 
   st->codecpar->codec_type = type;
+
+  output_streams_.resize(ofmt_ctx_->nb_streams);
   std::shared_ptr<OutputStream> ost = std::make_shared<OutputStream>(
       ifmt_ctx, ofmt_ctx_, file_index_, ofmt_ctx_->nb_streams - 1);
 
@@ -323,7 +316,7 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
   AVMediaType type = st->codecpar->codec_type;
   if (type == AVMEDIA_TYPE_VIDEO || type == AVMEDIA_TYPE_AUDIO ||
       type == AVMEDIA_TYPE_SUBTITLE) {
-    if (!codec_name.empty()) {
+    if (codec_name.empty()) {
       st->codecpar->codec_id =
           av_guess_codec(ofmt_ctx_->oformat, nullptr, ofmt_ctx_->url, nullptr,
                          st->codecpar->codec_type);
@@ -337,19 +330,42 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
             ost->file_index_, ost->stream_index_, ofmt_ctx_->oformat->name,
             avcodec_get_name(st->codecpar->codec_id));
         return AVERROR_ENCODER_NOT_FOUND;
-      } else if (codec_name == "copy") {
-        ost->encoding_needed_ = false;
-      } else {
-        ret = find_encoder(codec_name, st->codecpar->codec_type, codec);
-        if (ret) {
-          return ret;
-        }
-        st->codecpar->codec_id = codec->id;
-        if (recast_media_ && st->codecpar->codec_type != codec->type) {
-          st->codecpar->codec_type = codec->type;
-        }
+      }
+    } else if (codec_name == "copy") {
+      ost->stream_copy_ = true;
+      ost->encoding_needed_ = false;
+    } else {
+      /*
+    st->codecpar->codec_id =
+        av_guess_codec(ofmt_ctx_->oformat, nullptr, ofmt_ctx_->url, nullptr,
+                       st->codecpar->codec_type);
+                       */
+
+      ret = find_encoder(codec_name, st->codecpar->codec_type,
+
+                         codec);
+      /*
+      codec = avcodec_find_encoder(st->codecpar->codec_id);
+      if (!codec) {
+        av_log(
+            this, AV_LOG_FATAL,
+            "Automatic encoder selection failed for "
+            "output stream #%d:%d. Default encoder for format %s (codec %s) is "
+            "probably disabled. Please choose an encoder manually.\n",
+            file_index_, st->index, ofmt_ctx_->oformat->name,
+            avcodec_get_name(st->codecpar->codec_id));
+      }
+      */
+      if (ret) {
+        return ret;
+      }
+      st->codecpar->codec_id = codec->id;
+      if (recast_media_ && st->codecpar->codec_type != codec->type) {
+        st->codecpar->codec_type = codec->type;
       }
     }
+  } else {
+    ost->encoding_needed_ = false;
   }
 
   return 0;

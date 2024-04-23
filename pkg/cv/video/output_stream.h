@@ -33,7 +33,7 @@ enum forced_keyframes_const {
 
 class OutputStream : public Stream {
  public:
-  OutputStream(std::shared_ptr<AVFormatContext> ifmt_ctx,
+  OutputStream(const AVFormatContext &ifmt_ctx,
                std::weak_ptr<AVFormatContext> ofmt_ctx, int file_index,
                unsigned int stream_index);
 
@@ -43,7 +43,8 @@ class OutputStream : public Stream {
 
  public:
   const AVClass *av_class_ = nullptr;
-  std::shared_ptr<AVFormatContext> ifmt_ctx_;
+  // std::shared_ptr<AVFormatContext> ifmt_ctx_;
+  AVFormatContext ifmt_ctx_;
   std::shared_ptr<FilterGraph> ofilt_;
   // int index;        /* stream index in the output file */
   int source_index_; /* InputStream index */

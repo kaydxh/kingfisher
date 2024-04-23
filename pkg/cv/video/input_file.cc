@@ -165,6 +165,8 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
 
+  format_ctx = *ifmt_ctx_;
+
   return init_filters();
 }
 
