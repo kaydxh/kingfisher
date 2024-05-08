@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#include <chrono>
 #include <type_traits>  // for static_assert
 
 namespace kingfisher {
@@ -78,6 +77,14 @@ Timestamp Timestamp::Now() {
 }
 
 Timestamp Timestamp::Invalid() { return Timestamp(); }
+
+#if 0
+uint64_t NowUs() {
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             std::chrono::system_clock::now().time_since_epoch())
+      .count();
+}
+#endif
 
 }  // namespace time
 }  // namespace kingfisher

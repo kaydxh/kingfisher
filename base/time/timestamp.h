@@ -8,6 +8,7 @@
 #include <inttypes.h>
 #include <sys/time.h>
 
+#include <chrono>
 #include <string>
 
 namespace kingfisher {
@@ -83,6 +84,20 @@ inline Timestamp AddTime(const Timestamp &timestamp, double seconds) {
       static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond);
   return Timestamp(timestamp.MicroSecondsSinceEpoch() + delta);
 }
+
+template <typename T>
+uint64_t Now() {
+  return std::chrono::duration_cast<T>(
+             std::chrono::system_clock::now().time_since_epoch())
+      .count();
+}
+
+/*
+uint64_t NowS();
+uint64_t NowS();
+uint64_t NowMs();
+uint64_t NowUs();
+*/
 
 }  // namespace time
 }  // namespace kingfisher
