@@ -92,12 +92,9 @@ uint64_t Now() {
       .count();
 }
 
-/*
-uint64_t NowS();
 uint64_t NowS();
 uint64_t NowMs();
 uint64_t NowUs();
-*/
 
 }  // namespace time
 }  // namespace kingfisher

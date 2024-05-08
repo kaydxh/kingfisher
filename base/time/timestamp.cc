@@ -78,13 +78,10 @@ Timestamp Timestamp::Now() {
 
 Timestamp Timestamp::Invalid() { return Timestamp(); }
 
-#if 0
-uint64_t NowUs() {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             std::chrono::system_clock::now().time_since_epoch())
-      .count();
-}
-#endif
+uint64_t NowS() { return Now<std::chrono::microseconds>(); }
+
+uint64_t NowMs() { return Now<std::chrono::milliseconds>(); }
+uint64_t NowUs() { return Now<std::chrono::microseconds>(); }
 
 }  // namespace time
 }  // namespace kingfisher
