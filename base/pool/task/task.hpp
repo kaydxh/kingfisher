@@ -12,7 +12,7 @@ namespace pool {
 class Task {
  public:
   Task() {}
-  virtual ~Task();
+  virtual ~Task(){};
 
   void Done() {
     {
@@ -50,7 +50,7 @@ class Task {
  private:
   // DISABLE_COPY(TASK)
 
- private:
+ public:
   std::condition_variable cv_;
   std::mutex mutex_;
 
@@ -59,7 +59,6 @@ class Task {
   int64_t commit_time_ = 0;
 
   bool done_ = false;
-  std::atomic<bool> stopped_;
 };
 
 #if 0
