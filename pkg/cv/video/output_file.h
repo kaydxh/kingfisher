@@ -54,7 +54,8 @@ class OutputFile {
 
   // int new_output_stream(const std::shared_ptr<AVFormatContext> &ifmt_ctx,
   //                      enum AVMediaType type);
-  int new_output_stream(const AVFormatContext &ifmt_ctx, enum AVMediaType type);
+  int new_output_stream(const AVFormatContext &ifmt_ctx,
+                        unsigned int stream_index, enum AVMediaType type);
   int init_filter(std::shared_ptr<OutputStream> &ost);
   int init_filters();
 

@@ -183,7 +183,7 @@ int OutputFile::create_streams(const AVFormatContext &format_ctx) {
   int ret = 0;
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
     AVStream *st = format_ctx.streams[i];
-    ret = new_output_stream(format_ctx, st->codecpar->codec_type);
+    ret = new_output_stream(format_ctx, i, st->codecpar->codec_type);
     if (ret != 0) {
       av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
              av_err2str(ret));
@@ -199,6 +199,7 @@ int OutputFile::new_output_stream(
     */
 
 int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
+                                  unsigned int stream_index,
                                   enum AVMediaType type) {
   AVStream *st = avformat_new_stream(ofmt_ctx_.get(), nullptr);
   if (!st) {
@@ -211,7 +212,8 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
 
   output_streams_.resize(ofmt_ctx_->nb_streams);
   std::shared_ptr<OutputStream> ost = std::make_shared<OutputStream>(
-      ifmt_ctx, ofmt_ctx_, file_index_, ofmt_ctx_->nb_streams - 1);
+      ifmt_ctx, ofmt_ctx_, file_index_,
+      stream_index);  // ofmt_ctx_->nb_streams - 1);
 
   const AVCodec *enc = nullptr;
   int ret = choose_encoder(ost, enc);
@@ -277,9 +279,36 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
                preset.c_str(), ost->file_index_, st->index);
       }
     }
+
+#if 0
+    if (enc_ctx->codec_id == st->codec.codec_id) {
+      /* In this example, we transcode to same properties (picture size,
+       * sample rate etc.). These properties can be changed for output
+       * streams easily using filters */
+      enc_ctx->bit_rate = ist->codec.bit_rate;
+      // `codec_tag` various with format
+      // [mp4 @ 0x162af40] Tag H264 incompatible with output codec id '27'
+      // (avc1) enc_ctx->codec_tag = ist->codec.codec_tag;
+      enc_ctx->profile = ist->codec.profile;
+      enc_ctx->level = ist->codec.level;
+    }
+
+#endif
   } else {
     ost->codec_opts_ = filter_codec_opts(encoder_opts_, AV_CODEC_ID_NONE,
                                          ofmt_ctx_.get(), st, nullptr);
+  }
+
+  if (ifmt_ctx.streams[stream_index]->codecpar) {
+    ret = avcodec_parameters_copy(st->codecpar,
+                                  ifmt_ctx.streams[stream_index]->codecpar);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Error initializing the output stream codec context for output "
+             "stream #%d:%d -- %s\n",
+             file_index_, st->index, av_err2str(ret));
+      return ret;
+    }
   }
 
   if (bitexact_) {
@@ -331,31 +360,14 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
             avcodec_get_name(st->codecpar->codec_id));
         return AVERROR_ENCODER_NOT_FOUND;
       }
+      ost->stream_copy_ = false;
     } else if (codec_name == "copy") {
       ost->stream_copy_ = true;
-      ost->encoding_needed_ = false;
     } else {
-      /*
-    st->codecpar->codec_id =
-        av_guess_codec(ofmt_ctx_->oformat, nullptr, ofmt_ctx_->url, nullptr,
-                       st->codecpar->codec_type);
-                       */
-
+      ost->stream_copy_ = false;
       ret = find_encoder(codec_name, st->codecpar->codec_type,
 
                          codec);
-      /*
-      codec = avcodec_find_encoder(st->codecpar->codec_id);
-      if (!codec) {
-        av_log(
-            this, AV_LOG_FATAL,
-            "Automatic encoder selection failed for "
-            "output stream #%d:%d. Default encoder for format %s (codec %s) is "
-            "probably disabled. Please choose an encoder manually.\n",
-            file_index_, st->index, ofmt_ctx_->oformat->name,
-            avcodec_get_name(st->codecpar->codec_id));
-      }
-      */
       if (ret) {
         return ret;
       }
@@ -365,8 +377,9 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
       }
     }
   } else {
-    ost->encoding_needed_ = false;
+    ost->stream_copy_ = true;
   }
+  ost->encoding_needed_ = !ost->stream_copy_;
 
   return 0;
 }
@@ -632,7 +645,6 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
     }
 
     // todo hw_device_setup_for_encode
-
     const AVCodec *codec = ost->codec_ctx_->codec;
     auto st = ost->av_stream();
     ret = avcodec_open2(ost->codec_ctx_.get(), codec, &ost->codec_opts_);
@@ -971,8 +983,8 @@ int OutputFile::write_packet(const std::shared_ptr<AVPacket> &enc_pkt,
                              std::shared_ptr<OutputStream> &ost) {
   int ret = 0;
   if (!ost->initialized_) {
-    ost->stream_copy_ = true;       // remux for write_paket
-    ost->encoding_needed_ = false;  // remux for write_paket
+    ost->stream_copy_ = true;       // remux for write_packet
+    ost->encoding_needed_ = false;  // remux for write_packet
   }
   ret = init_output_stream_wrapper(ost, nullptr);
   if (ret < 0) {
