@@ -34,7 +34,9 @@ int LocalInit(void* p, int id) {
     return 0;
 }
 
-void LocalRelease(void* p) { LOG(INFO) << "do local release"; }
+void LocalRelease(void* p, int id) {
+    LOG(INFO) << "do local release id: " << id;
+}
 
 class MySDK {
    public:
@@ -59,6 +61,7 @@ TEST(test_Sdk_Pool, All) {
     opts.global_init_func = GlobalInit;
     opts.global_release_func = GlobalRelease;
     opts.local_init_func = LocalInit;
+    opts.local_release_func = LocalRelease;
     opts.core_ids = {-1};
 
     kingfisher::pool::CoreThreadPool<MySDK, MyTask> pool(opts);
@@ -73,7 +76,7 @@ TEST(test_Sdk_Pool, All) {
     LOG(INFO) << "wait task";
     task->Wait();
     LOG(INFO) << "task done";
-    sleep(10000);
+    //   sleep(10000);
 }
 
 }  // namespace sdk

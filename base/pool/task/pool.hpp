@@ -54,8 +54,7 @@ struct CoreThreadPoolOptions {
     std::function<int()> global_init_func;
     std::function<int()> global_release_func;
     std::function<int(void *, int)> local_init_func;
-    std::function<void(void *)> local_release_func;
-    std::function<void(void *)> delete_func;
+    std::function<void(void *, int)> local_release_func;
 };
 
 template <typename SDK, typename Task>
@@ -73,11 +72,10 @@ class CoreThreadPool : public ThreadPool<Task> {
             }
         }
 
-#if 0
         for (auto id : opts_.core_ids) {
             for (int i = 0; i < opts_.concurrency; ++i) {
                 if (opts_.local_release_func) {
-                    opts_.local_release_func(this);
+                    opts_.local_release_func(this, id);
                 }
             }
         }
@@ -85,7 +83,6 @@ class CoreThreadPool : public ThreadPool<Task> {
         if (opts_.global_release_func) {
             opts_.global_release_func();
         }
-#endif
     }
 
     int Init(std::function<void(SDK &, std::vector<std::shared_ptr<Task>> &)>
