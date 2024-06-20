@@ -94,6 +94,16 @@ TEST_F(test_Image, CropImage) {
     ::cv::imwrite("./output.crop.png", mat);
 }
 
+TEST_F(test_Image, DumpImageFileToBytes) {
+    kingfisher::kcv::Image::GlobalInit();
+    std::string imageFile = "./testdata/1.jpg";
+    std::string imageBytes = "./testdata/1_bytes.txt";
+
+    int ret =
+        kingfisher::kcv::Image::DumpImageFileToBytes(imageFile, imageBytes);
+    EXPECT_EQ(ret, 0);
+}
+
 #if 0
 TEST_F(test_Image, WriteImage) {
   kingfisher::kcv::Image::GlobalInit();

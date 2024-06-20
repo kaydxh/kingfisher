@@ -124,6 +124,16 @@ int Image::DecodeImage(const std::string &imageData, const DecodeOptions &opts,
                         matOutput);
 }
 
+int Image::DecodeImageFile(const std::string &imageFile, ::cv::Mat &matOutput) {
+    std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+    std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+    kingfisher::kcv::DecodeOptions opts;
+    opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+    opts.set_auto_orient(true);
+    return kingfisher::kcv::Image::DecodeImage(content, opts, matOutput);
+}
+
 int Image::DecodeImageFile(const std::string &imageFile,
                            const DecodeOptions &opts, ::cv::Mat &matOutput) {
     std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
@@ -214,6 +224,34 @@ int Image::WriteImage(const cv::Mat &mat, const std::string &path) {
         return -1;
     }
 
+    return 0;
+}
+
+int Image::DumpImageFileToBytes(const std::string &imageFile,
+                                const std::string &path) {
+    kingfisher::kcv::DecodeOptions opts;
+    opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+    opts.set_auto_orient(true);
+
+    ::cv::Mat mat;
+    int ret = DecodeImageFile(imageFile, opts, mat);
+    if (ret) {
+        return ret;
+    }
+
+    return DumpImageToBytes(mat, path);
+}
+
+int Image::DumpImageToBytes(const cv::Mat &mat, const std::string &path) {
+    std::ofstream ofs(path);
+    ofs.precision(6);
+    ofs.setf(std::ios::fixed, std::ios::floatfield);
+    int sz = mat.dims * mat.rows * mat.cols;
+    for (int i = 0; i < sz; ++i) {
+        ofs << static_cast<int>(static_cast<uint8_t *>(mat.data)[i])
+            << std::endl;
+    }
+    ofs.close();
     return 0;
 }
 
