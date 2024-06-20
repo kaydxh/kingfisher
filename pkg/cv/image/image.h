@@ -22,6 +22,9 @@ class Image {
     static int GlobalRelease();
 
     static int DecodeImageFile(const std::string &imageFile,
+                               ::cv::Mat &matOutput);
+
+    static int DecodeImageFile(const std::string &imageFile,
                                const DecodeOptions &opts, ::cv::Mat &matOutput);
 
     static int DecodeImage(const std::string &imageData,
@@ -37,6 +40,11 @@ class Image {
                          ::cv::Mat &matOutput);
 
     static int WriteImage(const cv::Mat &mat, const std::string &path);
+
+    static int DumpImageFileToBytes(const std::string &imageFile,
+                                    const std::string &path);
+
+    static int DumpImageToBytes(const cv::Mat &mat, const std::string &path);
     // static int AnnotateImage(const std::string &imageData,
     //                        const std::string &text, const Rect &rect,
     //                       ::cv::Mat &matOutput);
