@@ -6,7 +6,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <codecvt>
 #include <cstring>
+#include <exception>
+#include <locale>
 #include <sstream>
 
 #include "encoding/utf8/utf8.h"
@@ -326,7 +329,8 @@ bool Unescape(std::string &dest, const std::string &source,
             // Arbitrarily many hex digits
             ch = (ch << 4) + HexDigitToInt(*++p);
           if (ch > 0xFF) {
-            // "Value of \\" + std::string(hex_start, static_cast<size_t>(p + 1
+            // "Value of \\" + std::string(hex_start,
+            // static_cast<size_t>(p + 1
             // - hex_start)) + " exceeds 0xff";
 
             return false;
@@ -348,7 +352,8 @@ bool Unescape(std::string &dest, const std::string &source,
           const char *hex_start = p;
           if (p + 4 >= end) {
             // error = "\\u must be followed by 4 hex digits: \\" +
-            // std::string(hex_start, static_cast<size_t>(p + 1 - hex_start));
+            // std::string(hex_start, static_cast<size_t>(p + 1 -
+            // hex_start));
 
             return false;
           }
@@ -358,7 +363,8 @@ bool Unescape(std::string &dest, const std::string &source,
               rune = (rune << 4) + HexDigitToInt(*++p);  // Advance p.
             } else {
               // "\\u must be followed by 4 hex digits: \\" +
-              // std::string(hex_start, static_cast<size_t>(p + 1 - hex_start));
+              // std::string(hex_start, static_cast<size_t>(p + 1
+              // - hex_start));
 
               return false;
             }
@@ -382,7 +388,8 @@ bool Unescape(std::string &dest, const std::string &source,
           const char *hex_start = p;
           if (p + 8 >= end) {
             //"\\U must be followed by 8 hex digits: \\" +
-            // std::string(hex_start, static_cast<size_t>(p + 1 - hex_start));
+            // std::string(hex_start, static_cast<size_t>(p + 1 -
+            // hex_start));
 
             return false;
           }
@@ -393,8 +400,10 @@ bool Unescape(std::string &dest, const std::string &source,
               // is within the Unicode limit, but do advance p.
               uint32_t newrune = (rune << 4) + HexDigitToInt(*++p);
               if (newrune > 0x10FFFF) {
-                // "Value of \\" + std::string(hex_start, static_cast<size_t>(p
-                // + 1 - hex_start)) + " exceeds Unicode limit (0x10FFFF)";
+                // "Value of \\" + std::string(hex_start,
+                // static_cast<size_t>(p
+                // + 1 - hex_start)) + " exceeds Unicode limit
+                // (0x10FFFF)";
 
                 return false;
               } else {
@@ -402,7 +411,8 @@ bool Unescape(std::string &dest, const std::string &source,
               }
             } else {
               // "\\U must be followed by 8 hex digits: \\" +
-              // std::string(hex_start, static_cast<size_t>(p + 1 - hex_start));
+              // std::string(hex_start, static_cast<size_t>(p + 1
+              // - hex_start));
 
               return false;
             }
@@ -454,6 +464,60 @@ unsigned int HexDigitToInt(char c) {
     x += 9;
   }
   return x & 0xf;
+}
+
+int WStringFromBytes(std::wstring &result, const std::string &s) {
+  if (s.empty()) {
+    return 0;
+  }
+  static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+  try {
+    result = converter.from_bytes(s);
+  } catch (std::exception &e) {
+    return -1;
+  }
+
+  return 0;
+}
+
+int WStringToBytes(std::string &result, const std::wstring &ws) {
+  if (ws.empty()) {
+    return 0;
+  }
+  static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+  try {
+    result = converter.to_bytes(ws);
+  } catch (std::exception &e) {
+    return -1;
+  }
+
+  return 0;
+}
+
+bool IsChineseChar(const wchar_t wch) {
+  return (
+      // 基本汉字（CJK Unified Ideographs）范围：0x4E00 - 0x9FFF
+      (wch >= 0x4E00 && wch <= 0x9FFF) ||
+      // 扩展 A 区（CJK Unified Ideographs Extension A）范围：0x3400 - 0x4DBF
+      (wch >= 0x3400 && wch <= 0x4DBF) ||
+      // 扩展 B 区（CJK Unified Ideographs Extension B）范围：0x20000 -
+      // 0x2A6DF
+      (wch >= 0x20000 && wch <= 0x2A6DF) ||
+      // 扩展 C 区（CJK Unified Ideographs Extension C）范围：0x2A700 -
+      // 0x2B73F
+      (wch >= 0x2A700 && wch <= 0x2B73F) ||
+      // 扩展 D 区（CJK Unified Ideographs Extension D）范围：0x2B820 -
+      // 0x2CEAF
+      (wch >= 0x2B740 && wch <= 0x2B81F) ||
+      // 扩展 E 区（CJK Unified Ideographs Extension E）范围：0x2CEB0 -
+      // 0x2EBEF
+      (wch >= 0x2B820 && wch <= 0x2CEAF) ||
+      // 汉字笔画（CJK Compatibility Ideographs）范围：0x2E80 - 0x2EFF
+      (wch >= 0xF900 && wch <= 0xFAFF) ||
+      // 康熙部首（Kangxi Radicals）范围：0x2F00 - 0x2FDF
+      (wch >= 0x2F800 && wch <= 0x2FA1F));
 }
 
 }  // namespace strings
