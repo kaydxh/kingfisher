@@ -15,93 +15,91 @@ using namespace kingfisher::kcv;
 //./kingfisher_base_test --gtest_filter=test_Image.*
 //./kingfisher_base_test --gtest_filter=test_Image.DecodeImage
 class test_Image : public testing::Test {
-   public:
-    test_Image() {}
-    ~test_Image() {}
+ public:
+  test_Image() {}
+  ~test_Image() {}
 
-    virtual void SetUp(void) {}
+  virtual void SetUp(void) {}
 
-    virtual void TearDown(void) {}
+  virtual void TearDown(void) {}
 };
 
 TEST_F(test_Image, DecodeImageFile) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/1.jpg";
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
 
-    ::cv::Mat mat;
-    kingfisher::kcv::DecodeOptions opts;
-    opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
-    opts.set_auto_orient(true);
-    int ret = kingfisher::kcv::Image::DecodeImageFile(imageFile, opts, mat);
-    EXPECT_EQ(ret, 0);
-    ::cv::imwrite("./output.BGRColorSpace.png", mat);
+  ::cv::Mat mat;
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = kingfisher::kcv::Image::DecodeImageFile(imageFile, opts, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
 
 TEST_F(test_Image, DecodeImage) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/1.jpg";
-    std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
-    std::string content{std::istreambuf_iterator<char>(stream), {}};
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
 
-    ::cv::Mat mat;
-    kingfisher::kcv::DecodeOptions opts;
-    opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
-    opts.set_auto_orient(true);
-    int ret = kingfisher::kcv::Image::DecodeImage(content, opts, mat);
-    EXPECT_EQ(ret, 0);
-    ::cv::imwrite("./output.BGRColorSpace.png", mat);
+  ::cv::Mat mat;
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = kingfisher::kcv::Image::DecodeImage(content, opts, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.BGRColorSpace.png", mat);
 }
 
 TEST_F(test_Image, RotateImage) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/1.jpg";
-    std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
-    std::string content{std::istreambuf_iterator<char>(stream), {}};
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
 
-    ::cv::Mat mat;
-    int ret = kingfisher::kcv::Image::RotateImage(content, -90, mat);
-    EXPECT_EQ(ret, 0);
-    ::cv::imwrite("./output.rotate.png", mat);
+  ::cv::Mat mat;
+  int ret = kingfisher::kcv::Image::RotateImage(content, -90, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.rotate.png", mat);
 }
 
 TEST_F(test_Image, ResizeImage) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/kay2.png";
-    std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
-    std::string content{std::istreambuf_iterator<char>(stream), {}};
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/kay2.png";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
 
-    ::cv::Mat mat;
-    int ret =
-        kingfisher::kcv::Image::ResizeImage(content, 520, 765, false, mat);
-    EXPECT_EQ(ret, 0);
-    ::cv::imwrite("./output.resize.jpg", mat);
+  ::cv::Mat mat;
+  int ret = kingfisher::kcv::Image::ResizeImage(content, 520, 765, false, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.resize.jpg", mat);
 }
 
 TEST_F(test_Image, CropImage) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/1.jpg";
-    std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
-    std::string content{std::istreambuf_iterator<char>(stream), {}};
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
 
-    ::cv::Mat mat;
-    kingfisher::kcv::Rect rect;
-    rect.set_x(10);
-    rect.set_y(10);
-    rect.set_width(100);
-    rect.set_height(200);
-    int ret = kingfisher::kcv::Image::CropImage(content, rect, mat);
-    EXPECT_EQ(ret, 0);
-    ::cv::imwrite("./output.crop.png", mat);
+  ::cv::Mat mat;
+  kingfisher::kcv::Rect rect;
+  rect.set_x(10);
+  rect.set_y(10);
+  rect.set_width(100);
+  rect.set_height(200);
+  int ret = kingfisher::kcv::Image::CropImage(content, rect, mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::imwrite("./output.crop.png", mat);
 }
 
 TEST_F(test_Image, DumpImageFileToBytes) {
-    kingfisher::kcv::Image::GlobalInit();
-    std::string imageFile = "./testdata/1.jpg";
-    std::string imageBytes = "./testdata/1_bytes.txt";
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+  std::string imageBytes = "./testdata/1_bytes.txt";
 
-    int ret =
-        kingfisher::kcv::Image::DumpImageFileToBytes(imageFile, imageBytes);
-    EXPECT_EQ(ret, 0);
+  int ret = kingfisher::kcv::Image::DumpImageFileToBytes(imageFile, imageBytes);
+  EXPECT_EQ(ret, 0);
 }
 
 #if 0

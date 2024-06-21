@@ -17,39 +17,39 @@ namespace kingfisher {
 namespace kcv {
 
 class Image {
-   public:
-    static int GlobalInit();
-    static int GlobalRelease();
+ public:
+  static int GlobalInit();
+  static int GlobalRelease();
 
-    static int DecodeImageFile(const std::string &imageFile,
-                               ::cv::Mat &matOutput);
+  static int DecodeImageFile(const std::string &imageFile,
+                             ::cv::Mat &matOutput);
 
-    static int DecodeImageFile(const std::string &imageFile,
-                               const DecodeOptions &opts, ::cv::Mat &matOutput);
+  static int DecodeImageFile(const std::string &imageFile,
+                             const DecodeOptions &opts, ::cv::Mat &matOutput);
 
-    static int DecodeImage(const std::string &imageData,
-                           const DecodeOptions &opts, ::cv::Mat &matOutput);
+  static int DecodeImage(const std::string &imageData,
+                         const DecodeOptions &opts, ::cv::Mat &matOutput);
 
-    static int RotateImage(const std::string &imageData, double degree,
-                           ::cv::Mat &matOutput);
-
-    static int ResizeImage(const std::string &imageData, int width, int height,
-                           bool keepRatio, ::cv::Mat &matOutput);
-
-    static int CropImage(const std::string &imageData, const Rect &rect,
+  static int RotateImage(const std::string &imageData, double degree,
                          ::cv::Mat &matOutput);
 
-    static int WriteImage(const cv::Mat &mat, const std::string &path);
+  static int ResizeImage(const std::string &imageData, int width, int height,
+                         bool keepRatio, ::cv::Mat &matOutput);
 
-    static int DumpImageFileToBytes(const std::string &imageFile,
-                                    const std::string &path);
+  static int CropImage(const std::string &imageData, const Rect &rect,
+                       ::cv::Mat &matOutput);
 
-    static int DumpImageToBytes(const cv::Mat &mat, const std::string &path);
-    // static int AnnotateImage(const std::string &imageData,
-    //                        const std::string &text, const Rect &rect,
-    //                       ::cv::Mat &matOutput);
-    // static int ZoomImage(const std::string &imageData, double ratio,
-    //                     ::cv::Mat &matOutput);
+  static int WriteImage(const cv::Mat &mat, const std::string &path);
+
+  static int DumpImageFileToBytes(const std::string &imageFile,
+                                  const std::string &path);
+
+  static int DumpImageToBytes(const cv::Mat &mat, const std::string &path);
+  // static int AnnotateImage(const std::string &imageData,
+  //                        const std::string &text, const Rect &rect,
+  //                       ::cv::Mat &matOutput);
+  // static int ZoomImage(const std::string &imageData, double ratio,
+  //                     ::cv::Mat &matOutput);
 };
 }  // namespace kcv
 }  // namespace kingfisher
