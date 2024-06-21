@@ -96,6 +96,10 @@ std::vector<T> ToNumbers(std::string s) {
   return results;
 }
 
+int WStringFromBytes(std::wstring &result, const std::string &s);
+int WStringToBytes(std::string &result, const std::wstring &ws);
+bool IsChineseChar(const wchar_t wch);
+
 }  // namespace strings
 }  // namespace kingfisher
 #endif
