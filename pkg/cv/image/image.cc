@@ -5,6 +5,7 @@
 
 #include <fstream>
 
+#include "cv/image/image.pb.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "wrap.func.h"
 
@@ -96,6 +97,41 @@ static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
 
 int Image::GlobalInit() {
   Magick::InitializeMagick(nullptr);
+  return 0;
+}
+
+int Image::PingImage(ImageInfo &result, const std::string &imageData) {
+  Magick::Image image;
+  std::string msg;
+  int ret = WrapMagickFuncTWithMsg(msg, [&]() {
+    Magick::Blob blob((void *)(imageData.data()), imageData.length());
+    image.ping(blob);
+  });
+  if (ret != 0) {
+    return 0;
+  }
+
+  result.set_columns(image.columns());
+  result.set_rows(image.rows());
+  result.set_color_space(static_cast<kcv::ColorSpace>(image.colorSpace()));
+  result.set_depth(image.depth());
+  result.set_file_name(image.fileName());
+  result.set_file_size(image.fileSize());
+  result.set_format(image.format());
+  result.set_gama(image.gamma());
+  result.set_is_valid(image.isValid());
+  result.set_line_width(image.lineWidth());
+  result.set_magick(image.magick());
+  result.set_matte(image.matte());
+  result.set_orientation(
+      static_cast<kcv::OrientationType>(image.orientation()));
+
+  result.set_quality(image.quality());
+  result.set_quantize_colors(image.quantizeColors());
+  result.set_tile_name(image.tileName());
+  result.set_type(static_cast<kcv::ImageType>(image.type()));
+  result.set_magick_warning(msg);
+
   return 0;
 }
 
