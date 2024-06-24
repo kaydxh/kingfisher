@@ -23,3 +23,53 @@ message Rect {
   int32 height = 3;
   int32 width = 4;
 }
+
+enum OrientationType {
+  UndefinedOrientation = 0;   /*      0      / Unknown  / Unknown  */
+  TopLeftOrientation = 1;     /*      1      / Left     / Top      */
+  TopRightOrientation = 2;    /*      2      / Right    / Top      */
+  BottomRightOrientation = 3; /*      3      / Right    / Bottom   */
+  BottomLeftOrientation = 4;  /*      4      / Left     / Bottom   */
+  LeftTopOrientation = 5;     /*      5      / Top      / Left     */
+  RightTopOrientation = 6;    /*      6      / Top      / Right    */
+  RightBottomOrientation = 7; /*      7      / Bottom   / Right    */
+  LeftBottomOrientation = 8;  /*      8      / Bottom   / Left     */
+};
+
+enum ImageType {
+  UndefinedType = 0;
+  BilevelType = 1;
+  GrayscaleType = 2;
+  GrayscaleMatteType = 3;
+  PaletteType = 4;
+  PaletteMatteType = 5;
+  TrueColorType = 6;
+  TrueColorMatteType = 7;
+  ColorSeparationType = 8;
+  ColorSeparationMatteType = 9;
+}
+
+// https://github.com/trevor/ImageMagick/blob/82d683349c7a6adc977f6f638f1b340e01bf0ea9/branches/ImageMagick-6.6.3/Magick%2B%2B/lib/Magick%2B%2B/Image.h#L936
+message ImageInfo {
+  int64 rows = 2;
+  int64 columns = 3;
+  ColorSpace color_space = 4;
+  int64 depth = 5;
+  string directory = 6;
+  string file_name = 7;
+  int64 file_size = 8;  // Number of bytes of the image on disk
+  string format = 9;    // Long image format description
+  double gama = 10;     // Gamma level of the image
+  bool is_valid = 11;   // Does object contain valid image?
+  string label = 12;    // Image label
+  double line_width =
+      13;             // Stroke width for drawing vector objects (default one)
+  bytes magick = 14;  // File type magick identifier (.e.g "GIF")
+  bool matte = 15;    // Image supports transparency (matte channel)
+  OrientationType orientation = 16;  // Image orientation
+  int64 quality = 17;          // JPEG/MIFF/PNG compression level (default 75).
+  int64 quantize_colors = 18;  // Colorspace to quantize in.
+  string tile_name = 19;       // Tile name
+  ImageType type = 20;  // Image representation type (also see type operation)
+  string magick_warning = 21;  // Magick::Warning ignored
+}
