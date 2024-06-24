@@ -21,6 +21,8 @@ class Image {
   static int GlobalInit();
   static int GlobalRelease();
 
+  static int PingImage(ImageInfo &result, const std::string &imageData);
+
   static int DecodeImageFile(const std::string &imageFile,
                              ::cv::Mat &matOutput);
 
