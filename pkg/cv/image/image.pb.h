@@ -48,7 +48,7 @@ struct TableStruct_pkg_2fcv_2fimage_2fimage_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[2]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -60,6 +60,9 @@ namespace kcv {
 class DecodeOptions;
 class DecodeOptionsDefaultTypeInternal;
 extern DecodeOptionsDefaultTypeInternal _DecodeOptions_default_instance_;
+class ImageInfo;
+class ImageInfoDefaultTypeInternal;
+extern ImageInfoDefaultTypeInternal _ImageInfo_default_instance_;
 class Rect;
 class RectDefaultTypeInternal;
 extern RectDefaultTypeInternal _Rect_default_instance_;
@@ -67,6 +70,7 @@ extern RectDefaultTypeInternal _Rect_default_instance_;
 }  // namespace kingfisher
 PROTOBUF_NAMESPACE_OPEN
 template<> ::kingfisher::kcv::DecodeOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::DecodeOptions>(Arena*);
+template<> ::kingfisher::kcv::ImageInfo* Arena::CreateMaybeMessage<::kingfisher::kcv::ImageInfo>(Arena*);
 template<> ::kingfisher::kcv::Rect* Arena::CreateMaybeMessage<::kingfisher::kcv::Rect>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace kingfisher {
@@ -99,6 +103,71 @@ inline bool ColorSpace_Parse(
     const std::string& name, ColorSpace* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ColorSpace>(
     ColorSpace_descriptor(), name, value);
+}
+enum OrientationType : int {
+  UndefinedOrientation = 0,
+  TopLeftOrientation = 1,
+  TopRightOrientation = 2,
+  BottomRightOrientation = 3,
+  BottomLeftOrientation = 4,
+  LeftTopOrientation = 5,
+  RightTopOrientation = 6,
+  RightBottomOrientation = 7,
+  LeftBottomOrientation = 8,
+  OrientationType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  OrientationType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool OrientationType_IsValid(int value);
+constexpr OrientationType OrientationType_MIN = UndefinedOrientation;
+constexpr OrientationType OrientationType_MAX = LeftBottomOrientation;
+constexpr int OrientationType_ARRAYSIZE = OrientationType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* OrientationType_descriptor();
+template<typename T>
+inline const std::string& OrientationType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, OrientationType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function OrientationType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    OrientationType_descriptor(), enum_t_value);
+}
+inline bool OrientationType_Parse(
+    const std::string& name, OrientationType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<OrientationType>(
+    OrientationType_descriptor(), name, value);
+}
+enum ImageType : int {
+  UndefinedType = 0,
+  BilevelType = 1,
+  GrayscaleType = 2,
+  GrayscaleMatteType = 3,
+  PaletteType = 4,
+  PaletteMatteType = 5,
+  TrueColorType = 6,
+  TrueColorMatteType = 7,
+  ColorSeparationType = 8,
+  ColorSeparationMatteType = 9,
+  ImageType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  ImageType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool ImageType_IsValid(int value);
+constexpr ImageType ImageType_MIN = UndefinedType;
+constexpr ImageType ImageType_MAX = ColorSeparationMatteType;
+constexpr int ImageType_ARRAYSIZE = ImageType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ImageType_descriptor();
+template<typename T>
+inline const std::string& ImageType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, ImageType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function ImageType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    ImageType_descriptor(), enum_t_value);
+}
+inline bool ImageType_Parse(
+    const std::string& name, ImageType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ImageType>(
+    ImageType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -418,6 +487,464 @@ class Rect PROTOBUF_FINAL :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_pkg_2fcv_2fimage_2fimage_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ImageInfo PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.ImageInfo) */ {
+ public:
+  inline ImageInfo() : ImageInfo(nullptr) {};
+  virtual ~ImageInfo();
+
+  ImageInfo(const ImageInfo& from);
+  ImageInfo(ImageInfo&& from) noexcept
+    : ImageInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ImageInfo& operator=(const ImageInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ImageInfo& operator=(ImageInfo&& from) noexcept {
+    if (GetArena() == from.GetArena()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ImageInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ImageInfo* internal_default_instance() {
+    return reinterpret_cast<const ImageInfo*>(
+               &_ImageInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(ImageInfo& a, ImageInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ImageInfo* other) {
+    if (other == this) return;
+    if (GetArena() == other->GetArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ImageInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ImageInfo* New() const final {
+    return CreateMaybeMessage<ImageInfo>(nullptr);
+  }
+
+  ImageInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ImageInfo>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ImageInfo& from);
+  void MergeFrom(const ImageInfo& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ImageInfo* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "kingfisher.kcv.ImageInfo";
+  }
+  protected:
+  explicit ImageInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_pkg_2fcv_2fimage_2fimage_2eproto);
+    return ::descriptor_table_pkg_2fcv_2fimage_2fimage_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kDirectoryFieldNumber = 6,
+    kFileNameFieldNumber = 7,
+    kFormatFieldNumber = 9,
+    kLabelFieldNumber = 12,
+    kMagickFieldNumber = 14,
+    kTileNameFieldNumber = 19,
+    kMagickWarningFieldNumber = 21,
+    kRowsFieldNumber = 2,
+    kColumnsFieldNumber = 3,
+    kDepthFieldNumber = 5,
+    kFileSizeFieldNumber = 8,
+    kGamaFieldNumber = 10,
+    kColorSpaceFieldNumber = 4,
+    kIsValidFieldNumber = 11,
+    kMatteFieldNumber = 15,
+    kLineWidthFieldNumber = 13,
+    kQualityFieldNumber = 17,
+    kQuantizeColorsFieldNumber = 18,
+    kOrientationFieldNumber = 16,
+    kTypeFieldNumber = 20,
+  };
+  // string directory = 6;
+  void clear_directory();
+  const std::string& directory() const;
+  void set_directory(const std::string& value);
+  void set_directory(std::string&& value);
+  void set_directory(const char* value);
+  void set_directory(const char* value, size_t size);
+  std::string* mutable_directory();
+  std::string* release_directory();
+  void set_allocated_directory(std::string* directory);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_directory();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_directory(
+      std::string* directory);
+  private:
+  const std::string& _internal_directory() const;
+  void _internal_set_directory(const std::string& value);
+  std::string* _internal_mutable_directory();
+  public:
+
+  // string file_name = 7;
+  void clear_file_name();
+  const std::string& file_name() const;
+  void set_file_name(const std::string& value);
+  void set_file_name(std::string&& value);
+  void set_file_name(const char* value);
+  void set_file_name(const char* value, size_t size);
+  std::string* mutable_file_name();
+  std::string* release_file_name();
+  void set_allocated_file_name(std::string* file_name);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_file_name();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_file_name(
+      std::string* file_name);
+  private:
+  const std::string& _internal_file_name() const;
+  void _internal_set_file_name(const std::string& value);
+  std::string* _internal_mutable_file_name();
+  public:
+
+  // string format = 9;
+  void clear_format();
+  const std::string& format() const;
+  void set_format(const std::string& value);
+  void set_format(std::string&& value);
+  void set_format(const char* value);
+  void set_format(const char* value, size_t size);
+  std::string* mutable_format();
+  std::string* release_format();
+  void set_allocated_format(std::string* format);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_format();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_format(
+      std::string* format);
+  private:
+  const std::string& _internal_format() const;
+  void _internal_set_format(const std::string& value);
+  std::string* _internal_mutable_format();
+  public:
+
+  // string label = 12;
+  void clear_label();
+  const std::string& label() const;
+  void set_label(const std::string& value);
+  void set_label(std::string&& value);
+  void set_label(const char* value);
+  void set_label(const char* value, size_t size);
+  std::string* mutable_label();
+  std::string* release_label();
+  void set_allocated_label(std::string* label);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_label();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_label(
+      std::string* label);
+  private:
+  const std::string& _internal_label() const;
+  void _internal_set_label(const std::string& value);
+  std::string* _internal_mutable_label();
+  public:
+
+  // bytes magick = 14;
+  void clear_magick();
+  const std::string& magick() const;
+  void set_magick(const std::string& value);
+  void set_magick(std::string&& value);
+  void set_magick(const char* value);
+  void set_magick(const void* value, size_t size);
+  std::string* mutable_magick();
+  std::string* release_magick();
+  void set_allocated_magick(std::string* magick);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_magick();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_magick(
+      std::string* magick);
+  private:
+  const std::string& _internal_magick() const;
+  void _internal_set_magick(const std::string& value);
+  std::string* _internal_mutable_magick();
+  public:
+
+  // string tile_name = 19;
+  void clear_tile_name();
+  const std::string& tile_name() const;
+  void set_tile_name(const std::string& value);
+  void set_tile_name(std::string&& value);
+  void set_tile_name(const char* value);
+  void set_tile_name(const char* value, size_t size);
+  std::string* mutable_tile_name();
+  std::string* release_tile_name();
+  void set_allocated_tile_name(std::string* tile_name);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_tile_name();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_tile_name(
+      std::string* tile_name);
+  private:
+  const std::string& _internal_tile_name() const;
+  void _internal_set_tile_name(const std::string& value);
+  std::string* _internal_mutable_tile_name();
+  public:
+
+  // string magick_warning = 21;
+  void clear_magick_warning();
+  const std::string& magick_warning() const;
+  void set_magick_warning(const std::string& value);
+  void set_magick_warning(std::string&& value);
+  void set_magick_warning(const char* value);
+  void set_magick_warning(const char* value, size_t size);
+  std::string* mutable_magick_warning();
+  std::string* release_magick_warning();
+  void set_allocated_magick_warning(std::string* magick_warning);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_magick_warning();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_magick_warning(
+      std::string* magick_warning);
+  private:
+  const std::string& _internal_magick_warning() const;
+  void _internal_set_magick_warning(const std::string& value);
+  std::string* _internal_mutable_magick_warning();
+  public:
+
+  // int64 rows = 2;
+  void clear_rows();
+  ::PROTOBUF_NAMESPACE_ID::int64 rows() const;
+  void set_rows(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_rows() const;
+  void _internal_set_rows(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // int64 columns = 3;
+  void clear_columns();
+  ::PROTOBUF_NAMESPACE_ID::int64 columns() const;
+  void set_columns(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_columns() const;
+  void _internal_set_columns(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // int64 depth = 5;
+  void clear_depth();
+  ::PROTOBUF_NAMESPACE_ID::int64 depth() const;
+  void set_depth(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_depth() const;
+  void _internal_set_depth(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // int64 file_size = 8;
+  void clear_file_size();
+  ::PROTOBUF_NAMESPACE_ID::int64 file_size() const;
+  void set_file_size(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_file_size() const;
+  void _internal_set_file_size(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // double gama = 10;
+  void clear_gama();
+  double gama() const;
+  void set_gama(double value);
+  private:
+  double _internal_gama() const;
+  void _internal_set_gama(double value);
+  public:
+
+  // .kingfisher.kcv.ColorSpace color_space = 4;
+  void clear_color_space();
+  ::kingfisher::kcv::ColorSpace color_space() const;
+  void set_color_space(::kingfisher::kcv::ColorSpace value);
+  private:
+  ::kingfisher::kcv::ColorSpace _internal_color_space() const;
+  void _internal_set_color_space(::kingfisher::kcv::ColorSpace value);
+  public:
+
+  // bool is_valid = 11;
+  void clear_is_valid();
+  bool is_valid() const;
+  void set_is_valid(bool value);
+  private:
+  bool _internal_is_valid() const;
+  void _internal_set_is_valid(bool value);
+  public:
+
+  // bool matte = 15;
+  void clear_matte();
+  bool matte() const;
+  void set_matte(bool value);
+  private:
+  bool _internal_matte() const;
+  void _internal_set_matte(bool value);
+  public:
+
+  // double line_width = 13;
+  void clear_line_width();
+  double line_width() const;
+  void set_line_width(double value);
+  private:
+  double _internal_line_width() const;
+  void _internal_set_line_width(double value);
+  public:
+
+  // int64 quality = 17;
+  void clear_quality();
+  ::PROTOBUF_NAMESPACE_ID::int64 quality() const;
+  void set_quality(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_quality() const;
+  void _internal_set_quality(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // int64 quantize_colors = 18;
+  void clear_quantize_colors();
+  ::PROTOBUF_NAMESPACE_ID::int64 quantize_colors() const;
+  void set_quantize_colors(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_quantize_colors() const;
+  void _internal_set_quantize_colors(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // .kingfisher.kcv.OrientationType orientation = 16;
+  void clear_orientation();
+  ::kingfisher::kcv::OrientationType orientation() const;
+  void set_orientation(::kingfisher::kcv::OrientationType value);
+  private:
+  ::kingfisher::kcv::OrientationType _internal_orientation() const;
+  void _internal_set_orientation(::kingfisher::kcv::OrientationType value);
+  public:
+
+  // .kingfisher.kcv.ImageType type = 20;
+  void clear_type();
+  ::kingfisher::kcv::ImageType type() const;
+  void set_type(::kingfisher::kcv::ImageType value);
+  private:
+  ::kingfisher::kcv::ImageType _internal_type() const;
+  void _internal_set_type(::kingfisher::kcv::ImageType value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.ImageInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr directory_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr file_name_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr format_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr label_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr magick_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr tile_name_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr magick_warning_;
+  ::PROTOBUF_NAMESPACE_ID::int64 rows_;
+  ::PROTOBUF_NAMESPACE_ID::int64 columns_;
+  ::PROTOBUF_NAMESPACE_ID::int64 depth_;
+  ::PROTOBUF_NAMESPACE_ID::int64 file_size_;
+  double gama_;
+  int color_space_;
+  bool is_valid_;
+  bool matte_;
+  double line_width_;
+  ::PROTOBUF_NAMESPACE_ID::int64 quality_;
+  ::PROTOBUF_NAMESPACE_ID::int64 quantize_colors_;
+  int orientation_;
+  int type_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_pkg_2fcv_2fimage_2fimage_2eproto;
+};
 // ===================================================================
 
 
@@ -553,9 +1080,842 @@ inline void Rect::set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:kingfisher.kcv.Rect.width)
 }
 
+// -------------------------------------------------------------------
+
+// ImageInfo
+
+// int64 rows = 2;
+inline void ImageInfo::clear_rows() {
+  rows_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_rows() const {
+  return rows_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::rows() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.rows)
+  return _internal_rows();
+}
+inline void ImageInfo::_internal_set_rows(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  rows_ = value;
+}
+inline void ImageInfo::set_rows(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_rows(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.rows)
+}
+
+// int64 columns = 3;
+inline void ImageInfo::clear_columns() {
+  columns_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_columns() const {
+  return columns_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::columns() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.columns)
+  return _internal_columns();
+}
+inline void ImageInfo::_internal_set_columns(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  columns_ = value;
+}
+inline void ImageInfo::set_columns(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_columns(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.columns)
+}
+
+// .kingfisher.kcv.ColorSpace color_space = 4;
+inline void ImageInfo::clear_color_space() {
+  color_space_ = 0;
+}
+inline ::kingfisher::kcv::ColorSpace ImageInfo::_internal_color_space() const {
+  return static_cast< ::kingfisher::kcv::ColorSpace >(color_space_);
+}
+inline ::kingfisher::kcv::ColorSpace ImageInfo::color_space() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.color_space)
+  return _internal_color_space();
+}
+inline void ImageInfo::_internal_set_color_space(::kingfisher::kcv::ColorSpace value) {
+  
+  color_space_ = value;
+}
+inline void ImageInfo::set_color_space(::kingfisher::kcv::ColorSpace value) {
+  _internal_set_color_space(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.color_space)
+}
+
+// int64 depth = 5;
+inline void ImageInfo::clear_depth() {
+  depth_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_depth() const {
+  return depth_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::depth() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.depth)
+  return _internal_depth();
+}
+inline void ImageInfo::_internal_set_depth(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  depth_ = value;
+}
+inline void ImageInfo::set_depth(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_depth(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.depth)
+}
+
+// string directory = 6;
+inline void ImageInfo::clear_directory() {
+  directory_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::directory() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.directory)
+  return _internal_directory();
+}
+inline void ImageInfo::set_directory(const std::string& value) {
+  _internal_set_directory(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.directory)
+}
+inline std::string* ImageInfo::mutable_directory() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.directory)
+  return _internal_mutable_directory();
+}
+inline const std::string& ImageInfo::_internal_directory() const {
+  return directory_.Get();
+}
+inline void ImageInfo::_internal_set_directory(const std::string& value) {
+  
+  directory_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_directory(std::string&& value) {
+  
+  directory_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.directory)
+}
+inline void ImageInfo::set_directory(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  directory_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.directory)
+}
+inline void ImageInfo::set_directory(const char* value,
+    size_t size) {
+  
+  directory_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.directory)
+}
+inline std::string* ImageInfo::_internal_mutable_directory() {
+  
+  return directory_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_directory() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.directory)
+  return directory_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_directory(std::string* directory) {
+  if (directory != nullptr) {
+    
+  } else {
+    
+  }
+  directory_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), directory,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.directory)
+}
+inline std::string* ImageInfo::unsafe_arena_release_directory() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.directory)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return directory_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_directory(
+    std::string* directory) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (directory != nullptr) {
+    
+  } else {
+    
+  }
+  directory_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      directory, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.directory)
+}
+
+// string file_name = 7;
+inline void ImageInfo::clear_file_name() {
+  file_name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::file_name() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.file_name)
+  return _internal_file_name();
+}
+inline void ImageInfo::set_file_name(const std::string& value) {
+  _internal_set_file_name(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.file_name)
+}
+inline std::string* ImageInfo::mutable_file_name() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.file_name)
+  return _internal_mutable_file_name();
+}
+inline const std::string& ImageInfo::_internal_file_name() const {
+  return file_name_.Get();
+}
+inline void ImageInfo::_internal_set_file_name(const std::string& value) {
+  
+  file_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_file_name(std::string&& value) {
+  
+  file_name_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.file_name)
+}
+inline void ImageInfo::set_file_name(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  file_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.file_name)
+}
+inline void ImageInfo::set_file_name(const char* value,
+    size_t size) {
+  
+  file_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.file_name)
+}
+inline std::string* ImageInfo::_internal_mutable_file_name() {
+  
+  return file_name_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_file_name() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.file_name)
+  return file_name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_file_name(std::string* file_name) {
+  if (file_name != nullptr) {
+    
+  } else {
+    
+  }
+  file_name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), file_name,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.file_name)
+}
+inline std::string* ImageInfo::unsafe_arena_release_file_name() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.file_name)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return file_name_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_file_name(
+    std::string* file_name) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (file_name != nullptr) {
+    
+  } else {
+    
+  }
+  file_name_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      file_name, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.file_name)
+}
+
+// int64 file_size = 8;
+inline void ImageInfo::clear_file_size() {
+  file_size_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_file_size() const {
+  return file_size_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::file_size() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.file_size)
+  return _internal_file_size();
+}
+inline void ImageInfo::_internal_set_file_size(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  file_size_ = value;
+}
+inline void ImageInfo::set_file_size(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_file_size(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.file_size)
+}
+
+// string format = 9;
+inline void ImageInfo::clear_format() {
+  format_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::format() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.format)
+  return _internal_format();
+}
+inline void ImageInfo::set_format(const std::string& value) {
+  _internal_set_format(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.format)
+}
+inline std::string* ImageInfo::mutable_format() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.format)
+  return _internal_mutable_format();
+}
+inline const std::string& ImageInfo::_internal_format() const {
+  return format_.Get();
+}
+inline void ImageInfo::_internal_set_format(const std::string& value) {
+  
+  format_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_format(std::string&& value) {
+  
+  format_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.format)
+}
+inline void ImageInfo::set_format(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  format_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.format)
+}
+inline void ImageInfo::set_format(const char* value,
+    size_t size) {
+  
+  format_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.format)
+}
+inline std::string* ImageInfo::_internal_mutable_format() {
+  
+  return format_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_format() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.format)
+  return format_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_format(std::string* format) {
+  if (format != nullptr) {
+    
+  } else {
+    
+  }
+  format_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), format,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.format)
+}
+inline std::string* ImageInfo::unsafe_arena_release_format() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.format)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return format_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_format(
+    std::string* format) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (format != nullptr) {
+    
+  } else {
+    
+  }
+  format_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      format, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.format)
+}
+
+// double gama = 10;
+inline void ImageInfo::clear_gama() {
+  gama_ = 0;
+}
+inline double ImageInfo::_internal_gama() const {
+  return gama_;
+}
+inline double ImageInfo::gama() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.gama)
+  return _internal_gama();
+}
+inline void ImageInfo::_internal_set_gama(double value) {
+  
+  gama_ = value;
+}
+inline void ImageInfo::set_gama(double value) {
+  _internal_set_gama(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.gama)
+}
+
+// bool is_valid = 11;
+inline void ImageInfo::clear_is_valid() {
+  is_valid_ = false;
+}
+inline bool ImageInfo::_internal_is_valid() const {
+  return is_valid_;
+}
+inline bool ImageInfo::is_valid() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.is_valid)
+  return _internal_is_valid();
+}
+inline void ImageInfo::_internal_set_is_valid(bool value) {
+  
+  is_valid_ = value;
+}
+inline void ImageInfo::set_is_valid(bool value) {
+  _internal_set_is_valid(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.is_valid)
+}
+
+// string label = 12;
+inline void ImageInfo::clear_label() {
+  label_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::label() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.label)
+  return _internal_label();
+}
+inline void ImageInfo::set_label(const std::string& value) {
+  _internal_set_label(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.label)
+}
+inline std::string* ImageInfo::mutable_label() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.label)
+  return _internal_mutable_label();
+}
+inline const std::string& ImageInfo::_internal_label() const {
+  return label_.Get();
+}
+inline void ImageInfo::_internal_set_label(const std::string& value) {
+  
+  label_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_label(std::string&& value) {
+  
+  label_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.label)
+}
+inline void ImageInfo::set_label(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  label_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.label)
+}
+inline void ImageInfo::set_label(const char* value,
+    size_t size) {
+  
+  label_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.label)
+}
+inline std::string* ImageInfo::_internal_mutable_label() {
+  
+  return label_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_label() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.label)
+  return label_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_label(std::string* label) {
+  if (label != nullptr) {
+    
+  } else {
+    
+  }
+  label_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), label,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.label)
+}
+inline std::string* ImageInfo::unsafe_arena_release_label() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.label)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return label_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_label(
+    std::string* label) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (label != nullptr) {
+    
+  } else {
+    
+  }
+  label_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      label, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.label)
+}
+
+// double line_width = 13;
+inline void ImageInfo::clear_line_width() {
+  line_width_ = 0;
+}
+inline double ImageInfo::_internal_line_width() const {
+  return line_width_;
+}
+inline double ImageInfo::line_width() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.line_width)
+  return _internal_line_width();
+}
+inline void ImageInfo::_internal_set_line_width(double value) {
+  
+  line_width_ = value;
+}
+inline void ImageInfo::set_line_width(double value) {
+  _internal_set_line_width(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.line_width)
+}
+
+// bytes magick = 14;
+inline void ImageInfo::clear_magick() {
+  magick_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::magick() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.magick)
+  return _internal_magick();
+}
+inline void ImageInfo::set_magick(const std::string& value) {
+  _internal_set_magick(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.magick)
+}
+inline std::string* ImageInfo::mutable_magick() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.magick)
+  return _internal_mutable_magick();
+}
+inline const std::string& ImageInfo::_internal_magick() const {
+  return magick_.Get();
+}
+inline void ImageInfo::_internal_set_magick(const std::string& value) {
+  
+  magick_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_magick(std::string&& value) {
+  
+  magick_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.magick)
+}
+inline void ImageInfo::set_magick(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  magick_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.magick)
+}
+inline void ImageInfo::set_magick(const void* value,
+    size_t size) {
+  
+  magick_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.magick)
+}
+inline std::string* ImageInfo::_internal_mutable_magick() {
+  
+  return magick_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_magick() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.magick)
+  return magick_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_magick(std::string* magick) {
+  if (magick != nullptr) {
+    
+  } else {
+    
+  }
+  magick_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), magick,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.magick)
+}
+inline std::string* ImageInfo::unsafe_arena_release_magick() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.magick)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return magick_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_magick(
+    std::string* magick) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (magick != nullptr) {
+    
+  } else {
+    
+  }
+  magick_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      magick, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.magick)
+}
+
+// bool matte = 15;
+inline void ImageInfo::clear_matte() {
+  matte_ = false;
+}
+inline bool ImageInfo::_internal_matte() const {
+  return matte_;
+}
+inline bool ImageInfo::matte() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.matte)
+  return _internal_matte();
+}
+inline void ImageInfo::_internal_set_matte(bool value) {
+  
+  matte_ = value;
+}
+inline void ImageInfo::set_matte(bool value) {
+  _internal_set_matte(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.matte)
+}
+
+// .kingfisher.kcv.OrientationType orientation = 16;
+inline void ImageInfo::clear_orientation() {
+  orientation_ = 0;
+}
+inline ::kingfisher::kcv::OrientationType ImageInfo::_internal_orientation() const {
+  return static_cast< ::kingfisher::kcv::OrientationType >(orientation_);
+}
+inline ::kingfisher::kcv::OrientationType ImageInfo::orientation() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.orientation)
+  return _internal_orientation();
+}
+inline void ImageInfo::_internal_set_orientation(::kingfisher::kcv::OrientationType value) {
+  
+  orientation_ = value;
+}
+inline void ImageInfo::set_orientation(::kingfisher::kcv::OrientationType value) {
+  _internal_set_orientation(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.orientation)
+}
+
+// int64 quality = 17;
+inline void ImageInfo::clear_quality() {
+  quality_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_quality() const {
+  return quality_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::quality() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.quality)
+  return _internal_quality();
+}
+inline void ImageInfo::_internal_set_quality(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  quality_ = value;
+}
+inline void ImageInfo::set_quality(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_quality(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.quality)
+}
+
+// int64 quantize_colors = 18;
+inline void ImageInfo::clear_quantize_colors() {
+  quantize_colors_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::_internal_quantize_colors() const {
+  return quantize_colors_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 ImageInfo::quantize_colors() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.quantize_colors)
+  return _internal_quantize_colors();
+}
+inline void ImageInfo::_internal_set_quantize_colors(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  quantize_colors_ = value;
+}
+inline void ImageInfo::set_quantize_colors(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_quantize_colors(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.quantize_colors)
+}
+
+// string tile_name = 19;
+inline void ImageInfo::clear_tile_name() {
+  tile_name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::tile_name() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.tile_name)
+  return _internal_tile_name();
+}
+inline void ImageInfo::set_tile_name(const std::string& value) {
+  _internal_set_tile_name(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.tile_name)
+}
+inline std::string* ImageInfo::mutable_tile_name() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.tile_name)
+  return _internal_mutable_tile_name();
+}
+inline const std::string& ImageInfo::_internal_tile_name() const {
+  return tile_name_.Get();
+}
+inline void ImageInfo::_internal_set_tile_name(const std::string& value) {
+  
+  tile_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_tile_name(std::string&& value) {
+  
+  tile_name_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.tile_name)
+}
+inline void ImageInfo::set_tile_name(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  tile_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.tile_name)
+}
+inline void ImageInfo::set_tile_name(const char* value,
+    size_t size) {
+  
+  tile_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.tile_name)
+}
+inline std::string* ImageInfo::_internal_mutable_tile_name() {
+  
+  return tile_name_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_tile_name() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.tile_name)
+  return tile_name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_tile_name(std::string* tile_name) {
+  if (tile_name != nullptr) {
+    
+  } else {
+    
+  }
+  tile_name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), tile_name,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.tile_name)
+}
+inline std::string* ImageInfo::unsafe_arena_release_tile_name() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.tile_name)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return tile_name_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_tile_name(
+    std::string* tile_name) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (tile_name != nullptr) {
+    
+  } else {
+    
+  }
+  tile_name_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      tile_name, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.tile_name)
+}
+
+// .kingfisher.kcv.ImageType type = 20;
+inline void ImageInfo::clear_type() {
+  type_ = 0;
+}
+inline ::kingfisher::kcv::ImageType ImageInfo::_internal_type() const {
+  return static_cast< ::kingfisher::kcv::ImageType >(type_);
+}
+inline ::kingfisher::kcv::ImageType ImageInfo::type() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.type)
+  return _internal_type();
+}
+inline void ImageInfo::_internal_set_type(::kingfisher::kcv::ImageType value) {
+  
+  type_ = value;
+}
+inline void ImageInfo::set_type(::kingfisher::kcv::ImageType value) {
+  _internal_set_type(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.type)
+}
+
+// string magick_warning = 21;
+inline void ImageInfo::clear_magick_warning() {
+  magick_warning_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ImageInfo::magick_warning() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ImageInfo.magick_warning)
+  return _internal_magick_warning();
+}
+inline void ImageInfo::set_magick_warning(const std::string& value) {
+  _internal_set_magick_warning(value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ImageInfo.magick_warning)
+}
+inline std::string* ImageInfo::mutable_magick_warning() {
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ImageInfo.magick_warning)
+  return _internal_mutable_magick_warning();
+}
+inline const std::string& ImageInfo::_internal_magick_warning() const {
+  return magick_warning_.Get();
+}
+inline void ImageInfo::_internal_set_magick_warning(const std::string& value) {
+  
+  magick_warning_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ImageInfo::set_magick_warning(std::string&& value) {
+  
+  magick_warning_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ImageInfo.magick_warning)
+}
+inline void ImageInfo::set_magick_warning(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  magick_warning_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ImageInfo.magick_warning)
+}
+inline void ImageInfo::set_magick_warning(const char* value,
+    size_t size) {
+  
+  magick_warning_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ImageInfo.magick_warning)
+}
+inline std::string* ImageInfo::_internal_mutable_magick_warning() {
+  
+  return magick_warning_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ImageInfo::release_magick_warning() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ImageInfo.magick_warning)
+  return magick_warning_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ImageInfo::set_allocated_magick_warning(std::string* magick_warning) {
+  if (magick_warning != nullptr) {
+    
+  } else {
+    
+  }
+  magick_warning_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), magick_warning,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ImageInfo.magick_warning)
+}
+inline std::string* ImageInfo::unsafe_arena_release_magick_warning() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:kingfisher.kcv.ImageInfo.magick_warning)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return magick_warning_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ImageInfo::unsafe_arena_set_allocated_magick_warning(
+    std::string* magick_warning) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (magick_warning != nullptr) {
+    
+  } else {
+    
+  }
+  magick_warning_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      magick_warning, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:kingfisher.kcv.ImageInfo.magick_warning)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 
@@ -570,6 +1930,16 @@ template <> struct is_proto_enum< ::kingfisher::kcv::ColorSpace> : ::std::true_t
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::ColorSpace>() {
   return ::kingfisher::kcv::ColorSpace_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::OrientationType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::OrientationType>() {
+  return ::kingfisher::kcv::OrientationType_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::ImageType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::ImageType>() {
+  return ::kingfisher::kcv::ImageType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE
