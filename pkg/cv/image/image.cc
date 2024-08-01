@@ -186,6 +186,21 @@ int Image::RotateImage(const std::string &imageData, double degree,
   return ImageToMat(image, matOutput);
 }
 
+int Image::RotateImage(const ::cv::Mat &matInput, double degree,
+                       ::cv::Mat &matOutput) {
+  Magick::Image image(matInput.cols, matInput.rows, "BGR", CharPixel,
+                      matInput.data);
+
+  if (degree) {
+    int ret = WrapMagickFuncT([&]() { image.rotate(degree); });
+    if (ret != 0) {
+      return ret;
+    }
+  }
+
+  return ImageToMat(image, matOutput);
+}
+
 // https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp
 int Image::ResizeImage(const std::string &imageData, int width, int height,
                        bool keepRatio, ::cv::Mat &matOutput) {

@@ -59,9 +59,25 @@ TEST_F(test_Image, RotateImage) {
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   ::cv::Mat mat;
-  int ret = kingfisher::kcv::Image::RotateImage(content, -90, mat);
+  int ret = kingfisher::kcv::Image::RotateImage(content, -45, mat);
   EXPECT_EQ(ret, 0);
   ::cv::imwrite("./output.rotate.png", mat);
+}
+
+TEST_F(test_Image, RotateImageMat) {
+  kingfisher::kcv::Image::GlobalInit();
+  std::string imageFile = "./testdata/1.jpg";
+
+  ::cv::Mat mat;
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = kingfisher::kcv::Image::DecodeImageFile(imageFile, opts, mat);
+  EXPECT_EQ(ret, 0);
+
+  ::cv::Mat rotated_mat;
+  ret = kingfisher::kcv::Image::RotateImage(mat, 90, rotated_mat);
+  ::cv::imwrite("./output.rotate.png", rotated_mat);
 }
 
 TEST_F(test_Image, ResizeImage) {
