@@ -6,6 +6,8 @@
 #include <fstream>
 
 #include "cv/image/image.pb.h"
+#include "cv/types/types.h"
+#include "log/config.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "wrap.func.h"
 
@@ -168,7 +170,7 @@ int Image::GlobalRelease() {
   return 0;
 }
 
-int Image::RotateImage(const std::string &imageData, double degree,
+int Image::RotateImage(const std::string &imageData, double angle,
                        ::cv::Mat &matOutput) {
   Magick::Image image;
   auto ret = imageRead(imageData, image);
@@ -176,8 +178,8 @@ int Image::RotateImage(const std::string &imageData, double degree,
     return ret;
   }
 
-  if (degree) {
-    ret = WrapMagickFuncT([&]() { image.rotate(degree); });
+  if (angle) {
+    ret = WrapMagickFuncT([&]() { image.rotate(angle); });
     if (ret != 0) {
       return ret;
     }
@@ -186,8 +188,9 @@ int Image::RotateImage(const std::string &imageData, double degree,
   return ImageToMat(image, matOutput);
 }
 
-int Image::RotateImage(const ::cv::Mat &matInput, double degree,
+int Image::RotateImage(const ::cv::Mat &matInput, double angle,
                        ::cv::Mat &matOutput) {
+#if 0
   Magick::Image image(matInput.cols, matInput.rows, "BGR", CharPixel,
                       matInput.data);
 
@@ -199,6 +202,31 @@ int Image::RotateImage(const ::cv::Mat &matInput, double degree,
   }
 
   return ImageToMat(image, matOutput);
+#endif
+  if (angle == ROTATE_CLOCKWISE_0 || angle == ROTATE_CLOCKWISE_360) {
+    matOutput = matInput.clone();
+    LOG(INFO) << "no need to rotate, rotate angle=" << angle;
+    return 0;
+  }
+  if (angle == ROTATE_CLOCKWISE_90) {
+    cv::transpose(matInput, matOutput);
+    cv::flip(matOutput, matOutput, 1);
+    LOG(INFO) << "rotate origin image by angle=" << angle;
+    return 0;
+  }
+  if (angle == ROTATE_CLOCKWISE_180) {
+    cv::flip(matInput, matOutput, -1);
+    LOG(INFO) << "rotate origin image by angle=" << angle;
+    return 0;
+  }
+  if (angle == ROTATE_CLOCKWISE_270) {
+    cv::transpose(matInput, matOutput);
+    cv::flip(matOutput, matOutput, 0);
+    LOG(INFO) << "rotate origin image by angle=" << angle;
+    return 0;
+  }
+
+  return -1;
 }
 
 // https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp

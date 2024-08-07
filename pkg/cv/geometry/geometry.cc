@@ -1,12 +1,14 @@
 #include "geometry.h"
 
+#include "cv/types/types.h"
+
 namespace kingfisher {
 namespace kcv {
 
 void Geometry::RotatePoint(const cv::Size& origin_size,
                            const cv::Point2f& origin, int angle,
                            cv::Point2f& output) {
-  if (angle == ROTATE_0 || angle == ROTATE_CLOCKWISE_360) {
+  if (angle == ROTATE_CLOCKWISE_0 || angle == ROTATE_CLOCKWISE_360) {
     output = cv::Point2f(origin);
     return;
   }

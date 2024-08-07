@@ -6,12 +6,6 @@
 namespace kingfisher {
 namespace kcv {
 
-const int ROTATE_0 = 0;
-const int ROTATE_CLOCKWISE_90 = 90;
-const int ROTATE_CLOCKWISE_180 = 180;
-const int ROTATE_CLOCKWISE_270 = 270;
-const int ROTATE_CLOCKWISE_360 = 360;
-
 class Geometry {
  public:
   static void RotatePoint(const cv::Size& origin_size,
