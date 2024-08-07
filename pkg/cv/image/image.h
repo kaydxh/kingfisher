@@ -16,10 +16,6 @@
 namespace kingfisher {
 namespace kcv {
 
-const int ROTATE_CLOCKWISE_90 = 90;
-const int ROTATE_CLOCKWISE_180 = 180;
-const int ROTATE_CLOCKWISE_270 = 270;
-
 class Image {
  public:
   static int GlobalInit();
@@ -36,10 +32,10 @@ class Image {
   static int DecodeImage(const std::string &imageData,
                          const DecodeOptions &opts, ::cv::Mat &matOutput);
 
-  static int RotateImage(const std::string &imageData, double degree,
+  static int RotateImage(const std::string &imageData, double angle,
                          ::cv::Mat &matOutput);
 
-  static int RotateImage(const ::cv::Mat &matInput, double degree,
+  static int RotateImage(const ::cv::Mat &matInput, double angle,
                          ::cv::Mat &matOutput);
 
   static int ResizeImage(const std::string &imageData, int width, int height,
