@@ -5,6 +5,31 @@
 namespace kingfisher {
 namespace kcv {
 
+void Geometry::FixRect(const cv::Size& origin_size, cv::Rect& rect) {
+  if (rect.x < 0) {
+    rect.width = rect.width + rect.x;
+    rect.x = 0;
+  }
+  if (rect.x > origin_size.width) {
+    rect.width = rect.width + (origin_size.width - rect.x);
+    rect.x = origin_size.width;
+  }
+  if (rect.y < 0) {
+    rect.height = rect.height + rect.y;
+    rect.y = 0;
+  }
+  if (rect.y > origin_size.height) {
+    rect.height = rect.height + (origin_size.height - rect.y);
+    rect.y = origin_size.height;
+  }
+  if (rect.x + rect.width > origin_size.width) {
+    rect.width = origin_size.width - rect.x;
+  }
+  if (rect.y + rect.height > origin_size.height) {
+    rect.height = origin_size.height - rect.y;
+  }
+}
+
 void Geometry::RotatePoint(const cv::Size& origin_size,
                            const cv::Point2f& origin, int angle,
                            cv::Point2f& output) {
