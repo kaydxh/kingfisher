@@ -8,6 +8,8 @@ namespace kcv {
 
 class Geometry {
  public:
+  static void FixRect(const cv::Size& origin_size, cv::Rect& rect);
+
   static void RotatePoint(const cv::Size& origin_size,
                           const cv::Point2f& origin, int angle,
                           cv::Point2f& output);
