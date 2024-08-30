@@ -5,7 +5,7 @@ message(STATUS "BASE_SRC = ${BASE_SRC}")
 
 add_library(kingfisher_base SHARED ${BASE_SRC})
 file(GLOB_RECURSE ALLEGRO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-target_link_libraries(kingfisher_base ${OPENSSL_DEPS})
+target_link_libraries(kingfisher_base ${OPENSSL_DEPS} ${LIBCO_DEPS})
 # message(STATUS "current dir = ${CMAKE_CURRENT_SOURCE_DIR}, include files =  ${ALLEGRO_INCLUDE_DIR}")
 
 #set_target_properties(kingfisher_base PROPERTIES PUBLIC_HEADER "${ALLEGRO_INCLUDE_DIR}")
