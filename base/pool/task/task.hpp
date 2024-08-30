@@ -6,6 +6,10 @@
 #include <condition_variable>
 #include <string>
 
+#ifdef ENABLE_LIBCO
+#include "sync/co_condition_variable.h"
+#endif
+
 namespace kingfisher {
 namespace pool {
 
@@ -51,7 +55,11 @@ class Task {
   // DISABLE_COPY(TASK)
 
  public:
+#ifdef ENABLE_LIBCO
+  libco::ConditionVariable cv_;
+#else
   std::condition_variable cv_;
+#endif
   std::mutex mutex_;
 
   int64_t start_proc_time_ = 0;
