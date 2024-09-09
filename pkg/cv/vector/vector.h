@@ -9,15 +9,16 @@ namespace cv {
 template <typename T>
 class Vector {
  public:
-  Vector(std::vector<T>& vector) : vector_(vector) {}
+  Vector(const std::vector<T>& data) : data_(data) {}
   ~Vector() {}
 
   void Norm();
 
   int Dims();
+  int Dot(const Vector<T>& other, T& result);
 
  private:
-  std::vector<T> vector_;
+  std::vector<T> data_;
 };
 
 }  // namespace cv

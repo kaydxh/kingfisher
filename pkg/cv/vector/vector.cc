@@ -7,20 +7,31 @@ namespace cv {
 
 template <typename T>
 void Vector<T>::Norm() {
-  float sum = 0;
-  for (int i = 0; i < vector_.size(); i++) {
-    sum += vector_[i] * vector_[i];
-  }
+  T sum = 0;
+  Dot(*this, sum);
 
   auto magnitude = sqrt(float(sum));
-  for (int i = 0; i < vector_.size(); ++i) {
-    vector_[i] = static_cast<T>(vector_[i] / magnitude);
+  for (int i = 0; i < data_.size(); ++i) {
+    data_[i] = static_cast<T>(data_[i] / magnitude);
   }
 }
 
 template <typename T>
 int Vector<T>::Dims() {
-  return vector_.size();
+  return data_.size();
+}
+
+template <typename T>
+int Vector<T>::Dot(const Vector<T>& other, T& result) {
+  if (data_.size() != other.data_.size()) {
+    return -1;
+  }
+
+  result = 0;
+  for (int i = 0; i < data_.size(); i++) {
+    result += data_[i] * other.data_[i];
+  }
+  return 0;
 }
 
 }  // namespace cv
