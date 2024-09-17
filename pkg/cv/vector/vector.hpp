@@ -16,6 +16,11 @@ void StringVectorTo(const std::string& v, std::vector<T>& data) {
 }
 
 template <typename T>
+void VectorToString(const std::vector<T>& data, std::string& v) {
+  v.assign((const char*)data.data(), data.size() * sizeof(T));
+}
+
+template <typename T>
 class Vector {
  public:
   Vector(const std::vector<T>& data) : data_(data) {}
