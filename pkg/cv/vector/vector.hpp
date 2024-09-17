@@ -9,6 +9,13 @@ namespace kingfisher {
 namespace cv {
 
 template <typename T>
+void StringVectorTo(const std::string& v, std::vector<T>& data) {
+  const T* begin = (const T*)v.data();
+  const T* end = (const T*)(v.data() + v.size());
+  data.insert(data.end(), begin, end);
+}
+
+template <typename T>
 class Vector {
  public:
   Vector(const std::vector<T>& data) : data_(data) {}
@@ -54,6 +61,19 @@ class Vector {
     }
 
     return sum / (sqrt(normL) * sqrt(normR));
+  }
+
+  float EuclideanDistance(const Vector<T>& other) {
+    if (data_.size() != other.Data().size()) {
+      return -1;
+    }
+
+    float sum = 0;
+    for (std::size_t i = 0; i < data_.size(); ++i) {
+      sum += (data_[i] - other.Data()[i]) * (data_[i] - other.Data()[i]);
+    }
+
+    return sqrt(sum);
   }
 
   void Print() {
