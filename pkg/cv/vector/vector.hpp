@@ -36,8 +36,8 @@ enum VECTOR_TYPE {
   VECTOR_TYPE_INT7 = 2,
 };
 
-void VectorFloatToInt(const std::vector<float>& data, VECTOR_TYPE vector_type,
-                      float scale, std::vector<int8_t>& v) {
+int VectorFloatToInt(const std::vector<float>& data, VECTOR_TYPE vector_type,
+                     float scale, std::vector<int8_t>& v) {
   float m = sqrt(Dot<float>(data, data));
   for (float d : data) {
     // normalize
@@ -45,14 +45,22 @@ void VectorFloatToInt(const std::vector<float>& data, VECTOR_TYPE vector_type,
     // cast to int7
     float mapped_value = m * scale;
     int rounded_value = static_cast<int>(round(mapped_value));
+
     int clamped_value = 0;
-    if (vector_type == VECTOR_TYPE_INT8) {
-      clamped_value = std::max(-127, std::min(rounded_value, 127));
-    } else if (vector_type == VECTOR_TYPE_INT7) {
-      clamped_value = std::max(-63, std::min(rounded_value, 63));
+    switch (vector_type) {
+      case VECTOR_TYPE_INT8:
+        clamped_value = std::max(-127, std::min(rounded_value, 127));
+        break;
+      case VECTOR_TYPE_INT7:
+        clamped_value = std::max(-63, std::min(rounded_value, 63));
+        break;
+      default:
+        return -1;
     }
     v.emplace_back(static_cast<int8_t>(clamped_value));
   }
+
+  return 0;
 }
 
 template <typename T>
