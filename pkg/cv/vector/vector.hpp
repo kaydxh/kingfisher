@@ -2,6 +2,7 @@
 #define KINGFISHER_PKG_CV_VECTOR_H_
 
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -18,6 +19,40 @@ void StringVectorTo(const std::string& v, std::vector<T>& data) {
 template <typename T>
 void VectorToString(const std::vector<T>& data, std::string& v) {
   v.assign((const char*)data.data(), data.size() * sizeof(T));
+}
+
+template <typename T>
+T Dot(const std::vector<T>& v1, const std::vector<T>& v2) {
+  double r = 0;
+  for (size_t i = 0; i < std::min(v1.size(), v2.size()); i++) {
+    r += v1[i] * v2[i];
+  }
+  return static_cast<T>(r);
+}
+
+enum VECTOR_TYPE {
+  VECTOR_TYPE_FLOAT = 0,
+  VECTOR_TYPE_INT8 = 1,
+  VECTOR_TYPE_INT7 = 2,
+};
+
+void VectorFloatToInt(const std::vector<float>& data, VECTOR_TYPE vector_type,
+                      float scale, std::vector<int8_t>& v) {
+  float m = sqrt(Dot<float>(data, data));
+  for (float d : data) {
+    // normalize
+    m = d / m;
+    // cast to int7
+    float mapped_value = m * scale;
+    int rounded_value = static_cast<int>(round(mapped_value));
+    int clamped_value = 0;
+    if (vector_type == VECTOR_TYPE_INT8) {
+      clamped_value = std::max(-127, std::min(rounded_value, 127));
+    } else if (vector_type == VECTOR_TYPE_INT7) {
+      clamped_value = std::max(-63, std::min(rounded_value, 63));
+    }
+    v.emplace_back(static_cast<int8_t>(clamped_value));
+  }
 }
 
 template <typename T>
