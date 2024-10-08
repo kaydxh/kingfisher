@@ -7,6 +7,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "core/likely.h"
 #include "core/scope_guard.h"
