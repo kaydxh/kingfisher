@@ -9,7 +9,9 @@
 #include <stdio.h>
 
 #include <iostream>
+#include <vector>
 // #include <string.h>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -48,6 +50,25 @@ class File : kingfisher::noncopyable {
   }
 
   int ReadFull(std::string& content);
+
+  template <typename T>
+  int ReadLines(std::vector<T>& lines) {
+    std::string content;
+    int ret = ReadFull(content);
+    if (ret != 0) {
+      return ret;
+    }
+    std::stringstream content_stream(content);
+
+    std::string line;
+    while (std::getline(content_stream, line)) {
+      std::stringstream line_stream(line);
+      T value;
+      line_stream >> value;
+      lines.push_back(value);
+    }
+    return 0;
+  }
 
   std::string ReadBytes(int n) {
     char buf[n];
