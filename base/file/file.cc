@@ -1,9 +1,13 @@
 #include "file.h"
+
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include <cassert>
+#include <fstream>
 #include <iostream>
+
 #include "core/likely.h"
 #include "core/scope_guard.h"
 
@@ -57,6 +61,18 @@ size_t File::GetPositon() const {
   }
 
   return static_cast<size_t>(::lseek(fd_, 0, SEEK_CUR));
+}
+
+int File::ReadFull(std::string& content) {
+  std::ifstream file_reader(filename_.c_str(), std::ios::binary);
+  if (!file_reader.is_open()) {
+    return -1;
+  }
+
+  std::string data((std::istreambuf_iterator<char>(file_reader)),
+                   std::istreambuf_iterator<char>());
+  content = data;
+  return 0;
 }
 
 void File::Swap(File& other) {

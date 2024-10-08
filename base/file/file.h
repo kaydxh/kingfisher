@@ -47,6 +47,8 @@ class File : kingfisher::noncopyable {
     return kingfisher::fileutil::ReadFull(fd_, buf, size);
   }
 
+  int ReadFull(std::string& content);
+
   std::string ReadBytes(int n) {
     char buf[n];
     ssize_t bytes = Read(buf, n);
@@ -77,6 +79,7 @@ class File : kingfisher::noncopyable {
 
     return ret;
   }
+
 #if 0
   std::string ReadBytes(int n) {
     char buf[n];
