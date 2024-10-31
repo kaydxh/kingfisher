@@ -37,6 +37,7 @@ OutputFile::~OutputFile() {
 int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   int ret = 0;
   AVFormatContext *ofmt_ctx = nullptr;
+  // std::string fmt = "mp4";
   if ((ret = avformat_alloc_output_context2(&ofmt_ctx, nullptr, nullptr,
                                             filename.c_str())) < 0) {
     av_log(this, AV_LOG_ERROR,
@@ -201,6 +202,13 @@ int OutputFile::new_output_stream(
 int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
                                   unsigned int stream_index,
                                   enum AVMediaType type) {
+#if 0
+  AVStream *ist = ifmt_ctx.streams[stream_index];
+  if (ist != nullptr) {
+    return -1;
+  }
+#endif
+
   AVStream *st = avformat_new_stream(ofmt_ctx_.get(), nullptr);
   if (!st) {
     av_log(this, AV_LOG_ERROR, "Could not alloc output stream -- %s\n",
@@ -210,7 +218,9 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
 
   st->codecpar->codec_type = type;
 
-  output_streams_.resize(ofmt_ctx_->nb_streams);
+  if (output_streams_.size() < ofmt_ctx_->nb_streams) {
+    output_streams_.resize(ofmt_ctx_->nb_streams);
+  }
   std::shared_ptr<OutputStream> ost = std::make_shared<OutputStream>(
       ifmt_ctx, ofmt_ctx_, file_index_,
       stream_index);  // ofmt_ctx_->nb_streams - 1);
@@ -243,6 +253,7 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
     return AVERROR(ENOMEM);
   }
 
+  // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/doc/examples/transcoding.c?/L177-179#:~:text=if%20(dec_ctx%2D%3Ecodec_type%20%3D%3D%
   if (enc_ctx->codec) {
     if (type == AVMEDIA_TYPE_VIDEO) {
       ost->codec_opts_ = filter_codec_opts(encoder_opts_, enc_ctx->codec->id,
@@ -278,8 +289,28 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
                "Preset %s specified for stream %d:%d, but not implemented.\n",
                preset.c_str(), ost->file_index_, st->index);
       }
-    }
 
+      enc_ctx->width = ost->codec_ctx_->width;
+      enc_ctx->height = ost->codec_ctx_->height;
+      enc_ctx->sample_aspect_ratio = ost->codec_ctx_->sample_aspect_ratio;
+      /* take first format from list of supported formats */
+      if (enc->pix_fmts) {
+        enc_ctx->pix_fmt = enc->pix_fmts[0];
+      } else {
+        enc_ctx->pix_fmt = ost->codec_ctx_->pix_fmt;
+      }
+      /* video time_base can be set to whatever is handy and supported by
+       * encoder
+       */
+      // will be overwritten in init_encoder_time_base later, codec framerate is
+      // not reliable
+      enc_ctx->time_base = av_inv_q(ost->codec_ctx_->framerate);
+
+      // enc_ctx->gop_size = gop;
+      if (enc_ctx->pix_fmt == AV_PIX_FMT_NONE) {
+        enc_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+      }
+    }
 #if 0
     if (enc_ctx->codec_id == st->codec.codec_id) {
       /* In this example, we transcode to same properties (picture size,
@@ -294,7 +325,9 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
     }
 
 #endif
-  } else {
+  }
+
+  else {
     ost->codec_opts_ = filter_codec_opts(encoder_opts_, AV_CODEC_ID_NONE,
                                          ofmt_ctx_.get(), st, nullptr);
   }
@@ -351,13 +384,13 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
                          st->codecpar->codec_type);
       codec = avcodec_find_encoder(st->codecpar->codec_id);
       if (!codec) {
-        av_log(
-            NULL, AV_LOG_FATAL,
-            "Automatic encoder selection failed for "
-            "output stream #%d:%d. Default encoder for format %s (codec %s) is "
-            "probably disabled. Please choose an encoder manually.\n",
-            ost->file_index_, ost->stream_index_, ofmt_ctx_->oformat->name,
-            avcodec_get_name(st->codecpar->codec_id));
+        av_log(NULL, AV_LOG_FATAL,
+               "Automatic encoder selection failed for "
+               "output stream #%d:%d. Default encoder for format %s (codec "
+               "%s) is "
+               "probably disabled. Please choose an encoder manually.\n",
+               ost->file_index_, ost->stream_index_, ofmt_ctx_->oformat->name,
+               avcodec_get_name(st->codecpar->codec_id));
         return AVERROR_ENCODER_NOT_FOUND;
       }
       ost->stream_copy_ = false;
@@ -644,6 +677,44 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
       av_dict_set(&ost->codec_opts_, "threads", "auto", 0);
     }
 
+    if (!av_dict_get(ost->codec_opts_, "preset", nullptr, 0)) {
+      if (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO) {
+        av_dict_set(&ost->codec_opts_, "preset", "fast",
+                    AV_DICT_DONT_OVERWRITE);
+      }
+    }
+
+    if (!av_dict_get(ost->codec_opts_, "zerolatency", nullptr, 0)) {
+      if (ost->codec_ctx_->codec_type == AVMEDIA_TYPE_VIDEO) {
+        av_dict_set(&ost->codec_opts_, "zerolatency", "true",
+                    AV_DICT_DONT_OVERWRITE);
+      }
+    }
+
+    if (ost->codec_ctx_->codec_id == AV_CODEC_ID_H264) {
+      if (!strcmp(ost->codec_ctx_->codec->name, "h264_nvenc")) {
+        if (!av_dict_get(ost->codec_opts_, "tune", nullptr, 0)) {
+          av_dict_set(&ost->codec_opts_, "tune", "ll", AV_DICT_DONT_OVERWRITE);
+        }
+      } else {
+        if (!av_dict_get(ost->codec_opts_, "tune", nullptr, 0)) {
+          av_dict_set(&ost->codec_opts_, "tune", "zerolatency",
+                      AV_DICT_DONT_OVERWRITE);
+        }
+      }
+    } else if (ost->codec_ctx_->codec_id == AV_CODEC_ID_HEVC) {
+      if (!strcmp(ost->codec_ctx_->codec->name, "hevc_nvenc")) {
+        if (!av_dict_get(ost->codec_opts_, "tune", nullptr, 0)) {
+          av_dict_set(&ost->codec_opts_, "tune", "ll", AV_DICT_DONT_OVERWRITE);
+        }
+      } else {
+        if (!av_dict_get(ost->codec_opts_, "tune", nullptr, 0)) {
+          av_dict_set(&ost->codec_opts_, "tune", "zerolatency",
+                      AV_DICT_DONT_OVERWRITE);
+        }
+      }
+    }
+
     // todo hw_device_setup_for_encode
     const AVCodec *codec = ost->codec_ctx_->codec;
     auto st = ost->av_stream();
@@ -741,6 +812,7 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
   if (ret < 0) {
     return ret;
   }
+  // ost->initialized_ = true;
 
   return 0;
 }
@@ -796,11 +868,9 @@ int OutputFile::init_output_stream_streamcopy(
     return ret;
   }
 
-  /*
   if (ist->time_base.den) {
     st->time_base = ist->time_base;
   }
-  */
 
   // copy timebase while removing common factors
   if (st->time_base.num <= 0 || st->time_base.den <= 0) {
@@ -855,12 +925,14 @@ int OutputFile::init_output_stream_streamcopy(
 
 /* open the muxer when all the streams are initialized */
 int OutputFile::of_check_init() {
+#if 0
   for (unsigned int i = 0; i < ofmt_ctx_->nb_streams; i++) {
     const auto &ost = output_streams_[i];
     if (!ost->initialized_) {
       return 0;
     }
   }
+#endif
 
   int ret = avformat_write_header(ofmt_ctx_.get(), &opts_);
   if (ret < 0) {
@@ -894,8 +966,7 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
                                 AVPacket *pkt) {
   const auto &s = ofmt_ctx_;
   AVStream *st = ost->av_stream();
-  int ret;
-
+  int ret = 0;
   if (!pkt) {
     return 0;
   }
@@ -907,7 +978,9 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
     return 0;
   }
 
+  pkt->stream_index = static_cast<int>(st->index);
   av_packet_rescale_ts(pkt, ost->mux_timebase_, st->time_base);
+  pkt->time_base = st->time_base;
 
   if (!(s->oformat->flags & AVFMT_NOTIMESTAMPS)) {
     if (pkt->dts != AV_NOPTS_VALUE && pkt->pts != AV_NOPTS_VALUE &&
@@ -954,7 +1027,7 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
   ost->data_size_ += pkt->size;
   ost->packets_written_++;
 
-  pkt->stream_index = static_cast<int>(st->index);
+  // pkt->stream_index = static_cast<int>(st->index);
 
   if (debug_ts_) {
     av_log(NULL, AV_LOG_INFO,
