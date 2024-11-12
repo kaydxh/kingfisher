@@ -182,6 +182,7 @@ int OutputFile::init_filters() {
 
 int OutputFile::create_streams(const AVFormatContext &format_ctx) {
   int ret = 0;
+  output_streams_.resize(ofmt_ctx_->nb_streams);
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
     AVStream *st = format_ctx.streams[i];
     ret = new_output_stream(format_ctx, i, st->codecpar->codec_type);
