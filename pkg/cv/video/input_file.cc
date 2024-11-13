@@ -55,7 +55,7 @@ InputFile::~InputFile() {
 }
 
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
-int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
+int InputFile::open(const std::string &filename, FormatContext &format_ctx) {
   const AVInputFormat *file_iformat = nullptr;
   int ret = 0;
   if (!format_.empty()) {
@@ -165,7 +165,23 @@ int InputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
 
-  format_ctx = *ifmt_ctx_;
+  format_ctx.av_format_context = ifmt_ctx_;
+
+  if (first_video_stream_index_ >= 0) {
+    format_ctx.video_stream.reset(
+        input_streams_[first_video_stream_index_]->st_);
+    format_ctx.video_codec_context =
+        input_streams_[first_video_stream_index_]->codec_ctx_;
+    //  = std::make_shared<AVStream>(
+    //     input_streams_[first_video_stream_index_]->st_);
+  }
+
+  if (first_audio_stream_index_) {
+    format_ctx.audio_stream.reset(
+        input_streams_[first_audio_stream_index_]->st_);
+    format_ctx.audio_codec_context =
+        input_streams_[first_audio_stream_index_]->codec_ctx_;
+  }
 
   return init_filters();
 }
@@ -696,8 +712,10 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     if (pkt && pkt->pts != AV_NOPTS_VALUE && !ist->decoding_needed_) {
       ist->first_dts_ = ist->dts_ +=
           av_rescale_q(pkt->pts, st->time_base, AV_TIME_BASE_Q);
-      ist->pts_ = ist->dts_;  // unused but better to set it to a value
-                              // thats not totally wrong
+      ist->pts_ = ist->dts_;  // unused but better
+                              // to set it to a
+                              // value thats not
+                              // totally wrong
     }
     ist->saw_first_ts_ = true;
   }
@@ -720,8 +738,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
 
   bool repeating = false;
   bool eof_reached = false;  // meet decode eof
-  // while we have more to decode or while the decoder did output something
-  // on EOF
+  // while we have more to decode or while
+  // the decoder did output something on EOF
   while (ist->decoding_needed_) {
     int64_t duration_dts = 0;
     int64_t duration_pts = 0;
@@ -783,11 +801,14 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
 
     if (ret < 0) {
       if (decode_failed) {
-        av_log(this, AV_LOG_ERROR, "Error while decoding stream #%d:%d: %s\n",
+        av_log(this, AV_LOG_ERROR,
+               "Error while decoding "
+               "stream #%d:%d: %s\n",
                ist->file_index_, ist->stream_index_, av_err2str(ret));
       } else {
         av_log(this, AV_LOG_FATAL,
-               "Error while processing the decoded "
+               "Error while processing the "
+               "decoded "
                "data for stream #%d:%d\n",
                ist->file_index_, ist->stream_index_);
       }
@@ -805,16 +826,23 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
       break;
     }
 
-    // During draining, we might get multiple output frames in this loop.
-    // ffmpeg.c does not drain the filter chain on configuration changes,
-    // which means if we send multiple frames at once to the filters, and
-    // one of those frames changes configuration, the buffered frames will
-    // be lost. This can upset certain FATE tests.
-    // Decode only 1 frame per call on EOF to appease these FATE tests.
-    // The ideal solution would be to rewrite decoding to use the new
-    // decoding API in a better way.
-    // FIXME: we will drain all frames if no more packets will be provided,
-    // that is av_read_frame eof
+    // During draining, we might get
+    // multiple output frames in this loop.
+    // ffmpeg.c does not drain the filter
+    // chain on configuration changes, which
+    // means if we send multiple frames at
+    // once to the filters, and one of those
+    // frames changes configuration, the
+    // buffered frames will be lost. This
+    // can upset certain FATE tests. Decode
+    // only 1 frame per call on EOF to
+    // appease these FATE tests. The ideal
+    // solution would be to rewrite decoding
+    // to use the new decoding API in a
+    // better way.
+    // FIXME: we will drain all frames if no
+    // more packets will be provided, that
+    // is av_read_frame eof
     if (!pkt && no_eof) {
       break;
     }
@@ -822,14 +850,17 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
     repeating = 1;
   }
 
-  /* after flushing, send an EOF on all the filter inputs attached to the
-   * stream
+  /* after flushing, send an EOF on all the
+   * filter inputs attached to the stream
    */
-  /* except when looping we need to flush but not to send an EOF */
+  /* except when looping we need to flush
+   * but not to send an EOF */
   if (!pkt && ist->decoding_needed_ && eof_reached && !no_eof) {
     ret = send_filter_eof(ist);
     if (ret < 0) {
-      av_log(this, AV_LOG_FATAL, "Error marking filters as finished\n");
+      av_log(this, AV_LOG_FATAL,
+             "Error marking filters as "
+             "finished\n");
       return ret;
     }
   }
@@ -852,7 +883,8 @@ int InputFile::process_input_packet(const std::shared_ptr<InputStream> &ist,
           break;
         case AVMEDIA_TYPE_VIDEO:
           if (ist->framerate_.num) {
-            // TODO: Remove work-around for c99-to-c89 issue 7
+            // TODO: Remove work-around for
+            // c99-to-c89 issue 7
             AVRational time_base_q = AV_TIME_BASE_Q;
             int64_t next_dts = av_rescale_q(ist->next_dts_, time_base_q,
                                             av_inv_q(ist->framerate_));
@@ -959,9 +991,11 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
   AVStream *st = ist->av_stream();
   int64_t dts = AV_NOPTS_VALUE;
 
-  // With fate-indeo3-2, we're getting 0-sized packets before EOF for some
-  // reason. This seems like a semi-critical bug. Don't trigger EOF, and
-  // skip the packet.
+  // With fate-indeo3-2, we're getting
+  // 0-sized packets before EOF for some
+  // reason. This seems like a semi-critical
+  // bug. Don't trigger EOF, and skip the
+  // packet.
   if (!eof && pkt && pkt->size == 0) {
     return 0;
   }
@@ -970,11 +1004,13 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     dts = av_rescale_q(ist->dts_, AV_TIME_BASE_Q, st->time_base);
   }
   if (pkt) {
-    pkt->dts = dts;  // ffmpeg.c probably shouldn't do this
+    pkt->dts = dts;  // ffmpeg.c probably
+                     // shouldn't do this
   }
 
-  // The old code used to set dts on the drain packet, which does not work
-  // with the new API anymore.
+  // The old code used to set dts on the
+  // drain packet, which does not work with
+  // the new API anymore.
   if (eof) {
     ist->dts_buffer_.emplace_back(dts);
   }
@@ -984,17 +1020,24 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     decode_failed = true;
   }
 
-  // The following line may be required in some cases where there is no
-  // parser or the parser does not has_b_frames correctly
+  // The following line may be required in
+  // some cases where there is no parser or
+  // the parser does not has_b_frames
+  // correctly
   if (st->codecpar->video_delay < ist->codec_ctx_->has_b_frames) {
     if (ist->codec_ctx_->codec_id == AV_CODEC_ID_H264) {
       st->codecpar->video_delay = ist->codec_ctx_->has_b_frames;
     } else
       av_log(ist->codec_ctx_.get(), AV_LOG_WARNING,
-             "video_delay is larger in decoder than demuxer %d > %d.\n"
-             "If you want to help, upload a sample "
-             "of this file to https://streams.videolan.org/upload/ "
-             "and contact the ffmpeg-devel mailing list. "
+             "video_delay is larger in "
+             "decoder than demuxer %d > %d.\n"
+             "If you want to help, upload a "
+             "sample "
+             "of this file to "
+             "https://streams.videolan.org/"
+             "upload/ "
+             "and contact the ffmpeg-devel "
+             "mailing list. "
              "(ffmpeg-devel@ffmpeg.org)\n",
              ist->codec_ctx_->has_b_frames, st->codecpar->video_delay);
   }
@@ -1011,7 +1054,8 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
         ist->codec_ctx_->height != decoded_frame->height ||
         ist->codec_ctx_->pix_fmt != decoded_frame->format) {
       av_log(this, AV_LOG_DEBUG,
-             "Frame parameters mismatch context %d,%d,%d != %d,%d,%d\n",
+             "Frame parameters mismatch "
+             "context %d,%d,%d != %d,%d,%d\n",
              decoded_frame->width, decoded_frame->height, decoded_frame->format,
              ist->codec_ctx_->width, ist->codec_ctx_->height,
              ist->codec_ctx_->pix_fmt);
@@ -1051,9 +1095,12 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
 
   if (debug_ts_) {
     av_log(this, AV_LOG_DEBUG,
-           "detail: decoder -> ist_index:%d type:video "
-           "frame_pts:%s frame_pts_time:%s best_effort_ts:%" PRId64
-           " best_effort_ts_time:%s keyframe:%d frame_type:%d "
+           "detail: decoder -> ist_index:%d "
+           "type:video "
+           "frame_pts:%s frame_pts_time:%s "
+           "best_effort_ts:%" PRId64
+           " best_effort_ts_time:%s "
+           "keyframe:%d frame_type:%d "
            "time_base:%d/%d\n",
            st->index, av_err2str(decoded_frame->pts),
            av_ts2timestr(decoded_frame->pts, &st->time_base),
@@ -1077,7 +1124,9 @@ int InputFile::check_decode_result(const std::shared_ptr<InputStream> &ist,
   if (got_output && ist) {
     if (ist->frame_->decode_error_flags ||
         (ist->frame_->flags & AV_FRAME_FLAG_CORRUPT)) {
-      av_log(this, AV_LOG_WARNING, "%s: corrupt decoded frame in stream %d\n",
+      av_log(this, AV_LOG_WARNING,
+             "%s: corrupt decoded frame in "
+             "stream %d\n",
              ifmt_ctx_->url, ist->st_->index);
       return AVERROR_INVALIDDATA;
     }
@@ -1115,8 +1164,10 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
   ist->samples_decoded_ += decoded_frame->nb_samples;
   ist->frames_decoded_++;
 
-  /* increment next_dts to use for the case where the input stream does not
-   have timestamps or there are multiple frames in the packet */
+  /* increment next_dts to use for the case
+   where the input stream does not have
+   timestamps or there are multiple frames
+   in the packet */
   ist->next_pts_ +=
       ((int64_t)AV_TIME_BASE * decoded_frame->nb_samples) / avctx->sample_rate;
   ist->next_dts_ +=
@@ -1156,10 +1207,13 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
 }
 
 // This does not quite work like
-// avcodec_decode_audio4/avcodec_decode_video2. There is the following
-// difference: if you got a frame, you must call it again with pkt=NULL.
-// pkt==NULL is treated differently from pkt->size==0 (pkt==NULL means get
-// more output, pkt->size==0 is a flush/drain packet)
+// avcodec_decode_audio4/avcodec_decode_video2.
+// There is the following difference: if you
+// got a frame, you must call it again with
+// pkt=NULL. pkt==NULL is treated
+// differently from pkt->size==0 (pkt==NULL
+// means get more output, pkt->size==0 is a
+// flush/drain packet)
 int InputFile::decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
                       bool &got_frame) {
   int ret = 0;
@@ -1167,8 +1221,10 @@ int InputFile::decode(AVCodecContext *avctx, AVPacket *pkt, AVFrame *frame,
 
   if (pkt) {
     ret = avcodec_send_packet(avctx, pkt);
-    // In particular, we don't expect AVERROR(EAGAIN), because we read all
-    // decoded frames with avcodec_receive_frame() until done.
+    // In particular, we don't expect
+    // AVERROR(EAGAIN), because we read all
+    // decoded frames with
+    // avcodec_receive_frame() until done.
     if (ret < 0 && ret != AVERROR_EOF) {
       return ret;
     }
@@ -1189,7 +1245,8 @@ int InputFile::send_filter_eof(const std::shared_ptr<InputStream> &ist) {
   AVStream *st = ist->av_stream();
   // int i = 0;
   // int ret = 0;
-  /* TODO keep pts also in stream time base to avoid converting back */
+  /* TODO keep pts also in stream time base
+   * to avoid converting back */
   const auto &stream_index = ist->stream_index_;
   const auto &ifilt = input_streams_[stream_index]->ifilt_;
   int64_t pts = av_rescale_q_rnd(
@@ -1233,7 +1290,8 @@ int InputFile::init_filters() {
     }
     std::string filter_spec;
     if (ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-      filter_spec = "null"; /* passthrough (dummy) filter for video */
+      filter_spec = "null"; /* passthrough (dummy)
+                               filter for video */
     } else {
       filter_spec = "anull";
     }
@@ -1243,7 +1301,8 @@ int InputFile::init_filters() {
     ret = fg->init_simple_filtergraph();
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR,
-             "Failed to init simple filtergraph"
+             "Failed to init simple "
+             "filtergraph"
              "%d:%d\n",
              ist->file_index_, ist->stream_index_);
       return ret;
@@ -1253,6 +1312,5 @@ int InputFile::init_filters() {
 
   return 0;
 }
-
 }  // namespace cv
 }  // namespace kingfisher
