@@ -28,8 +28,14 @@ struct Frame {
 };
 
 struct FormatContext {
-  class StreamContext;
+  // class StreamContext;
 
+  std::shared_ptr<AVFormatContext> av_format_context;
+  std::shared_ptr<AVStream> video_stream;
+  std::shared_ptr<AVCodecContext> video_codec_context;
+  std::shared_ptr<AVStream> audio_stream;
+  std::shared_ptr<AVCodecContext> audio_codec_context;
+#if 0
   std::string url;
   AVRational time_base = AV_TIME_BASE_Q;  // AV_TIME_BASE_Q, Internal
                                           // time base represented as
@@ -40,6 +46,9 @@ struct FormatContext {
   int64_t duration = AV_NOPTS_VALUE;  // Duration of the stream, in AV_TIME_BASE
                                       // fractional seconds.
   int64_t bit_rate = 0;  // Total stream bitrate in bit/s, 0 if not available.
+#endif
+
+#if 0
   std::shared_ptr<StreamContext> video_stream;
   std::shared_ptr<StreamContext> audio_stream;
 
@@ -47,6 +56,7 @@ struct FormatContext {
     AVStream stream;
     AVCodecContext codec_ctx;
   };
+#endif
 };
 
 }  // namespace cv

@@ -22,7 +22,8 @@ class InputFile {
   InputFile();
   ~InputFile();
 
-  int open(const std::string &filename, AVFormatContext &format_ctx);
+  // int open(const std::string &filename, AVFormatContext &format_ctx);
+  int open(const std::string &filename, FormatContext &format_ctx);
 
   int read_frames(std::vector<Frame> &video_frames,
                   std::vector<Frame> &audio_frames, int32_t batch_size,

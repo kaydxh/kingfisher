@@ -3,6 +3,7 @@
 #include "cv/video/ffmpeg_error.h"
 #include "cv/video/ffmpeg_types.h"
 #include "cv/video/input_file.h"
+#include "cv/video/output_file.h"
 
 using namespace kingfisher::cv;
 
@@ -21,15 +22,28 @@ TEST_F(test_Video, Transcode) {
   std::string input_url = "./testdata/bodyhead.mp4";
 
   InputFile input_file;
-  // av_dict_set(&input_file.command_opts_, "c:v", "copy", 0);
+  std::string output_url = "./testdata/bodyhead.copy.mp4";
+
+  av_dict_set(&input_file.command_opts_, "c:v", "copy", 0);
   //    av_dict_set(&input_file.command_opts_, "c:a", true ? "" : "copy", 0);
   //    av_dict_set_int(&input_file.decoder_opts_, "udu_sei", 1, 0);
-  AVFormatContext format_ctx;
+  OutputFile output_file;
+  // av_dict_set(&output_file.command_opts_, "c:v", "copy", 0);
+  // AVFormatContext format_ctx;
+  FormatContext format_ctx;
   int ret = input_file.open(input_url, format_ctx);
   if (ret != 0) {
     av_log(nullptr, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
     return;
   }
+
+#if 0
+  ret = output_file.open(output_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
+    return;
+  }
+#endif
 
   bool finished = false;
   std::vector<Frame> video_frames;
@@ -45,13 +59,16 @@ TEST_F(test_Video, Transcode) {
 
     av_log(nullptr, AV_LOG_INFO, "read frame size %lu\n", video_frames.size());
 
+    /*
     for (unsigned int i = 0; i < video_frames.size(); ++i) {
+
       av_log(nullptr, AV_LOG_INFO,
              "read video frame number %ld,packet size: %d, codec_id: %d, "
              "pts: %ld \n",
              video_frames[i].frame_number, video_frames[i].frame->width,
              video_frames[i].codec_id, video_frames[i].pts);
     }
+    */
 
     for (unsigned int i = 0; i < audio_frames.size(); ++i) {
       av_log(nullptr, AV_LOG_INFO,
@@ -60,6 +77,15 @@ TEST_F(test_Video, Transcode) {
              audio_frames[i].frame_number, audio_frames[i].frame->pkt_size,
              audio_frames[i].codec_type, audio_frames[i].pts);
     }
+
+#if 0
+    ret = output_file.write_frames(video_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_video_frames failed: %s\n",
+             av_err2str(ret));
+      return;
+    }
+#endif
   }
 
   while (1) {
