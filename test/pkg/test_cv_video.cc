@@ -37,7 +37,7 @@ TEST_F(test_Video, Transcode) {
     return;
   }
 
-#if 0
+#if 1
   ret = output_file.open(output_url, format_ctx);
   if (ret != 0) {
     av_log(nullptr, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
@@ -78,7 +78,7 @@ TEST_F(test_Video, Transcode) {
              audio_frames[i].codec_type, audio_frames[i].pts);
     }
 
-#if 0
+#if 1
     ret = output_file.write_frames(video_frames);
     if (ret < 0) {
       av_log(nullptr, AV_LOG_ERROR, "write_video_frames failed: %s\n",
