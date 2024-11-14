@@ -21,7 +21,7 @@ class OutputFile {
   OutputFile();
   ~OutputFile();
 
-  int open(const std::string &filename, AVFormatContext &format_ctx);
+  int open(const std::string &filename, FormatContext &format_ctx);
   int write_frames(const std::vector<Frame> &raw_frames);
 
  private:
@@ -44,7 +44,8 @@ class OutputFile {
   int of_write_packet(const std::shared_ptr<OutputStream> &ost, AVPacket *pkt);
 
   // int create_streams(const std::shared_ptr<AVFormatContext> &format_ctx);
-  int create_streams(const AVFormatContext &format_ctx);
+  // int create_streams(const AVFormatContext &format_ctx);
+  int create_streams(const FormatContext &format_ctx);
 
   int find_encoder(const std::string &name, enum AVMediaType type,
                    const AVCodec *&codec) const;
@@ -54,8 +55,14 @@ class OutputFile {
 
   // int new_output_stream(const std::shared_ptr<AVFormatContext> &ifmt_ctx,
   //                      enum AVMediaType type);
-  int new_output_stream(const AVFormatContext &ifmt_ctx,
-                        unsigned int stream_index, enum AVMediaType type);
+  //  int new_output_stream(const FormatContext &ifmt_ctx,
+  //                       unsigned int stream_index, enum AVMediaType type);
+
+  int new_output_stream(
+      const std::shared_ptr<AVFormatContext> ifmt_ctx,
+      const std::shared_ptr<AVCodecContext> input_codec_context,
+      unsigned int stream_index, enum AVMediaType type);
+
   int init_filter(std::shared_ptr<OutputStream> &ost);
   int init_filters();
 

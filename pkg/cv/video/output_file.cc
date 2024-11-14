@@ -34,7 +34,7 @@ OutputFile::~OutputFile() {
   av_dict_free(&encoder_opts_);
 }
 
-int OutputFile::open(const std::string &filename, AVFormatContext &format_ctx) {
+int OutputFile::open(const std::string &filename, FormatContext &format_ctx) {
   int ret = 0;
   AVFormatContext *ofmt_ctx = nullptr;
   // std::string fmt = "mp4";
@@ -180,8 +180,21 @@ int OutputFile::init_filters() {
   return 0;
 }
 
-int OutputFile::create_streams(const AVFormatContext &format_ctx) {
+int OutputFile::create_streams(const FormatContext &format_ctx) {
   int ret = 0;
+
+  if (format_ctx.video_stream && format_ctx.video_codec_context) {
+    ret = new_output_stream(format_ctx.av_format_context,
+                            format_ctx.video_codec_context, 0,
+                            format_ctx.video_stream->codecpar->codec_type);
+    if (ret != 0) {
+      av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
+             av_err2str(ret));
+      return ret;
+    }
+  }
+
+#if 0
   output_streams_.resize(ofmt_ctx_->nb_streams);
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
     AVStream *st = format_ctx.streams[i];
@@ -192,6 +205,7 @@ int OutputFile::create_streams(const AVFormatContext &format_ctx) {
       return ret;
     }
   }
+#endif
 
   return 0;
 }
@@ -200,9 +214,10 @@ int OutputFile::new_output_stream(
     const std::shared_ptr<AVFormatContext> &ifmt_ctx, enum AVMediaType type) {
     */
 
-int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
-                                  unsigned int stream_index,
-                                  enum AVMediaType type) {
+int OutputFile::new_output_stream(
+    const std::shared_ptr<AVFormatContext> ifmt_ctx,
+    const std::shared_ptr<AVCodecContext> input_codec_context,
+    unsigned int stream_index, enum AVMediaType type) {
 #if 0
   AVStream *ist = ifmt_ctx.streams[stream_index];
   if (ist != nullptr) {
@@ -223,7 +238,7 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
     output_streams_.resize(ofmt_ctx_->nb_streams);
   }
   std::shared_ptr<OutputStream> ost = std::make_shared<OutputStream>(
-      ifmt_ctx, ofmt_ctx_, file_index_,
+      *ifmt_ctx, ofmt_ctx_, file_index_,
       stream_index);  // ofmt_ctx_->nb_streams - 1);
 
   const AVCodec *enc = nullptr;
@@ -291,14 +306,14 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
                preset.c_str(), ost->file_index_, st->index);
       }
 
-      enc_ctx->width = ost->codec_ctx_->width;
-      enc_ctx->height = ost->codec_ctx_->height;
-      enc_ctx->sample_aspect_ratio = ost->codec_ctx_->sample_aspect_ratio;
+      enc_ctx->width = input_codec_context->width;
+      enc_ctx->height = input_codec_context->height;
+      enc_ctx->sample_aspect_ratio = input_codec_context->sample_aspect_ratio;
       /* take first format from list of supported formats */
       if (enc->pix_fmts) {
         enc_ctx->pix_fmt = enc->pix_fmts[0];
       } else {
-        enc_ctx->pix_fmt = ost->codec_ctx_->pix_fmt;
+        enc_ctx->pix_fmt = input_codec_context->pix_fmt;
       }
       /* video time_base can be set to whatever is handy and supported by
        * encoder
@@ -333,9 +348,9 @@ int OutputFile::new_output_stream(const AVFormatContext &ifmt_ctx,
                                          ofmt_ctx_.get(), st, nullptr);
   }
 
-  if (ifmt_ctx.streams[stream_index]->codecpar) {
+  if (ifmt_ctx->streams[stream_index]->codecpar) {
     ret = avcodec_parameters_copy(st->codecpar,
-                                  ifmt_ctx.streams[stream_index]->codecpar);
+                                  ifmt_ctx->streams[stream_index]->codecpar);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR,
              "Error initializing the output stream codec context for output "
