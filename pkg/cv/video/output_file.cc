@@ -6,6 +6,7 @@
 #include "ffmpeg_utils.h"
 #include "output_filter.h"
 #include "output_stream.h"
+#include "scripts/pack/ffmpeg/include/libavutil/avutil.h"
 
 extern "C" {
 #include "libavfilter/buffersink.h"
@@ -188,12 +189,22 @@ int OutputFile::create_streams(const FormatContext &format_ctx) {
                             format_ctx.video_codec_context, 0,
                             format_ctx.video_stream->codecpar->codec_type);
     if (ret != 0) {
-      av_log(this, AV_LOG_ERROR, "Failed to open decode filters: %s\n",
+      av_log(this, AV_LOG_ERROR, "Failed to new video stream: %s\n",
              av_err2str(ret));
       return ret;
     }
   }
 
+  if (format_ctx.audio_stream && format_ctx.audio_codec_context) {
+    ret = new_output_stream(format_ctx.av_format_context,
+                            format_ctx.audio_codec_context, 0,
+                            format_ctx.audio_stream->codecpar->codec_type);
+    if (ret != 0) {
+      av_log(this, AV_LOG_ERROR, "Failed to new audio stream: %s\n",
+             av_err2str(ret));
+      return ret;
+    }
+  }
 #if 0
   output_streams_.resize(ofmt_ctx_->nb_streams);
   for (unsigned int i = 0; i < format_ctx.nb_streams; ++i) {
@@ -326,6 +337,25 @@ int OutputFile::new_output_stream(
       if (enc_ctx->pix_fmt == AV_PIX_FMT_NONE) {
         enc_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
       }
+    } else if (type == AVMEDIA_TYPE_AUDIO) {
+      enc_ctx->sample_rate = input_codec_context->sample_rate;
+      ret = av_channel_layout_copy(&enc_ctx->ch_layout,
+                                   &input_codec_context->ch_layout);
+      if (ret < 0) {
+        av_log(this, AV_LOG_ERROR,
+               "Error copying channel layout for output stream #%d:%d\n",
+               file_index_, st->index);
+        return ret;
+      }
+
+      if (enc->sample_fmts) {
+        enc_ctx->sample_fmt = enc->sample_fmts[0];
+      } else {
+        enc_ctx->sample_fmt = input_codec_context->sample_fmt;
+      }
+      /* Allow the use of the experimental AAC encoder. */
+      enc_ctx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
+      enc_ctx->time_base = (AVRational){1, enc_ctx->sample_rate};
     }
 #if 0
     if (enc_ctx->codec_id == st->codec.codec_id) {
