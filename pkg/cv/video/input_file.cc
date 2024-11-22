@@ -10,6 +10,7 @@
 #include "input_stream.h"
 #include "scripts/pack/ffmpeg/include/libavcodec/defs.h"
 #include "scripts/pack/ffmpeg/include/libavcodec/packet.h"
+#include "scripts/pack/ffmpeg/include/libavformat/avformat.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
