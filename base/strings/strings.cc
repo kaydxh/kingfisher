@@ -466,6 +466,18 @@ unsigned int HexDigitToInt(char c) {
   return x & 0xf;
 }
 
+std::string ToHexString(const std::string &input) {
+  std::string output;
+  static const char *const lut = "0123456789abcdef";
+  output.reserve(2 * input.size());
+  for (size_t i = 0; i < input.size(); i++) {
+    const unsigned char c = input[i];
+    output.push_back(lut[c >> 4]);
+    output.push_back(lut[c & 0xf]);
+  }
+  return output;
+}
+
 int WStringFromBytes(std::wstring &result, const std::string &s) {
   if (s.empty()) {
     return 0;
