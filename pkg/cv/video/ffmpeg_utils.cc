@@ -189,5 +189,26 @@ AVPixelFormat choose_pixel_fmt(const AVStream *st, AVCodecContext *enc_ctx,
   return target;
 }
 
+void av_frame_rescale_ts(AVFrame *pkt, AVRational src_tb, AVRational dst_tb) {
+  if (!av_cmp_q(src_tb, dst_tb)) {
+    return;
+  }
+  if (pkt->pts != AV_NOPTS_VALUE) {
+    pkt->pts = av_rescale_q(pkt->pts, src_tb, dst_tb);
+  }
+  if (pkt->pkt_dts != AV_NOPTS_VALUE) {
+    pkt->pkt_dts = av_rescale_q(pkt->pkt_dts, src_tb, dst_tb);
+  }
+#if (LIBAVCODEC_VERSION_MAJOR < 60)
+  if (pkt->pkt_duration > 0) {
+    pkt->pkt_duration = av_rescale_q(pkt->pkt_duration, src_tb, dst_tb);
+  }
+#else
+  if (pkt->duration > 0) {
+    pkt->duration = av_rescale_q(pkt->duration, src_tb, dst_tb);
+  }
+#endif
+}
+
 }  // namespace cv
 }  // namespace kingfisher
