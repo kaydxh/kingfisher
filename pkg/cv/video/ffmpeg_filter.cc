@@ -246,7 +246,7 @@ int FilterGraph::reap_filters(
     }
   }
 
-  return 0;
+  return ret;
 }
 
 int FilterGraph::insert_filter(AVFilterContext **last_filter, int *pad_idx,

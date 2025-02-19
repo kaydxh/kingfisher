@@ -148,6 +148,8 @@ const AVPixelFormat *get_compliance_normal_pix_fmts(
 AVPixelFormat choose_pixel_fmt(const AVStream *st, AVCodecContext *enc_ctx,
                                const AVCodec *codec, AVPixelFormat target);
 
+void av_frame_rescale_ts(AVFrame *pkt, AVRational src_tb, AVRational dst_tb);
+
 }  // namespace cv
 }  // namespace kingfisher
 
