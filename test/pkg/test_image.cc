@@ -118,6 +118,32 @@ TEST_F(test_Image, DumpImageFileToBytes) {
   EXPECT_EQ(ret, 0);
 }
 
+TEST_F(test_Image, AdaptiveWatermarkFill) {
+  kingfisher::kcv::Image::GlobalInit();
+  std::string image = "/data/home/kayxhding/workspace/github.com/kaydxh/kingfisher/test/testdata/1.jpg";
+  std::string logo = "/data/home/kayxhding/workspace/github.com/kaydxh/kingfisher/test/testdata/1.jpg";
+  cv::Mat image_mat = cv::imread(image, cv::IMREAD_UNCHANGED);
+  cv::Mat logo_mat = cv::imread(logo, cv::IMREAD_UNCHANGED);
+
+#if 0
+  ::cv::Mat image_mat;
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = kingfisher::kcv::Image::DecodeImageFile(image, opts, image_mat);
+  EXPECT_EQ(ret, 0);
+  ::cv::Mat logo_mat;
+  ret = kingfisher::kcv::Image::DecodeImageFile(logo, opts, logo_mat);
+  EXPECT_EQ(ret, 0);
+#endif
+
+  // 在(100,50)位置创建200x150区域（允许负坐标和越界）
+  kingfisher::kcv::Image::AdaptiveWatermarkFill(image_mat, logo_mat, cv::Rect(100, 50, 200, 150),
+                       cv::INTER_LANCZOS4, 0.7);
+  //EXPECT_EQ(ret, 0);
+  ::cv::imwrite("/data/home/kayxhding/workspace/github.com/kaydxh/kingfisher/test/testdata/output.mark.png", image_mat);
+}
+
 #if 0
 TEST_F(test_Image, WriteImage) {
   kingfisher::kcv::Image::GlobalInit();
