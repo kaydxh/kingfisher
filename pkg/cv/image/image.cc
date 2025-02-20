@@ -363,5 +363,134 @@ int Image::AnnotateImage(const std::string &imageData, const std::string &text,
 }
 #endif
 
+/**
+ * @brief 计算有效区域（处理负坐标和越界）
+ */
+cv::Rect Image::CalculateValidRegion(const cv::Size& image_size, cv::Rect region) {
+  // 处理负坐标（OpenCV的Rect::operator&对负尺寸处理不够健壮）
+  if (region.width < 0) {
+    region.x += region.width;
+    region.width = -region.width;
+  }
+  if (region.height < 0) {
+    region.y += region.height;
+    region.height = -region.height;
+  }
+
+  // 计算实际可见区域
+  cv::Rect image_boundary(0, 0, image_size.width, image_size.height);
+  cv::Rect valid = region & image_boundary;
+
+  // 处理完全不可见的情况
+  if (valid.width <= 0 || valid.height <= 0) {
+    return cv::Rect(0, 0, 0, 0);
+  }
+
+  return valid;
+}
+
+/**
+ * @brief 计算保持纵横比的目标尺寸
+ */
+cv::Size Image::CalculateAspectRatioSize(const cv::Size& src_size, const cv::Size& dst_size) {
+  if (src_size.area() <= 0 || dst_size.area() <= 0) {
+    return cv::Size(0, 0);
+  }
+
+  // 计算缩放比例
+  double width_ratio = dst_size.width / static_cast<double>(src_size.width);
+  double height_ratio = dst_size.height / static_cast<double>(src_size.height);
+  double min_ratio = std::min(width_ratio, height_ratio);
+
+  // 计算最大内接矩形
+  cv::Size target_size(
+      cvRound(src_size.width * min_ratio),
+      cvRound(src_size.height * min_ratio)
+  );
+
+  // 保证最小尺寸为1像素
+  target_size.width = std::max(target_size.width, 1);
+  target_size.height = std::max(target_size.height, 1);
+
+  return target_size;
+}
+
+/**
+ * @brief Alpha混合实现（复用之前优化的版本）
+ */
+void Image::AlphaBlend(const cv::Mat& background, const cv::Mat& foreground,
+               cv::Mat& dst, double alpha)
+{
+  // 此处复用之前实现的AlphaBlend函数
+  // 可根据需要替换为实际的优化实现
+  cv::addWeighted(background, 1.0 - alpha,
+                 foreground, alpha, 0.0, dst);
+}
+
+
+void Image::AdaptiveWatermarkFill(
+    cv::Mat& dest,
+    const cv::Mat& logo,
+    cv::Rect region,
+    int interpolation,
+    double alpha)
+{
+  // ==================== 输入验证 ====================
+  CV_Assert(!dest.empty() && !logo.empty());
+  CV_Assert(dest.depth() == CV_8U && logo.depth() == CV_8U);
+  CV_Assert(alpha >= 0.0 && alpha <= 1.0);
+
+  // ==================== 区域规范化 ====================
+  // 计算有效区域（处理负坐标和越界情况）
+  cv::Rect valid_region = CalculateValidRegion(dest.size(), region);
+  if (valid_region.area() <= 0) {
+    return;
+  }
+
+  // ==================== 自适应尺寸计算 ====================
+  cv::Size target_size = CalculateAspectRatioSize(
+      logo.size(),
+      valid_region.size()
+  );
+  if (target_size.area() <= 0) {
+    return;
+  }
+
+  // ==================== 水印预处理 ====================
+  cv::Mat scaled_logo;
+  cv::resize(logo, scaled_logo, target_size, 0, 0, interpolation);
+  if (scaled_logo.size() != valid_region.size()) { // 二次尺寸校验
+    cv::resize(scaled_logo, scaled_logo, valid_region.size());
+  }
+
+  // ==================== 通道统一化 ====================
+  cv::Mat dest_roi = dest(valid_region);
+  if (scaled_logo.channels() != dest_roi.channels()) {
+    if (dest_roi.channels() == 4) {
+      cv::cvtColor(scaled_logo, scaled_logo, cv::COLOR_BGR2BGRA);
+    } else if (dest_roi.channels() == 3) {
+      if (scaled_logo.channels() == 4) {
+        cv::cvtColor(scaled_logo, scaled_logo, cv::COLOR_BGRA2BGR);
+      } else if (scaled_logo.channels() == 1) {
+        cv::cvtColor(scaled_logo, scaled_logo, cv::COLOR_GRAY2BGR);
+      }
+    } else if (dest_roi.channels() == 1) {
+      cv::cvtColor(scaled_logo, scaled_logo, cv::COLOR_BGR2GRAY);
+    }
+  }
+
+  cv::Mat blended_roi;
+  // ==================== 核心混合操作 ====================
+  if (logo.channels() == 4 || dest.channels() == 4) {
+    AlphaBlend(dest_roi, scaled_logo, blended_roi, 1.0 - alpha);
+  } else {
+    cv::addWeighted(dest_roi, 1.0 - alpha,
+                   scaled_logo, alpha, 0.0, blended_roi);
+  }
+
+  // ==================== 结果回写 ====================
+  blended_roi.copyTo(dest_roi);
+}
+
 }  // namespace kcv
 }  // namespace kingfisher
