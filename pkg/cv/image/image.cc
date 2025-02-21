@@ -17,6 +17,17 @@ using namespace MagickLib;
 namespace kingfisher {
 namespace kcv {
 
+// 统一 OpenCV 2.x/3.x/4.x 的转换标识
+#if CV_VERSION_MAJOR < 4
+#define COLOR_RGBA2BGR CV_RGBA2BGR
+#define COLOR_BGR2BGRA CV_BGR2BGRA
+#define COLOR_GRAY2BGRA CV_GRAY2BGRA
+#define COLOR_GRAY2BGR CV_GRAY2BGR
+#define COLOR_BGR2GRAY CV_BGR2BGRA
+
+// 其他需要兼容的宏...
+#endif
+
 static int ImageToMat(Magick::Image &image, ColorSpace targetColorSpace,
                       ::cv::Mat &matOutput) {
   if (!image.isValid()) {
@@ -366,7 +377,8 @@ int Image::AnnotateImage(const std::string &imageData, const std::string &text,
 /**
  * @brief 计算有效区域（处理负坐标和越界）
  */
-cv::Rect Image::CalculateValidRegion(const cv::Size& image_size, cv::Rect region) {
+cv::Rect Image::CalculateValidRegion(const cv::Size &image_size,
+                                     cv::Rect region) {
   // 处理负坐标（OpenCV的Rect::operator&对负尺寸处理不够健壮）
   if (region.width < 0) {
     region.x += region.width;
@@ -392,7 +404,8 @@ cv::Rect Image::CalculateValidRegion(const cv::Size& image_size, cv::Rect region
 /**
  * @brief 计算保持纵横比的目标尺寸
  */
-cv::Size Image::CalculateAspectRatioSize(const cv::Size& src_size, const cv::Size& dst_size) {
+cv::Size Image::CalculateAspectRatioSize(const cv::Size &src_size,
+                                         const cv::Size &dst_size) {
   if (src_size.area() <= 0 || dst_size.area() <= 0) {
     return cv::Size(0, 0);
   }
@@ -403,10 +416,8 @@ cv::Size Image::CalculateAspectRatioSize(const cv::Size& src_size, const cv::Siz
   double min_ratio = std::min(width_ratio, height_ratio);
 
   // 计算最大内接矩形
-  cv::Size target_size(
-      cvRound(src_size.width * min_ratio),
-      cvRound(src_size.height * min_ratio)
-  );
+  cv::Size target_size(cvRound(src_size.width * min_ratio),
+                       cvRound(src_size.height * min_ratio));
 
   // 保证最小尺寸为1像素
   target_size.width = std::max(target_size.width, 1);
@@ -418,48 +429,47 @@ cv::Size Image::CalculateAspectRatioSize(const cv::Size& src_size, const cv::Siz
 /**
  * @brief Alpha混合实现（复用之前优化的版本）
  */
-void Image::AlphaBlend(const cv::Mat& background, const cv::Mat& foreground,
-               cv::Mat& dst, double alpha)
-{
+void Image::AlphaBlend(const cv::Mat &background, const cv::Mat &foreground,
+                       cv::Mat &dst, double alpha) {
   // 此处复用之前实现的AlphaBlend函数
   // 可根据需要替换为实际的优化实现
-  cv::addWeighted(background, 1.0 - alpha,
-                 foreground, alpha, 0.0, dst);
+  cv::addWeighted(background, 1.0 - alpha, foreground, alpha, 0.0, dst);
 }
 
-
-void Image::AdaptiveWatermarkFill(
-    cv::Mat& dest,
-    const cv::Mat& logo,
-    cv::Rect region,
-    int interpolation,
-    double alpha)
-{
+int Image::AdaptiveWatermarkFill(cv::Mat &dest, const cv::Mat &logo,
+                                 cv::Rect region, int interpolation,
+                                 double alpha) {
   // ==================== 输入验证 ====================
-  CV_Assert(!dest.empty() && !logo.empty());
-  CV_Assert(dest.depth() == CV_8U && logo.depth() == CV_8U);
-  CV_Assert(alpha >= 0.0 && alpha <= 1.0);
+  if (dest.empty() || logo.empty()) {
+    return -1;
+  }
+
+  if (dest.depth() != CV_8U || logo.depth() != CV_8U) {
+    return -1;
+  }
+
+  if (alpha < 0.0 || alpha > 1.0) {
+    return -1;
+  }
 
   // ==================== 区域规范化 ====================
   // 计算有效区域（处理负坐标和越界情况）
   cv::Rect valid_region = CalculateValidRegion(dest.size(), region);
   if (valid_region.area() <= 0) {
-    return;
+    return -1;
   }
 
   // ==================== 自适应尺寸计算 ====================
-  cv::Size target_size = CalculateAspectRatioSize(
-      logo.size(),
-      valid_region.size()
-  );
+  cv::Size target_size =
+      CalculateAspectRatioSize(logo.size(), valid_region.size());
   if (target_size.area() <= 0) {
-    return;
+    return -1;
   }
 
   // ==================== 水印预处理 ====================
   cv::Mat scaled_logo;
   cv::resize(logo, scaled_logo, target_size, 0, 0, interpolation);
-  if (scaled_logo.size() != valid_region.size()) { // 二次尺寸校验
+  if (scaled_logo.size() != valid_region.size()) {  // 二次尺寸校验
     cv::resize(scaled_logo, scaled_logo, valid_region.size());
   }
 
@@ -484,12 +494,13 @@ void Image::AdaptiveWatermarkFill(
   if (logo.channels() == 4 || dest.channels() == 4) {
     AlphaBlend(dest_roi, scaled_logo, blended_roi, 1.0 - alpha);
   } else {
-    cv::addWeighted(dest_roi, 1.0 - alpha,
-                   scaled_logo, alpha, 0.0, blended_roi);
+    cv::addWeighted(dest_roi, 1.0 - alpha, scaled_logo, alpha, 0.0,
+                    blended_roi);
   }
 
   // ==================== 结果回写 ====================
   blended_roi.copyTo(dest_roi);
+  return 0;
 }
 
 }  // namespace kcv
