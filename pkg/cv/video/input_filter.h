@@ -46,6 +46,7 @@ class InputFilter {
   std::string name_;
   enum AVMediaType type_;  //  AVMEDIA_TYPE_SUBTITLE for sub2video
                            //
+  AVRational timebase_ = {};
   int format_ = -1;
   int width_ = 0;
   int height_ = 0;
