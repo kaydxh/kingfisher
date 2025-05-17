@@ -19,7 +19,7 @@ std::vector<std::string> Glob(const std::string& pattern) {
     globfree(&glob_result);
     std::stringstream ss;
     ss << "glob() failed, err: " << ret << std::endl;
-    throw std::runtime_error(ss.str());
+    return matches;
   }
 
   for (size_t i = 0; i < glob_result.gl_pathc; ++i) {
