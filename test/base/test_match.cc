@@ -17,8 +17,10 @@ class test_Match : public testing::Test {
 
 TEST_F(test_Match, All) {
   std::string pattern = "./logs*";
-  std::vector<std::string> result = kingfisher::path::Glob(pattern);
-  for (auto &e : result) {
+  std::vector<std::string> matches;
+  int ret = kingfisher::path::Glob(pattern, matches);
+  ASSERT_TRUE(ret == 0);
+  for (auto &e : matches) {
     std::cout << e << std::endl;
   }
 }

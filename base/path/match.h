@@ -6,9 +6,7 @@
 
 namespace kingfisher {
 namespace path {
-
-std::vector<std::string> Glob(const std::string &pattern);
-
+int  Glob(const std::string& pattern, std::vector<std::string>& matches);
 }
 }  // namespace kingfisher
 
