@@ -1,5 +1,6 @@
 #include "file_util.h"
 
+#include <dirent.h>
 #include <libgen.h>
 #include <string.h>
 #include <sys/file.h>
@@ -128,6 +129,40 @@ int MakeDirAll(const std::string &path) {
 bool IsDir(const std::string &path) {
   struct stat buf;
   return stat(path.c_str(), &buf) == 0 && S_ISDIR(buf.st_mode);
+}
+
+int ListFiles(const std::string &dir_path, std::vector<std::string> &files) {
+  DIR *dir = opendir(dir_path.c_str());
+  if (!dir) {
+    return -1;
+  }
+
+  struct dirent *entry;
+  while ((entry = readdir(dir)) != nullptr) {
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+      continue;
+    }
+
+    std::string fullPath = dir_path + "/" + entry->d_name;
+    struct stat statbuf;
+    if (stat(fullPath.c_str(), &statbuf) != 0) {
+      std::cout << "Failed to get file status: " << fullPath << std::endl;
+      continue;
+    }
+
+    if (S_ISREG(statbuf.st_mode)) {
+      files.push_back(fullPath);
+    } else if (S_ISDIR(statbuf.st_mode)) {
+      // 递归处理子目录
+      int result = ListFiles(fullPath, files);
+      if (result != 0) {
+        // 处理错误，例如记录日志，但继续处理其他条目
+        std::cout << "Failed to process directory: " << fullPath << std::endl;
+      }
+    }
+  }
+  closedir(dir);
+  return 0;
 }
 
 bool DeleteFile(const char *filename) {

@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 #include <cerrno>
 #include <iostream>
@@ -74,6 +75,8 @@ std::string Dir(const std::string &filename);
 int MakeDirAll(const std::string &dir);
 
 bool IsDir(const std::string &path);
+
+int ListFiles(const std::string& dir, std::vector<std::string>& files);
 
 bool DeleteFile(const char *filename);
 
