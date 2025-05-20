@@ -30,9 +30,13 @@ struct has_no_destroy {
 template <typename T>
 class Singleton : kingfisher::noncopyable {
  public:
-  static T& Instance() {
+  template <typename ...Args>
+  static T& Instance(Args... args)  {
     try {
-      std::call_once(once_, [&]() { Singleton::init(); });
+      std::call_once(once_, [&]() {
+        value_ = new T(std::forward<Args>(args)...);
+        //Singleton::init();
+      });
       return *value_;
 
     } catch (...) {
