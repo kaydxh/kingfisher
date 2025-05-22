@@ -1,5 +1,5 @@
-#ifndef BASE_POOL_POOL_TASK_TASK_H_
-#define BASE_POOL_POOL_TASK_TASK_H_
+#ifndef BASE_POOL_POOL_SDK_TASK_H_
+#define BASE_POOL_POOL_SDK_TASK_H_
 
 #include <atomic>
 #include <chrono>
