@@ -19,43 +19,6 @@ class test_CoreThreadPool : public testing::Test {
   virtual void TearDown(void) {}
 };
 
-#if 0
-int GlobalInit() {
-  LOG(INFO) << "do global init";
-  return 0;
-}
-
-int GlobalRelease() {
-  LOG(INFO) << "do global release";
-  return 0;
-}
-
-void LocalInit(void* p) { LOG(INFO) << "do local init"; }
-
-void LocalRelease(void* p) { LOG(INFO) << "do local release"; }
-
-class SDK {
- public:
-  SDK() {}
-  ~SDK() {}
-  int doSdk() {
-    LOG(INFO) << "do in sdk";
-    return 0;
-  }
-};
-
-void* NewSDK() {
-  auto sdk = new SDK();
-  return sdk;
-}
-
-void DeleteSdk(void* p) {
-  auto s = reinterpret_cast<SDK*>(p);
-  delete s;
-}
-
-#endif
-
 class FaceDetectSDK {
  public:
   FaceDetectSDK() {}
@@ -100,30 +63,16 @@ struct FaceDetectTask : public kingfisher::pool::SDKTask {
 
 struct FaceDetectPool {
  public:
-#if 0
-  FaceDetectPool(const std::vector<int>& core_ids,
-                 const std::string& model_path, int thread_num,
-                 int max_batch_size, int max_wait_ms) {
-    int ret = FaceDetectSDK::GlobalInit(model_path, max_batch_size);
-    if (ret != 0) {
-      std::cout << "FaceDetectSDK GlobalInit failed" << std::endl;
-      exit(1);
-    }
-
-    pl = new kingfisher::pool::CoreThreadPool<FaceDetectSDK, FaceDetectTask>(core_ids, thread_num, max_batch_size, max_wait_ms, Process);
-  }
-#endif
-
-  FaceDetectPool(const CoreThreadPoolOptions& opts, const std::string& model_path) {
+  FaceDetectPool(const CoreThreadPoolOptions& opts,
+                 const std::string& model_path) {
     int ret = FaceDetectSDK::GlobalInit(model_path, opts.max_batch_size);
     if (ret != 0) {
       std::cout << "FaceDetectSDK GlobalInit failed" << std::endl;
       exit(1);
     }
-    pl = new kingfisher::pool::CoreThreadPool<FaceDetectSDK, FaceDetectTask>(opts, Process);
+    pl = new kingfisher::pool::CoreThreadPool<FaceDetectSDK, FaceDetectTask>(
+        opts, Process);
   }
-
-
 
   static void Process(FaceDetectSDK&,
                       std::vector<std::shared_ptr<FaceDetectTask>>&);
@@ -167,28 +116,6 @@ void FaceDetectPool::Process(
 }
 
 TEST(test_CoreThreadPool, All) {
-#if 0
-  PoolOptions opt;
-  opt.reserve_pool_size_per_core = 10;
-  opt.core_ids = {0};
-  opt.global_init_func = GlobalInit;
-  opt.global_release_func = GlobalRelease;
-  opt.local_init_func = LocalInit;
-  opt.local_release_func = LocalRelease;
-
-  Pool pool(NewSDK, opt);
-  auto ret = pool.GlobalInit();
-  ASSERT_EQ(0, ret);
-
-  for (int i = 0; i < 10; ++i) {
-    ret = pool.Invoke([&](void* p) {
-      auto s = reinterpret_cast<SDK*>(p);
-      s->doSdk();
-    });
-    ASSERT_EQ(0, ret);
-  }
-#endif
-
   FaceDetectConfig config;
   config.core_ids.push_back(0);
   config.model_path = "./model";
@@ -200,5 +127,6 @@ TEST(test_CoreThreadPool, All) {
   auto face_detect_pool = GetFaceDetectPool(config);
   face_detect_pool->Commit(face_detect_task);
   face_detect_task->Wait();
-  std::cout << "face_detect_task->ret_ = " << face_detect_task->ret_ << std::endl;
+  std::cout << "face_detect_task->ret_ = " << face_detect_task->ret_
+            << std::endl;
 }
