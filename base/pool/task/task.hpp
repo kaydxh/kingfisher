@@ -6,6 +6,8 @@
 #include <condition_variable>
 #include <string>
 
+#include "time/timestamp.h"
+
 #ifdef ENABLE_LIBCO
 #include "sync/co_condition_variable.h"
 #endif
@@ -13,12 +15,17 @@
 namespace kingfisher {
 namespace pool {
 
-class Task {
+const int SDK_TASK_TIMEOUT = 10000;
+
+class SDKTask {
  public:
-  Task() {}
-  virtual ~Task(){};
+  SDKTask(const std::string name, const std::string& session_id)
+      : name_(name), session_id_(session_id) {}
+  virtual ~SDKTask() {};
 
   void Done() {
+    ts_finish_proc_ = kingfisher::time::NowUs();
+    ;
     {
       std::unique_lock<std::mutex> lock(mutex_);
       done_ = true;
@@ -39,9 +46,11 @@ class Task {
       if (!cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
                         [&]() { return done_; })) {
         done_ = true;
-        ret_ = -1;
+        ret_ = SDK_TASK_TIMEOUT;
       }
     }
+    ts_wakeup_ = kingfisher::time::NowUs();
+    ;
 
     return;
   }
@@ -63,10 +72,15 @@ class Task {
   std::mutex mutex_;
 
   int64_t start_proc_time_ = 0;
+  int64_t ts_finish_proc_;
+  int64_t ts_wakeup_;
 
   int64_t commit_time_ = 0;
 
   bool done_ = false;
+  std::string name_;
+  std::string session_id_;
+
 };
 
 #if 0
