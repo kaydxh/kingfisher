@@ -1,5 +1,5 @@
-#ifndef BASE_POOL_POOL_TASK_POOL_H_
-#define BASE_POOL_POOL_TASK_POOL_H_
+#ifndef BASE_POOL_POOL_SDK_POOL_H_
+#define BASE_POOL_POOL_SDK_POOL_H_
 
 #include <chrono>
 #include <condition_variable>
@@ -91,37 +91,6 @@ class CoreThreadPool : public SDKThreadPool<Task> {
     }
   }
 
-#if 0
-  CoreThreadPool(
-      const std::vector<int> &core_ids, int thread_num, int max_batch_size,
-      int max_wait_ms, int64_t init_timeout_s,
-      std::function<void(SDK &, std::vector<std::shared_ptr<Task>> &)> proc) {
-    std::cout << "init core sdk pool| thread_num: " << thread_num
-              << "| batch_size: " << max_batch_size
-              << "| wait_ms: " << max_batch_size << std::endl;
-    for (auto id : core_ids) {
-      for (int i = 0; i < thread_num; i++) {
-        std::function<void(void)> f = std::bind(
-            &CoreThreadPool<SDK, Task>::ThreadProcess, this, i, id, proc);
-        this->pool_.emplace_back(f);
-      }
-    }
-
-    {
-      // Waiting for sdk init in thread pool.
-      std::unique_lock<std::mutex> lock(this->sdk_init_mutex_);
-      int cnt = core_ids.size() * thread_num;
-      bool ok = this->sdk_init_cv_.wait_for(
-          lock, std::chrono::seconds(init_timeout_s_),
-          [cnt, this] { return cnt == sdk_num_.load(); });
-      if (!ok) {
-        std::cout << "SDK init failed, exit " << std::endl;
-        exit(1);
-      }
-    }
-  }
-#endif
-
   ~CoreThreadPool() {
     this->stopped_.store(true);
     this->cv_.notify_all();
@@ -132,48 +101,6 @@ class CoreThreadPool : public SDKThreadPool<Task> {
       }
     }
   }
-
-#if 0
-  int Init(std::function<void(SDK &, std::vector<std::shared_ptr<Task>> &)>
-               proc_func) {
-    int ret = 0;
-    if (opts_.global_init_func) {
-      ret = opts_.global_init_func();
-      if (ret != 0) {
-        LOG(ERROR) << "failed to global init, ret: " << ret;
-        return ret;
-      }
-    }
-
-    if (opts_.core_ids.empty()) {
-      LOG(ERROR) << "core ids is empty()";
-      return -1;
-    }
-
-    for (auto id : opts_.core_ids) {
-      for (int i = 0; i < opts_.concurrency; ++i) {
-        auto f = std::bind(&CoreThreadPool<SDK, Task>::ThreadProcess, this, i,
-                           id, proc_func);
-
-        this->pool_.emplace_back(f);
-      }
-    }
-
-    if (opts_.local_init_func) {
-      std::unique_lock<std::mutex> lock(sdk_init_mutex_);
-      int cnt = opts_.concurrency * opts_.core_ids.size();
-      bool ok = sdk_init_cv_.wait_for(
-          lock, std::chrono::seconds(opts_.init_timeout_s),
-          [&] { return cnt == sdk_num_.load(); });
-      if (!ok) {
-        LOG(ERROR) << "local init timeout " << opts_.init_timeout_s << "s";
-        return -1;
-      }
-    }
-
-    return 0;
-  }
-#endif
 
   void ThreadProcess(
       int thread_id, int core_id,
@@ -209,7 +136,8 @@ class CoreThreadPool : public SDKThreadPool<Task> {
         continue;
       }
 
-      LOG(INFO) << id << " begin to process with " << batch_tasks.size() << " batch tasks...";
+      LOG(INFO) << id << " begin to process with " << batch_tasks.size()
+                << " batch tasks...";
       int64_t start = time::NowUs();
       for (const auto &t : batch_tasks) {
         t->start_proc_time_ = start;
