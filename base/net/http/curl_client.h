@@ -5,7 +5,7 @@
 #include <mutex>
 
 #include "container/buffer.h"
-#include "curl/curl.h"
+#include <curl/curl.h>
 #include "net/http/chain_interceptor.h"
 #include "net/http/interceptor.h"
 

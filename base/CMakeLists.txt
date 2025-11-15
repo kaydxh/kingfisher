@@ -1,5 +1,14 @@
 file(GLOB_RECURSE BASE_SRC TRUE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 list(FILTER BASE_SRC EXCLUDE REGEX "main.*")
+# Exclude grpc files if grpc is not available
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/grpc/include)
+  list(FILTER BASE_SRC EXCLUDE REGEX ".*grpc.*")
+endif()
+# Exclude curl files if curl is not available
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/curl/include)
+  list(FILTER BASE_SRC EXCLUDE REGEX ".*curl.*")
+  list(FILTER BASE_SRC EXCLUDE REGEX ".*http_client.*")
+endif()
 message(STATUS "BASE_SRC = ${BASE_SRC}")
 
 

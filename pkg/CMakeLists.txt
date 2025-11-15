@@ -3,6 +3,11 @@ find_package(Protobuf)
 
 file(GLOB_RECURSE PKG_SRC TRUE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 list(FILTER PKG_SRC EXCLUDE REGEX "main.*")
+# Exclude grpc-gateway if cpp-httplib is not available
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/cpp-httplib/httplib.h)
+    list(FILTER PKG_SRC EXCLUDE REGEX ".*grpc-gateway.*")
+    message(STATUS "Excluding grpc-gateway (cpp-httplib not found)")
+endif()
 message(STATUS "PKG_SRC = ${PKG_SRC}")
 
 #add_library(kingfisher_pkg SHARED ${PKG_SRC})
