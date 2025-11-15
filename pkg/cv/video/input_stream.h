@@ -115,6 +115,11 @@ class InputStream : public Stream {
 
   std::vector<int64_t> dts_buffer_;
   bool got_output = false;
+
+  unsigned int read_packet_count_ = 0;
+  unsigned int decoded_frame_count_ = 0;
+  unsigned int filtered_frame_count_ = 0;
+  unsigned int filtered_packet_count_ = 0;
 };
 
 }  // namespace cv

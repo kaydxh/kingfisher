@@ -3,7 +3,7 @@
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
 #include "ffmpeg_utils.h"
-#include "scripts/pack/ffmpeg/include/libavutil/frame.h"
+#include "libavutil/frame.h"
 #include "stream.h"
 
 extern "C" {

@@ -72,6 +72,8 @@ class InputFile {
 
   int init_filters();
 
+  void get_format_context(FormatContext &format_ctx) const;
+
  public:
   int file_index_ = 0;
   std::shared_ptr<AVFormatContext> ifmt_ctx_;

@@ -3,6 +3,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+#ifdef ENABLE_OPENCV
+#include <opencv2/opencv.hpp>
+#endif
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -20,11 +25,25 @@ namespace cv {
 struct Frame {
   std::shared_ptr<AVPacket> packet;
   std::shared_ptr<AVFrame> frame;
+  
+#ifdef ENABLE_OPENCV
+  ::cv::Mat mat;  // CV_8U类型，解码后的视频帧
+  std::vector<std::string> sei_messages;  // for mat, SEI messages
+#endif
+  
   int64_t frame_number = 0;
-  AVRational time_base = AV_TIME_BASE_Q;
-  int64_t pts = AV_NOPTS_VALUE;
+  AVRational time_base = AV_TIME_BASE_Q;  // for mat/packet/frame
+  int64_t pts = AV_NOPTS_VALUE;  // for mat/packet/frame
   AVMediaType codec_type = AVMEDIA_TYPE_UNKNOWN;
   AVCodecID codec_id = AV_CODEC_ID_NONE;
+
+  bool empty() const {
+#ifdef ENABLE_OPENCV
+    return mat.empty() && !packet && !frame;
+#else
+    return !packet && !frame;
+#endif
+  }
 };
 
 struct FormatContext {
