@@ -10,6 +10,8 @@ macro(GENERATE_PROTOBUF_LIB IMPORT_DIRS DEPEND_TARGETS)
     set(Protobuf_PROTOC_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/third_path/protobuf/bin/protoc)
   elseif (EXISTS ${PROJECT_SOURCE_DIR}/third_path/protobuf/bin/protoc)
     set(Protobuf_PROTOC_EXECUTABLE ${PROJECT_SOURCE_DIR}/third_path/protobuf/bin/protoc)
+  elseif (EXISTS ${PROJECT_SOURCE_DIR}/third_party/protobuf-v3.6.1/bin/protoc)
+    set(Protobuf_PROTOC_EXECUTABLE ${PROJECT_SOURCE_DIR}/third_party/protobuf-v3.6.1/bin/protoc)
   elseif (EXISTS ${PROJECT_SOURCE_DIR}/third_party/protobuf/bin/protoc)
     set(Protobuf_PROTOC_EXECUTABLE ${PROJECT_SOURCE_DIR}/third_party/protobuf/bin/protoc)
   elseif (EXISTS ${PROJECT_SOURCE_DIR}/api/openapi-spec/third_path/protobuf/bin/protoc)
@@ -194,11 +196,17 @@ function(protobuf_generate)
         get_filename_component(_abs_file ${_proto} ABSOLUTE)
         get_filename_component(_abs_dir ${_abs_file} DIRECTORY)
         get_filename_component(_basename ${_proto} NAME_WLE)
-        file(RELATIVE_PATH _rel_dir ${PROJECT_SOURCE_DIR} ${_abs_dir})
+        
+        # Calculate relative path from CMAKE_CURRENT_SOURCE_DIR to avoid nested paths
+        # when PROTOC_OUT_DIR is CMAKE_CURRENT_BINARY_DIR
+        file(RELATIVE_PATH _rel_dir ${CMAKE_CURRENT_SOURCE_DIR} ${_abs_dir})
 
         set(_possible_rel_dir)
-        if (NOT protobuf_generate_APPEND_PATH)
-            set(_possible_rel_dir ${_rel_dir}/)
+        if (NOT protobuf_generate_APPEND_PATH AND _rel_dir)
+            # Only add relative dir if it's not empty and not "."
+            if (NOT _rel_dir STREQUAL ".")
+                set(_possible_rel_dir ${_rel_dir}/)
+            endif ()
         endif ()
 
         set(_generated_srcs)
@@ -213,12 +221,19 @@ function(protobuf_generate)
         endif ()
         list(APPEND _generated_srcs_all ${_generated_srcs})
 
-        file(RELATIVE_PATH _rel_proto_file ${PROJECT_SOURCE_DIR} ${_abs_file})
+        # Use relative path from CMAKE_CURRENT_SOURCE_DIR to avoid nested paths
+        # This ensures protoc doesn't recreate the directory structure in the output
+        file(RELATIVE_PATH _rel_proto_file ${CMAKE_CURRENT_SOURCE_DIR} ${_abs_file})
+        if (NOT _rel_proto_file)
+            # If proto file is in the same directory, use just the filename
+            get_filename_component(_rel_proto_file ${_proto} NAME)
+        endif ()
+        
         add_custom_command(
                 OUTPUT ${_generated_srcs}
                 COMMAND protobuf::protoc
                 ARGS --${protobuf_generate_LANGUAGE}_out ${_dll_export_decl}${protobuf_generate_PROTOC_OUT_DIR} ${_plugin} ${_dll_desc_out} ${_protobuf_include_path} ${_rel_proto_file}
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 DEPENDS ${_abs_file} protobuf::protoc
                 COMMENT "Running ${protobuf_generate_LANGUAGE} protocol buffer compiler on ${_proto}"
                 VERBATIM)

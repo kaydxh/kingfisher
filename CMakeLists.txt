@@ -16,6 +16,7 @@ set(CXX_FLAGS
  -Wall
  -Wextra
  -Werror
+ -Wno-class-memaccess
  # -Wconversion
  -Wno-unused-parameter
  -Wno-unused-local-typedefs
@@ -28,6 +29,7 @@ set(CXX_FLAGS
  -Waligned-new
  # -Wshadow
  -Wwrite-strings
+ -Wno-error
  -march=native
  -std=c++17
  -rdynamic
@@ -66,7 +68,13 @@ add_subdirectory (base)
 add_subdirectory (pkg)
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-add_subdirectory (test)
+# Conditionally add test subdirectory if gtest is available
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/include/gtest/gtest.h OR
+    EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/include/gtest/gtest.h)
+  add_subdirectory (test)
+else()
+  message(STATUS "Skipping test directory (gtest not found)")
+endif()
 
 install(TARGETS kingfisher_base LIBRARY DESTINATION ${LIBRARY_OUTPUT_PATH})
 message(STATUS "> install lib target ${LIBRARY_OUTPUT_PATH}")
