@@ -8,9 +8,9 @@
 #include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
-#include "scripts/pack/ffmpeg/include/libavcodec/defs.h"
-#include "scripts/pack/ffmpeg/include/libavcodec/packet.h"
-#include "scripts/pack/ffmpeg/include/libavformat/avformat.h"
+#include "libavcodec/defs.h"
+#include "libavcodec/packet.h"
+#include "libavformat/avformat.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -166,48 +166,50 @@ int InputFile::open(const std::string &filename, FormatContext &format_ctx) {
   /* dump the file content */
   av_dump_format(ifmt_ctx_.get(), 0, filename.c_str(), 0);
 
-  format_ctx.av_format_context = ifmt_ctx_;
-
-  if (first_video_stream_index_ >= 0) {
-    format_ctx.video_stream.reset(
-        input_streams_[first_video_stream_index_]->st_);
-    format_ctx.video_codec_context =
-        input_streams_[first_video_stream_index_]->codec_ctx_;
-    //  = std::make_shared<AVStream>(
-    //     input_streams_[first_video_stream_index_]->st_);
+  ret = init_filters();
+  if (ret < 0) {
+    return ret;
   }
 
-  if (first_audio_stream_index_) {
-    format_ctx.audio_stream.reset(
-        input_streams_[first_audio_stream_index_]->st_);
-    format_ctx.audio_codec_context =
-        input_streams_[first_audio_stream_index_]->codec_ctx_;
-  }
+  /* update the current parameters so that they match the one of the input stream */
+  get_format_context(format_ctx);
 
-  return init_filters();
+  return 0;
 }
 
 int InputFile::read_frames(std::vector<Frame> &video_frames,
                            std::vector<Frame> &audio_frames, int32_t batch_size,
                            bool &finished) {
-  if (first_video_stream_index_ < 0) {
-    return AVERROR_STREAM_NOT_FOUND;
+  std::vector<Frame> *video_frames_buffer = nullptr;
+  std::vector<Frame> *audio_frames_buffer = nullptr;
+
+  if (first_video_stream_index_ >= 0) {
+    auto &v_ist = input_streams_[first_video_stream_index_];
+    if (v_ist) {
+      video_frames_buffer = &v_ist->frames_;
+    }
   }
-  auto &v_ist = input_streams_[first_video_stream_index_];
-  if (!v_ist) {
+
+  if (first_audio_stream_index_ >= 0) {
+    auto &a_ist = input_streams_[first_audio_stream_index_];
+    if (a_ist) {
+      audio_frames_buffer = &a_ist->frames_;
+    }
+  }
+
+  // At least one stream must be available
+  if (!video_frames_buffer && !audio_frames_buffer) {
     return AVERROR_STREAM_NOT_FOUND;
   }
 
-  if (first_audio_stream_index_ < 0) {
-    return AVERROR_STREAM_NOT_FOUND;
-  }
-  auto &a_ist = input_streams_[first_audio_stream_index_];
-  if (!a_ist) {
-    return AVERROR_STREAM_NOT_FOUND;
-  }
+  // Use empty vectors if streams are not available
+  std::vector<Frame> empty_video_buffer;
+  std::vector<Frame> empty_audio_buffer;
 
-  return read_batch_frames(v_ist->frames_, a_ist->frames_, video_frames,
-                           audio_frames, batch_size, finished);
+  return read_batch_frames(
+      video_frames_buffer ? *video_frames_buffer : empty_video_buffer,
+      audio_frames_buffer ? *audio_frames_buffer : empty_audio_buffer,
+      video_frames, audio_frames, batch_size, finished);
 }
 
 // first arrived batch for video or audio
@@ -1115,6 +1117,9 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     decoded_frame->sample_aspect_ratio = st->sample_aspect_ratio;
   }
 
+  ist->frames_decoded_++;
+  ist->decoded_frame_count_++;
+
   ret = send_frame_to_filters(ist, decoded_frame);
   av_frame_unref(decoded_frame.get());
   return ret;
@@ -1164,6 +1169,7 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
   }
   ist->samples_decoded_ += decoded_frame->nb_samples;
   ist->frames_decoded_++;
+  ist->decoded_frame_count_++;
 
   /* increment next_dts to use for the case
    where the input stream does not have
@@ -1262,24 +1268,117 @@ int InputFile::send_frame_to_filters(
     const std::shared_ptr<AVFrame> &decoded_frame) {
   const auto &stream_index = ist->stream_index_;
   const auto &ifilt = input_streams_[stream_index]->ifilt_;
+
+  // frame->time_base is ignored by filter, and take as codec's timebase
+  if (decoded_frame) {
+    /* prepare frame for filtering  */
+    if (ist->codec_ctx_->time_base.num) {
+      av_frame_rescale_ts(decoded_frame.get(), decoded_frame->time_base,
+                          ist->codec_ctx_->time_base);
+      decoded_frame->time_base = ist->codec_ctx_->time_base;
+    } else {
+      // since ffmpeg@n6.0，it's not set, so we set it here
+      ist->codec_ctx_->time_base = decoded_frame->time_base;
+    }
+    if (debug_ts_) {
+      av_log(this, AV_LOG_INFO, "decoder -> filter: stream #%d:%d, pts=%" PRId64 "\n",
+             file_index_, stream_index,
+             decoded_frame ? decoded_frame->pts : AV_NOPTS_VALUE);
+    }
+  }
+
   if (ifilt) {
-    std::vector<std::shared_ptr<AVFrame>> filtered_frames;
     ifilt->send_frame_to_filters(decoded_frame);
+    std::vector<std::shared_ptr<AVFrame>> filtered_frames;
     int ret = ifilt->reap_filters(filtered_frames, true);
     if (ret != 0) {
       return ret;
     }
 
     for (const auto &filtered_frame : filtered_frames) {
-      stream_copy_frame(ist, filtered_frame.get());
+      if (!filtered_frame) {
+        continue;
+      }
 
-      if (int(stream_index) == first_video_stream_index_) {
-      } else if (int(stream_index) == first_audio_stream_index_) {
-      } else {
+      ist->frame_number_++;
+      Frame raw_frame;
+      raw_frame.time_base = filtered_frame->time_base;
+      raw_frame.pts = filtered_frame->pts;
+      raw_frame.frame_number = ist->frame_number_;
+      raw_frame.codec_id = ist->codec_ctx_->codec_id;
+      raw_frame.codec_type = ist->codec_ctx_->codec_type;
+      raw_frame.frame = std::shared_ptr<AVFrame>(
+          av_frame_clone(filtered_frame.get()),
+          [](AVFrame *pkt) { av_frame_free(&pkt); });
+
+      switch (ist->codec_ctx_->codec_type) {
+        case AVMEDIA_TYPE_VIDEO:
+          ist->frames_.push_back(raw_frame);
+          ist->filtered_frame_count_++;
+          break;
+        case AVMEDIA_TYPE_AUDIO:
+          ist->frames_.push_back(raw_frame);
+          ist->filtered_frame_count_++;
+          break;
+        default:
+          break;
+      }
+    }
+  } else {
+    // No filter, directly add decoded frame to frames buffer
+    if (decoded_frame) {
+      ist->frame_number_++;
+      Frame raw_frame;
+      raw_frame.time_base = decoded_frame->time_base;
+      raw_frame.pts = decoded_frame->pts;
+      raw_frame.frame_number = ist->frame_number_;
+      raw_frame.codec_id = ist->codec_ctx_->codec_id;
+      raw_frame.codec_type = ist->codec_ctx_->codec_type;
+      raw_frame.frame = std::shared_ptr<AVFrame>(
+          av_frame_clone(decoded_frame.get()),
+          [](AVFrame *pkt) { av_frame_free(&pkt); });
+
+      switch (ist->codec_ctx_->codec_type) {
+        case AVMEDIA_TYPE_VIDEO:
+          ist->frames_.push_back(raw_frame);
+          ist->filtered_frame_count_++;
+          break;
+        case AVMEDIA_TYPE_AUDIO:
+          ist->frames_.push_back(raw_frame);
+          ist->filtered_frame_count_++;
+          break;
+        default:
+          break;
       }
     }
   }
   return 0;
+}
+
+void InputFile::get_format_context(FormatContext &format_ctx) const {
+  if (!ifmt_ctx_) {
+    return;
+  }
+
+  format_ctx.av_format_context = ifmt_ctx_;
+
+  if (first_video_stream_index_ >= 0 &&
+      first_video_stream_index_ < static_cast<int>(input_streams_.size())) {
+    auto &ist = input_streams_[first_video_stream_index_];
+    if (ist && ist->st_) {
+      format_ctx.video_stream.reset(ist->st_);
+      format_ctx.video_codec_context = ist->codec_ctx_;
+    }
+  }
+
+  if (first_audio_stream_index_ >= 0 &&
+      first_audio_stream_index_ < static_cast<int>(input_streams_.size())) {
+    auto &ist = input_streams_[first_audio_stream_index_];
+    if (ist && ist->st_) {
+      format_ctx.audio_stream.reset(ist->st_);
+      format_ctx.audio_codec_context = ist->codec_ctx_;
+    }
+  }
 }
 
 int InputFile::init_filters() {
@@ -1291,10 +1390,13 @@ int InputFile::init_filters() {
     }
     std::string filter_spec;
     if (ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-      filter_spec = "null"; /* passthrough (dummy)
-                               filter for video */
+      if (bitexact_) {
+        filter_spec = "sws_flags=bitexact;null"; /* passthrough (dummy) filter for video */
+      } else {
+        filter_spec = "null"; /* passthrough (dummy) filter for video */
+      }
     } else {
-      filter_spec = "anull";
+      filter_spec = "anull"; /* passthrough (dummy) filter for audio */
     }
 
     auto &ist = input_streams_[i];

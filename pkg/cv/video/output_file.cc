@@ -6,7 +6,7 @@
 #include "ffmpeg_utils.h"
 #include "output_filter.h"
 #include "output_stream.h"
-#include "scripts/pack/ffmpeg/include/libavutil/avutil.h"
+#include "libavutil/avutil.h"
 
 extern "C" {
 #include "libavfilter/buffersink.h"
