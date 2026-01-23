@@ -29,10 +29,20 @@ static const AVClass output_file_class = {
 namespace kingfisher {
 namespace cv {
 
-OutputFile::OutputFile() : av_class_(&output_file_class) {}
+OutputFile::OutputFile() : av_class_(&output_file_class) {
+  // 设置 movflags +faststart,将 moov atom 放在文件开头,避免无法检测时长
+  // 参考: https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv
+  // 注意: opts_ 会被传递给 avformat_write_header()
+  av_dict_set(&opts_, "movflags", "+faststart", AV_DICT_APPEND);
+  av_log(this, AV_LOG_WARNING, "OutputFile: set movflags=+faststart to opts_\n");
+}
 OutputFile::~OutputFile() {
+  // 在析构时自动 flush,确保 moov atom 被正确写入(参考 ffmpeg-wrapper 实现)
+  flush();
+  
   av_dict_free(&command_opts_);
   av_dict_free(&encoder_opts_);
+  av_dict_free(&opts_);
 }
 
 int OutputFile::open(const std::string &filename, FormatContext &format_ctx) {
@@ -186,7 +196,8 @@ int OutputFile::create_streams(const FormatContext &format_ctx) {
 
   if (format_ctx.video_stream && format_ctx.video_codec_context) {
     ret = new_output_stream(format_ctx.av_format_context,
-                            format_ctx.video_codec_context, 0,
+                            format_ctx.video_codec_context,
+                            format_ctx.video_stream->index,
                             format_ctx.video_stream->codecpar->codec_type);
     if (ret != 0) {
       av_log(this, AV_LOG_ERROR, "Failed to new video stream: %s\n",
@@ -197,7 +208,8 @@ int OutputFile::create_streams(const FormatContext &format_ctx) {
 
   if (format_ctx.audio_stream && format_ctx.audio_codec_context) {
     ret = new_output_stream(format_ctx.av_format_context,
-                            format_ctx.audio_codec_context, 0,
+                            format_ctx.audio_codec_context,
+                            format_ctx.audio_stream->index,
                             format_ctx.audio_stream->codecpar->codec_type);
     if (ret != 0) {
       av_log(this, AV_LOG_ERROR, "Failed to new audio stream: %s\n",
@@ -491,13 +503,17 @@ int OutputFile::init_output_stream_encode(
     const std::shared_ptr<OutputStream> &ost, AVFrame *frame) {
   const auto &ist = ost->input_av_stream();
   const auto enc = ost->codec_ctx_->codec;
-  const auto &filter_ctx = ost->filter_->filter_;
+  // 安全获取 filter context（可能为 null）
+  AVFilterContext *filter_ctx = 
+      (ost->filter_ && ost->filter_->filter_) ? ost->filter_->filter_ : nullptr;
+  
   AVCodecContext *enc_ctx = ost->codec_ctx_.get();
   int ret = 0;
+  
   set_encoder_id(ost);
 
   if (enc_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
-    if (!ost->framerate_.num) {
+    if (!ost->framerate_.num && filter_ctx) {
       ost->framerate_ = av_buffersink_get_frame_rate(filter_ctx);
     }
 
@@ -540,12 +556,41 @@ int OutputFile::init_output_stream_encode(
 
   switch (enc_ctx->codec_type) {
     case AVMEDIA_TYPE_AUDIO:
-      enc_ctx->sample_fmt =
-          static_cast<AVSampleFormat>(av_buffersink_get_format(filter_ctx));
-      enc_ctx->sample_rate = av_buffersink_get_sample_rate(filter_ctx);
-      ret = av_buffersink_get_ch_layout(filter_ctx, &enc_ctx->ch_layout);
-      if (ret < 0) {
-        return ret;
+      if (filter_ctx) {
+        // 从 filter 获取音频参数
+        enc_ctx->sample_fmt =
+            static_cast<AVSampleFormat>(av_buffersink_get_format(filter_ctx));
+        enc_ctx->sample_rate = av_buffersink_get_sample_rate(filter_ctx);
+        ret = av_buffersink_get_ch_layout(filter_ctx, &enc_ctx->ch_layout);
+        if (ret < 0) {
+          return ret;
+        }
+      } else if (frame) {
+        // 无 filter 时从 AVFrame 获取音频参数
+        enc_ctx->sample_fmt = static_cast<AVSampleFormat>(frame->format);
+        enc_ctx->sample_rate = frame->sample_rate;
+        ret = av_channel_layout_copy(&enc_ctx->ch_layout, &frame->ch_layout);
+        if (ret < 0) {
+          av_log(nullptr, AV_LOG_ERROR,
+                 "Failed to copy channel layout from frame: %s\n",
+                 av_err2str(ret));
+          return ret;
+        }
+      } else if (ist && ist->codecpar) {
+        // 从输入流获取音频参数（fallback）
+        enc_ctx->sample_fmt = static_cast<AVSampleFormat>(ist->codecpar->format);
+        enc_ctx->sample_rate = ist->codecpar->sample_rate;
+        ret = av_channel_layout_copy(&enc_ctx->ch_layout, &ist->codecpar->ch_layout);
+        if (ret < 0) {
+          av_log(nullptr, AV_LOG_ERROR,
+                 "Failed to copy channel layout from input stream: %s\n",
+                 av_err2str(ret));
+          return ret;
+        }
+      } else {
+        av_log(nullptr, AV_LOG_ERROR,
+               "No filter, frame, or valid input stream available for audio encoding\n");
+        return AVERROR(EINVAL);
       }
 
       init_encoder_time_base(ost, av_make_q(1, enc_ctx->sample_rate));
@@ -565,6 +610,20 @@ int OutputFile::init_output_stream_encode(
 
         enc_ctx->pix_fmt =
             static_cast<AVPixelFormat>(av_buffersink_get_format(filter_ctx));
+      } else if (frame) {
+        // 无 filter 时从 AVFrame 获取视频参数
+        enc_ctx->width = frame->width;
+        enc_ctx->height = frame->height;
+        enc_ctx->sample_aspect_ratio = ost->st_->sample_aspect_ratio =
+            frame->sample_aspect_ratio;
+        enc_ctx->pix_fmt = static_cast<AVPixelFormat>(frame->format);
+      } else if (ist && ist->codecpar) {
+        // 从输入流获取视频参数（fallback）
+        enc_ctx->width = ist->codecpar->width;
+        enc_ctx->height = ist->codecpar->height;
+        enc_ctx->sample_aspect_ratio = ost->st_->sample_aspect_ratio =
+            ist->codecpar->sample_aspect_ratio;
+        enc_ctx->pix_fmt = static_cast<AVPixelFormat>(ist->codecpar->format);
       }
 
       if (ost->bits_per_raw_sample_) {
@@ -636,10 +695,11 @@ void OutputFile::set_encoder_id(const std::shared_ptr<OutputStream> &ost) {
   int format_flags = 0;
   int codec_flags = ost->codec_ctx_->flags;
 
-  const auto &st = ost->av_stream();
+  // 使用输出流 st_,而不是 av_stream()(后者会从输入格式上下文获取)
+  const auto &st = ost->st_;
   const auto &codec = ost->codec_ctx_->codec;
 
-  if (av_dict_get(st->metadata, "encoder", nullptr, 0)) {
+  if (!st || av_dict_get(st->metadata, "encoder", nullptr, 0)) {
     return;
   }
 
@@ -971,14 +1031,27 @@ int OutputFile::init_output_stream_streamcopy(
 
 /* open the muxer when all the streams are initialized */
 int OutputFile::of_check_init() {
-#if 0
-  for (unsigned int i = 0; i < ofmt_ctx_->nb_streams; i++) {
+  // 检查所有流是否都已初始化
+  for (unsigned int i = 0; i < output_streams_.size(); i++) {
     const auto &ost = output_streams_[i];
     if (!ost->initialized_) {
-      return 0;
+      av_log(this, AV_LOG_DEBUG, "of_check_init: stream %d not initialized yet\n", i);
+      return 0;  // 还有流未初始化,暂不写入 header
     }
   }
-#endif
+  
+  // 防止重复写入 header
+  if (header_written_) {
+    av_log(this, AV_LOG_DEBUG, "of_check_init: header already written\n");
+    return 0;
+  }
+
+  // 调试: 打印 opts_ 的内容
+  av_log(this, AV_LOG_WARNING, "of_check_init: opts_ before write_header:\n");
+  AVDictionaryEntry *e = nullptr;
+  while ((e = av_dict_get(opts_, "", e, AV_DICT_IGNORE_SUFFIX))) {
+    av_log(this, AV_LOG_WARNING, "  %s=%s\n", e->key, e->value);
+  }
 
   int ret = avformat_write_header(ofmt_ctx_.get(), &opts_);
   if (ret < 0) {
@@ -1025,7 +1098,8 @@ int OutputFile::of_write_packet(const std::shared_ptr<OutputStream> &ost,
   }
 
   pkt->stream_index = static_cast<int>(st->index);
-  av_packet_rescale_ts(pkt, ost->mux_timebase_, st->time_base);
+  // 从编码器时间基 (pkt->time_base) 转换到输出流时间基 (st->time_base)
+  av_packet_rescale_ts(pkt, pkt->time_base, st->time_base);
   pkt->time_base = st->time_base;
 
   if (!(s->oformat->flags & AVFMT_NOTIMESTAMPS)) {
@@ -1117,10 +1191,139 @@ int OutputFile::write_packet(const std::shared_ptr<AVPacket> &enc_pkt,
   return 0;
 }
 
-int OutputFile::write_frame(int stream_index, const Frame &frame) {
+int OutputFile::write_avframe(int stream_index,
+                              const std::shared_ptr<AVFrame> &frame) {
+  if (stream_index < 0 ||
+      stream_index >= static_cast<int>(output_streams_.size())) {
+    return AVERROR(EINVAL);
+  }
+
   auto &ost = output_streams_[stream_index];
+  if (!ost) {
+    return AVERROR(EINVAL);
+  }
+
+  int ret = 0;
+  
+  // Initialize encoder if not done yet
+  if (!ost->initialized_) {
+    ret = init_output_stream_wrapper(ost, frame.get());
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  // 将帧的时间基转换到编码器时间基
+  auto &enc_ctx = ost->codec_ctx_;
+  if (enc_ctx && frame) {
+    // 如果帧有有效的时间基，转换到编码器时间基
+    if (frame->time_base.num > 0 && frame->time_base.den > 0 &&
+        (frame->time_base.num != enc_ctx->time_base.num ||
+         frame->time_base.den != enc_ctx->time_base.den)) {
+      av_frame_rescale_ts(frame.get(), frame->time_base, enc_ctx->time_base);
+      frame->time_base = enc_ctx->time_base;
+    }
+  }
+
+  // Encode the frame
+  ret = of_encode_frame(ost, frame);
+  if (ret < 0) {
+    return ret;
+  }
+
+  return 0;
+}
+
+int OutputFile::of_encode_frame(const std::shared_ptr<OutputStream> &ost,
+                                const std::shared_ptr<AVFrame> &frame) {
+  auto &enc_ctx = ost->codec_ctx_;
+  if (!enc_ctx) {
+    return AVERROR_ENCODER_NOT_FOUND;
+  }
+
+  if (!avcodec_is_open(enc_ctx.get())) {
+    if (frame) {
+      av_log(this, AV_LOG_ERROR,
+             "encoder is not open before encode for output stream #%d:%d\n",
+             file_index_, ost->stream_index_);
+      return AVERROR(EINVAL);
+    }
+    return 0;  // No frame and encoder not open, just return
+  }
+
+  const char *type_desc = av_get_media_type_string(enc_ctx->codec_type);
+  int ret = 0;
+
+  // Send frame to encoder
+  ret = avcodec_send_frame(enc_ctx.get(), frame.get());
+  if (ret < 0 && !(ret == AVERROR_EOF && !frame)) {
+    av_log(this, AV_LOG_ERROR,
+           "Error submitting %s frame to the encoder for output stream "
+           "#%d:%d: %s\n",
+           type_desc, file_index_, ost->stream_index_, av_err2str(ret));
+    return ret;
+  }
+
+  // Receive encoded packets
+  std::shared_ptr<AVPacket> enc_pkt(av_packet_alloc(),
+                                    [](AVPacket *p) { av_packet_free(&p); });
+  if (!enc_pkt) {
+    return AVERROR(ENOMEM);
+  }
+
+  while (ret >= 0) {
+    av_packet_unref(enc_pkt.get());
+    ret = avcodec_receive_packet(enc_ctx.get(), enc_pkt.get());
+    if (ret == AVERROR(EAGAIN)) {
+      ret = 0;
+      break;
+    } else if (ret == AVERROR_EOF) {
+      av_log(this, AV_LOG_VERBOSE,
+             "Encoder EOF for output stream #%d:%d\n",
+             file_index_, ost->stream_index_);
+      ret = 0;
+      return ret;
+    } else if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Error encoding %s frame for output stream #%d:%d: %s\n",
+             type_desc, file_index_, ost->stream_index_, av_err2str(ret));
+      return ret;
+    }
+
+    enc_pkt->time_base = enc_ctx->time_base;
+    ret = of_write_packet(ost, enc_pkt.get());
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
+  return 0;
+}
+
+int OutputFile::write_frame(int stream_index, const Frame &frame) {
+  // 边界检查：防止数组越界访问
+  if (stream_index < 0 || stream_index >= static_cast<int>(output_streams_.size())) {
+    av_log(this, AV_LOG_ERROR,
+           "Invalid stream_index %d (output_streams size: %zu)\n",
+           stream_index, output_streams_.size());
+    return AVERROR(EINVAL);
+  }
+
+  auto &ost = output_streams_[stream_index];
+  if (!ost) {
+    av_log(this, AV_LOG_ERROR,
+           "Output stream %d is null\n", stream_index);
+    return AVERROR(EINVAL);
+  }
+
+  // Handle packet (stream copy mode)
   if (frame.packet) {
     return write_packet(frame.packet, ost);
+  }
+
+  // Handle AVFrame (encoding mode)
+  if (frame.frame) {
+    return write_avframe(stream_index, frame.frame);
   }
 
   return 0;
@@ -1151,6 +1354,76 @@ int OutputFile::write_frames(const std::vector<Frame> &raw_frames) {
       return ret;
     }
   }
+  return 0;
+}
+
+int OutputFile::flush_one_encoder(unsigned int stream_index) {
+  if (stream_index >= output_streams_.size()) {
+    return AVERROR(EINVAL);
+  }
+
+  auto &ost = output_streams_[stream_index];
+  if (!ost || !ost->encoding_needed_ || !ost->initialized_) {
+    return 0;
+  }
+
+  av_log(this, AV_LOG_VERBOSE,
+         "Flushing encoder for output stream #%d:%d\n",
+         file_index_, stream_index);
+
+  // Send null frame to flush encoder
+  return of_encode_frame(ost, nullptr);
+}
+
+int OutputFile::of_write_trailer() {
+  if (!header_written_) {
+    av_log(this, AV_LOG_ERROR,
+           "Nothing was written into output file %d (%s), because "
+           "at least one of its streams received no packets.\n",
+           file_index_, ofmt_ctx_->url);
+    return AVERROR(EINVAL);
+  }
+
+  int ret = av_write_trailer(ofmt_ctx_.get());
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Error writing trailer of %s: %s\n",
+           ofmt_ctx_->url, av_err2str(ret));
+    return ret;
+  }
+
+  return 0;
+}
+
+int OutputFile::flush() {
+  int ret = 0;
+
+  if (!header_written_) {
+    return 0;
+  }
+
+  // 防止重复 flush(参考 ffmpeg-wrapper 实现)
+  if (flush_once_) {
+    return 0;
+  }
+  flush_once_ = true;
+
+  // Flush all encoders
+  for (unsigned int i = 0; i < output_streams_.size(); i++) {
+    ret = flush_one_encoder(i);
+    if (ret < 0) {
+      av_log(this, AV_LOG_ERROR,
+             "Flushing encoder for output stream #%d:%d failed: %s\n",
+             file_index_, i, av_err2str(ret));
+      return ret;
+    }
+  }
+
+  // Write trailer
+  ret = of_write_trailer();
+  if (ret < 0) {
+    return ret;
+  }
+
   return 0;
 }
 

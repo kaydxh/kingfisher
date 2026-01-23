@@ -23,11 +23,12 @@ inline std::string av_err2string(int errnum) {
 #ifdef av_ts2timestr
 #undef av_ts2timestr
 
-inline char *av_ts2timestring(int64_t ts, AVRational *tb) {
+inline std::string av_ts2timestring(int64_t ts, AVRational *tb) {
   char buf[AV_TS_MAX_STRING_SIZE]{0};
-  return av_ts_make_time_string(buf, ts, tb);
+  av_ts_make_time_string(buf, ts, tb);
+  return buf;
 }
-#define av_ts2timestr(ts, tb) av_ts2timestring(ts, tb)
+#define av_ts2timestr(ts, tb) av_ts2timestring(ts, tb).c_str()
 #endif
 
 #ifdef av_ts2str

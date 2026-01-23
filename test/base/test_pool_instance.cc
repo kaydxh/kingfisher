@@ -2,7 +2,6 @@
 
 #include "log/config.h"
 #include "pool/pool_instance.h"
-#include "protobuf/pb.map.h"
 
 using namespace kingfisher::pool;
 

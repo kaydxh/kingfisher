@@ -1,7 +1,10 @@
 #ifndef KINGFISHER_BASE_NET_GRPC_GRPC_CLIENT_H_
 #define KINGFISHER_BASE_NET_GRPC_GRPC_CLIENT_H_
 
+#ifdef ENABLE_GRPC
 #include <grpc++/security/credentials.h>
+
+
 #include <grpc/grpc.h>
 #include <grpcpp/grpcpp.h>
 
@@ -29,4 +32,5 @@ class GrpcClient {
 }  // namespace net
 }  // namespace kingfisher
 
+#endif
 #endif

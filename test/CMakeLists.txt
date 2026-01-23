@@ -9,5 +9,16 @@ aux_source_directory (pkg SRCS)
 
 add_executable (${TARGET_NAME} ${SRCS})
 #add_definitions ("-std=c++0x -Wno-deprecated -D_GLIBCXX_USE_NANOSLEEP")
-target_link_libraries (${TARGET_NAME} kingfisher_base kingfisher_pkg
-  gtest proto-image pthread)
+target_link_libraries (${TARGET_NAME} 
+  kingfisher_base 
+  kingfisher_pkg
+  proto-image 
+  gtest 
+  ${OPENCV_DEPS} 
+  ${MAGICK_DEPS}
+  ${PROTOBUF_DEPS}
+  # ${GRPC_DEPS} - 暂时移除，避免 protobuf 版本冲突（grpc 内置 3.12.2 vs 项目 3.6.1）
+  pthread 
+  dl
+  z
+  rt)

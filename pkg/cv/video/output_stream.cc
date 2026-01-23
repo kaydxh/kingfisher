@@ -32,7 +32,7 @@ if (stream_index_ < ifmt_ctx_->nb_streams) {
   return ifmt_ctx_->streams[stream_index_];
 }
 */
-  if (stream_index_ < ifmt_ctx_.nb_streams) {
+  if (ifmt_ctx_.streams && stream_index_ < ifmt_ctx_.nb_streams) {
     return ifmt_ctx_.streams[stream_index_];
   }
 
