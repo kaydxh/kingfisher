@@ -5,7 +5,6 @@
 #include "log/config.h"
 #include "pool/sdk/sdk_pool.hpp"
 #include "pool/sdk/sdk_task.hpp"
-#include "protobuf/pb.map.h"
 
 using namespace kingfisher::pool;
 

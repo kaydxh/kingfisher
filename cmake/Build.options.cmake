@@ -2,9 +2,11 @@ option(ENABLE_GRAPHICS_MAGICK "ENABLE_GRAPHICS_MAGICK" ON)
 if (ENABLE_GRAPHICS_MAGICK)
   message(STATUS " > build with graphics magick lib")
   add_definitions(-DENABLE_GRAPHICS_MAGICK)
-  set(MAGICK_DEPS z bz2 gomp GraphicsMagickWand GraphicsMagick++ GraphicsMagick tiff)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphicsMagick_v1.3.35/include)
-  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphicsMagick_v1.3.35/lib)
+  set(MAGICK_DEPS z bz2 gomp GraphicsMagickWand GraphicsMagick++ GraphicsMagick tiff jbig)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphics-magick/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphics-magick/lib)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jbig/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jbig/lib64)
   # link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/png/lib)
 endif()
 
@@ -38,13 +40,10 @@ option(ENABLE_PROTOBUF "ENABLE_PROTOBUF" ON)
 if (ENABLE_PROTOBUF)
   message(STATUS "> build with protobuf lib")
   add_definitions(-DENABLE_PROTOBUF)
+  # 强制使用 protobuf 3.6.1（统一版本，不使用 grpc 的 protobuf）
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/protobuf-v3.6.1/include)
-  # Try to use grpc's protobuf if available (usually newer version)
-  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/include)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/include)
-    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/lib64)
-  endif()
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/protobuf-v3.6.1/lib)
+  message(STATUS "> using protobuf 3.6.1 (forced)")
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/pkg/cmake/")
   message(STATUS "CMAKE_MODULE_PATH = " ${CMAKE_MODULE_PATH})
   set(PROTOBUF_DEPS protobuf)
@@ -78,7 +77,7 @@ if (ENABLE_GLOG)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/glog/lib64)
 endif()
 
-option(ENABLE_BRPC "ENABLE_BRPC" ON)
+option(ENABLE_BRPC "ENABLE_BRPC" OFF)
 if (ENABLE_BRPC)
   message(STATUS "> build with brpc lib")
   add_definitions(-DENABLE_BRPC)
@@ -123,13 +122,26 @@ if (ENABLE_CURL)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/curl/lib)
 endif()
 
-option(ENABLE_GRPC "ENABLE_GRPC" ON)
+option(ENABLE_GRPC "ENABLE_GRPC" OFF)
 if (ENABLE_GRPC)
   message(STATUS "> build with grpc lib")
   add_definitions(-DENABLE_GRPC)
-  set(GRPC_DEPS grpc++ grpc grpc++_reflection)
+  # grpc 依赖 abseil-cpp 和自带的 protobuf 3.12.2
+  # 注意：这里使用 grpc 内置的 protobuf，与项目自身的 protobuf 3.6.1 分离
+  set(GRPC_DEPS 
+    grpc++ grpc grpc++_reflection gpr upb address_sorting 
+    # abseil 核心库（按依赖顺序）
+    absl_log_internal_check_op absl_log_internal_message
+    absl_str_format_internal absl_strings absl_strings_internal
+    absl_base absl_spinlock_wait absl_raw_logging_internal
+    absl_throw_delegate absl_int128 absl_cord absl_cordz_info
+    absl_synchronization absl_time absl_time_zone
+  )
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/include)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc/lib)
+  # grpc 的 abseil-cpp 库
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc-v1.31.1/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc-v1.31.1/lib64)
 endif()
 
 option(ENABLE_FFMPEG "ENABLE_FFMPEG" ON)

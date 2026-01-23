@@ -1,5 +1,6 @@
 #include "grpc_client.h"
 
+#ifdef ENABLE_GRPC
 namespace kingfisher {
 namespace net {
 
@@ -20,3 +21,5 @@ std::shared_ptr<grpc::Channel> GrpcClient::MakeChannel() {
 
 }  // namespace net
 }  // namespace kingfisher
+
+#endif

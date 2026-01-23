@@ -1073,8 +1073,6 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
     decoded_frame->top_field_first = ist->top_field_first_;
   }
 
-  ist->frames_decoded_++;
-
   int64_t best_effort_timestamp = decoded_frame->best_effort_timestamp;
   duration_pts = decoded_frame->pkt_duration;
   if (ist->framerate_.num) {
@@ -1090,6 +1088,8 @@ int InputFile::decode_video(const std::shared_ptr<InputStream> &ist,
   if (best_effort_timestamp != AV_NOPTS_VALUE) {
     int64_t ts = av_rescale_q(decoded_frame->pts = best_effort_timestamp,
                               st->time_base, AV_TIME_BASE_Q);
+    // 设置帧的 time_base，确保 PTS 与 time_base 一致
+    decoded_frame->time_base = st->time_base;
 
     if (ts != AV_NOPTS_VALUE) {
       ist->next_pts_ = ist->pts_ = ts;
@@ -1204,6 +1204,8 @@ int InputFile::decode_audio(const std::shared_ptr<InputStream> &ist,
                                           decoded_frame->nb_samples,
                                           &ist->filter_in_rescale_delta_last_,
                                           (AVRational){1, avctx->sample_rate});
+    // 设置帧的 time_base，确保 PTS 与 time_base 一致
+    decoded_frame->time_base = (AVRational){1, avctx->sample_rate};
   }
 
   ist->nb_samples_ = decoded_frame->nb_samples;
@@ -1366,7 +1368,7 @@ void InputFile::get_format_context(FormatContext &format_ctx) const {
       first_video_stream_index_ < static_cast<int>(input_streams_.size())) {
     auto &ist = input_streams_[first_video_stream_index_];
     if (ist && ist->st_) {
-      format_ctx.video_stream.reset(ist->st_);
+      format_ctx.video_stream = ist->st_;
       format_ctx.video_codec_context = ist->codec_ctx_;
     }
   }
@@ -1375,7 +1377,7 @@ void InputFile::get_format_context(FormatContext &format_ctx) const {
       first_audio_stream_index_ < static_cast<int>(input_streams_.size())) {
     auto &ist = input_streams_[first_audio_stream_index_];
     if (ist && ist->st_) {
-      format_ctx.audio_stream.reset(ist->st_);
+      format_ctx.audio_stream = ist->st_;
       format_ctx.audio_codec_context = ist->codec_ctx_;
     }
   }

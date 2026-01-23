@@ -23,6 +23,7 @@ class OutputFile {
 
   int open(const std::string &filename, FormatContext &format_ctx);
   int write_frames(const std::vector<Frame> &raw_frames);
+  int flush();
 
  private:
   int init_output_stream_wrapper(const std::shared_ptr<OutputStream> &ost,
@@ -42,6 +43,10 @@ class OutputFile {
   int init_output_stream_streamcopy(const std::shared_ptr<OutputStream> &ost);
   int of_check_init();
   int of_write_packet(const std::shared_ptr<OutputStream> &ost, AVPacket *pkt);
+  int of_write_trailer();
+  int of_encode_frame(const std::shared_ptr<OutputStream> &ost,
+                      const std::shared_ptr<AVFrame> &frame);
+  int flush_one_encoder(unsigned int stream_index);
 
   // int create_streams(const std::shared_ptr<AVFormatContext> &format_ctx);
   // int create_streams(const AVFormatContext &format_ctx);
@@ -71,6 +76,7 @@ class OutputFile {
 
   int write_frame(int stream_index, const Frame &frame);
   int write_frame(const Frame &raw_frame);
+  int write_avframe(int stream_index, const std::shared_ptr<AVFrame> &frame);
 
  public:
   const AVClass *av_class_ = nullptr;
@@ -84,7 +90,7 @@ class OutputFile {
   const AVOutputFormat *format_ = nullptr;
   int recast_media_ = 0;
 
-  AVDictionary *opts_;
+  AVDictionary *opts_ = nullptr;
   int ost_index_ = 0; /* index of the first stream in output_streams */
   int64_t recording_time_ =
       INT64_MAX;  ///< desired length of the resulting file in
@@ -95,7 +101,7 @@ class OutputFile {
 
   int shortest_ = 0;
 
-  bool header_written_ = true;
+  bool header_written_ = false;
   bool bitexact_ = true;
   bool debug_ts_ = false;
 
@@ -104,6 +110,7 @@ class OutputFile {
   std::vector<std::shared_ptr<AVPacket>> muxing_queue_;
   int video_stream_index_ = -1;
   int audio_stream_index_ = -1;
+  bool flush_once_ = false;  // 防止重复 flush
 };
 
 }  // namespace cv

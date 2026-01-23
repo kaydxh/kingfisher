@@ -33,11 +33,11 @@ set(CXX_FLAGS
  -march=native
  -std=c++17
  -rdynamic
+ -D_GLIBCXX_USE_CXX11_ABI=0
  )
 
 # generate compile_commands.json
 set (CMAKE_EXPORT_COMPILE_COMMANDS "ON")
-set (CMAKE_CXX_COMPILER "g++")
 #set (CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -D__STDC_FORMAT_MACROS -fprofile-arcs -ftest-coverage -fPIC")
 set (CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -Wall -g -ggdb -D__STDC_FORMAT_MACROS -fprofile-arcs -ftest-coverage -fPIC")
 #set (CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O2 -finline-limit=1000 -DNDEBUG -D__STDC_FORMAT_MACROS")
@@ -68,10 +68,16 @@ add_subdirectory (base)
 add_subdirectory (pkg)
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-# Conditionally add test subdirectory if gtest is available
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/include/gtest/gtest.h OR
-    EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/include/gtest/gtest.h)
-  add_subdirectory (test)
+
+# Add gtest from third_party
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/CMakeLists.txt)
+  add_subdirectory(third_party/gtest)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/googletest/include)
+  add_subdirectory(test)
+elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/CMakeLists.txt)
+  add_subdirectory(third_party/googletest)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/googletest/include)
+  add_subdirectory(test)
 else()
   message(STATUS "Skipping test directory (gtest not found)")
 endif()

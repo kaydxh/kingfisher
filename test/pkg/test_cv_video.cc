@@ -17,18 +17,15 @@ class test_Video : public testing::Test {
   virtual void TearDown(void) {}
 };
 
-//./kingfisher_base_test --gtest_filter=test_Video.*
+//./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
 TEST_F(test_Video, Transcode) {
   std::string input_url = "./testdata/bodyhead.mp4";
 
   InputFile input_file;
   std::string output_url = "./testdata/bodyhead.copy.mp4";
 
-  av_dict_set(&input_file.command_opts_, "c:v", "copy", 0);
-  //    av_dict_set(&input_file.command_opts_, "c:a", true ? "" : "copy", 0);
-  //    av_dict_set_int(&input_file.decoder_opts_, "udu_sei", 1, 0);
+  // 输出文件使用默认编码器（重新编码）
   OutputFile output_file;
-  // av_dict_set(&output_file.command_opts_, "c:v", "copy", 0);
   // AVFormatContext format_ctx;
   FormatContext format_ctx;
   int ret = input_file.open(input_url, format_ctx);
@@ -50,14 +47,18 @@ TEST_F(test_Video, Transcode) {
   std::vector<Frame> audio_frames;
 
   while (!finished) {
+    video_frames.clear();
+    audio_frames.clear();
+
     int ret = input_file.read_frames(video_frames, audio_frames, 8, finished);
     if (ret < 0) {
       av_log(nullptr, AV_LOG_ERROR, "failed to read_video_frames: %s\n",
              av_err2str(ret));
-      return;
+      break;
     }
 
-    av_log(nullptr, AV_LOG_INFO, "read frame size %lu\n", video_frames.size());
+    av_log(nullptr, AV_LOG_INFO, "read video frame size %lu, audio frame size %lu\n",
+           video_frames.size(), audio_frames.size());
 
     /*
     for (unsigned int i = 0; i < video_frames.size(); ++i) {
@@ -83,14 +84,26 @@ TEST_F(test_Video, Transcode) {
     if (ret < 0) {
       av_log(nullptr, AV_LOG_ERROR, "write_video_frames failed: %s\n",
              av_err2str(ret));
-      return;
+      break;
+    }
+
+    ret = output_file.write_frames(audio_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_audio_frames failed: %s\n",
+             av_err2str(ret));
+      break;
     }
 #endif
   }
 
-  while (1) {
-    sleep(1);
+  // Flush encoder and write trailer
+  ret = output_file.flush();
+  if (ret < 0) {
+    av_log(nullptr, AV_LOG_ERROR, "flush output_file failed: %s\n",
+           av_err2str(ret));
   }
+
+  av_log(nullptr, AV_LOG_INFO, "Transcode completed\n");
 
 #if 0
   // 打开输入文件

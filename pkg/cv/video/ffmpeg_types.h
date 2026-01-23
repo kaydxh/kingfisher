@@ -50,9 +50,11 @@ struct FormatContext {
   // class StreamContext;
 
   std::shared_ptr<AVFormatContext> av_format_context;
-  std::shared_ptr<AVStream> video_stream;
+  // Use raw pointers for AVStream since they are owned by AVFormatContext
+  // and should not be managed separately by shared_ptr
+  AVStream* video_stream = nullptr;
   std::shared_ptr<AVCodecContext> video_codec_context;
-  std::shared_ptr<AVStream> audio_stream;
+  AVStream* audio_stream = nullptr;
   std::shared_ptr<AVCodecContext> audio_codec_context;
 #if 0
   std::string url;
