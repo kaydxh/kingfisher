@@ -11,6 +11,9 @@
 3. [moov atom not found 问题](#3-moov-atom-not-found-问题)
 4. [PTS（时间戳）问题](#4-pts时间戳问题)
 5. [FPS（帧率）问题](#5-fps帧率问题)
+6. [特殊视频流处理问题](#6-特殊视频流处理问题)
+7. [自定义过滤器支持](#7-自定义过滤器支持)
+8. [测试程序使用说明](#8-测试程序使用说明)
 
 ---
 
@@ -83,6 +86,115 @@ std::shared_ptr<AVFormatContext> ofmt_ctx(
 - `pkg/cv/video/input_file.cc`
 - `pkg/cv/video/output_file.cc`
 
+### 1.3 CMakeLists.txt 编译配置问题
+
+**问题描述**：
+项目编译时出现以下问题：
+1. protobuf 版本冲突（grpc 内置 3.12.2 vs 项目 3.6.1）
+2. gtest 找不到或链接失败
+3. C++ ABI 兼容性问题
+4. GraphicsMagick 依赖路径变更
+
+**解决方案（Commit dba19ff）**：
+
+#### 1.3.1 添加 C++11 ABI 兼容性标志
+
+```cmake
+# CMakeLists.txt
+set(CXX_FLAGS
+ -march=native
+ -std=c++17
+ -rdynamic
+ -D_GLIBCXX_USE_CXX11_ABI=0  # 新增：解决 ABI 兼容性问题
+)
+```
+
+#### 1.3.2 修改 gtest 集成方式
+
+```cmake
+# CMakeLists.txt - 修改前（仅检查头文件）
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/include/gtest/gtest.h OR
+    EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/include/gtest/gtest.h)
+  add_subdirectory (test)
+endif()
+
+# CMakeLists.txt - 修改后（正确添加 gtest 子项目）
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/CMakeLists.txt)
+  add_subdirectory(third_party/gtest)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest/googletest/include)
+  add_subdirectory(test)
+elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/CMakeLists.txt)
+  add_subdirectory(third_party/googletest)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/googletest/include)
+  add_subdirectory(test)
+else()
+  message(STATUS "Skipping test directory (gtest not found)")
+endif()
+```
+
+#### 1.3.3 统一 protobuf 版本，避免与 grpc 冲突
+
+```cmake
+# cmake/Build.options.cmake - protobuf 配置
+if (ENABLE_PROTOBUF)
+  message(STATUS "> build with protobuf lib")
+  add_definitions(-DENABLE_PROTOBUF)
+  # 强制使用 protobuf 3.6.1（统一版本，不使用 grpc 的 protobuf）
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/protobuf-v3.6.1/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/protobuf-v3.6.1/lib)
+  message(STATUS "> using protobuf 3.6.1 (forced)")
+endif()
+```
+
+#### 1.3.4 默认关闭 BRPC 和 GRPC 以避免版本冲突
+
+```cmake
+# cmake/Build.options.cmake
+option(ENABLE_BRPC "ENABLE_BRPC" OFF)  # 修改: ON -> OFF
+option(ENABLE_GRPC "ENABLE_GRPC" OFF)  # 修改: ON -> OFF
+```
+
+#### 1.3.5 更新 GraphicsMagick 依赖路径并添加 jbig 库
+
+```cmake
+# cmake/Build.options.cmake - GraphicsMagick 配置
+if (ENABLE_GRAPHICS_MAGICK)
+  message(STATUS " > build with graphics magick lib")
+  add_definitions(-DENABLE_GRAPHICS_MAGICK)
+  # 修改：更新依赖列表，添加 jbig 库
+  set(MAGICK_DEPS z bz2 gomp GraphicsMagickWand GraphicsMagick++ GraphicsMagick tiff jbig)
+  # 修改：更新路径
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphics-magick/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/graphics-magick/lib)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jbig/include)
+  link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jbig/lib64)
+endif()
+```
+
+#### 1.3.6 完善测试程序链接依赖
+
+```cmake
+# test/CMakeLists.txt
+target_link_libraries (${TARGET_NAME}
+  kingfisher_base
+  kingfisher_pkg
+  proto-image
+  gtest
+  ${OPENCV_DEPS}
+  ${MAGICK_DEPS}
+  ${PROTOBUF_DEPS}
+  # ${GRPC_DEPS} - 暂时移除，避免 protobuf 版本冲突
+  pthread
+  dl
+  z
+  rt)
+```
+
+**相关文件**：
+- `CMakeLists.txt`
+- `cmake/Build.options.cmake`
+- `test/CMakeLists.txt`
+
 ---
 
 ## 2. Core Dump 问题
@@ -145,6 +257,95 @@ if (!avcodec_is_open(enc_ctx.get())) {
     return AVERROR(EINVAL);
   }
 }
+```
+
+### 2.4 avformat_open_input 指针修改问题
+
+**问题描述**：
+运行特殊视频时程序 core dump，堆栈显示崩溃在 `avformat_find_stream_info` -> `av_dict_get`。
+
+**原因分析**：
+在构造函数中提前创建了 `shared_ptr<AVFormatContext>`，但 `avformat_open_input` 函数会修改传入的指针：
+
+```cpp
+// 错误代码
+InputFile::InputFile()
+    : ifmt_ctx_(std::shared_ptr<AVFormatContext>(
+          avformat_alloc_context(),  // ❌ 过早创建 shared_ptr
+          [](AVFormatContext *ctx) { avformat_close_input(&ctx); })),
+      ...
+
+int InputFile::open(...) {
+  AVFormatContext *ifmt_ctx = ifmt_ctx_.get();  // 获取指针副本
+  ret = avformat_open_input(&ifmt_ctx, ...);    // ❌ 可能修改 ifmt_ctx 指针！
+  // 此时 ifmt_ctx_ 仍指向旧地址（可能已无效）
+}
+```
+
+**解决方案**：
+参照 ffmpeg-wrapper 的实现，在 `avformat_open_input` 成功后才创建 `shared_ptr`：
+
+```cpp
+// 修复后的代码
+InputFile::InputFile() : pkt_(av_packet_alloc()), av_class_(...) {
+  // 不在构造函数创建 ifmt_ctx_
+}
+
+int InputFile::open(...) {
+  AVFormatContext *ifmt_ctx = avformat_alloc_context();
+  ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
+  
+  ret = avformat_open_input(&ifmt_ctx, ...);
+  if (ret < 0) return ret;
+  
+  // ✅ avformat_open_input 成功后才创建 shared_ptr
+  ifmt_ctx_ = std::shared_ptr<AVFormatContext>(
+      ifmt_ctx, [](AVFormatContext *ctx) { avformat_close_input(&ctx); });
+}
+```
+
+### 2.5 avformat_find_stream_info 选项问题
+
+**问题描述**：
+某些特殊视频在调用 `avformat_find_stream_info` 时崩溃。
+
+**原因分析**：
+`avformat_find_stream_info` 的第二个参数需要为每个流单独创建解码选项，而不是直接传递单个 `AVDictionary*`。
+
+**解决方案**：
+添加 `setup_find_stream_info_opts` 函数：
+
+```cpp
+// ffmpeg_utils.cc
+AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
+                                           AVDictionary *codec_opts) {
+  if (!s->nb_streams) return nullptr;
+  
+  AVDictionary **opts = static_cast<AVDictionary **>(
+      av_calloc(s->nb_streams, sizeof(*opts)));
+  if (!opts) return nullptr;
+  
+  for (int i = 0; i < static_cast<int>(s->nb_streams); i++) {
+    opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
+                                s, s->streams[i], nullptr);
+  }
+  return opts;
+}
+
+// input_file.cc: open()
+AVDictionary **opts = setup_find_stream_info_opts(ifmt_ctx_.get(), decoder_opts_);
+unsigned int orig_nb_streams = ifmt_ctx_->nb_streams;
+
+// RAII 方式释放 opts
+auto opts_guard = std::shared_ptr<void>(nullptr, [&opts, orig_nb_streams](void *) {
+  if (!opts) return;
+  for (unsigned int i = 0; i < orig_nb_streams; i++) {
+    av_dict_free(&opts[i]);
+  }
+  av_freep(&opts);
+});
+
+ret = avformat_find_stream_info(ifmt_ctx_.get(), opts);
 ```
 
 **相关文件**：
@@ -444,15 +645,243 @@ if (ist && ist->codecpar) {
 
 ---
 
+## 6. 特殊视频流处理问题
+
+### 6.1 问题描述
+
+处理包含 Data/Subtitle/Attachment 等非音视频流的视频文件时，出现错误：
+```
+Failed to init input stream #0:2 -- Invalid argument
+```
+
+### 6.2 原因分析
+
+某些视频文件（如 iOS 设备录制的视频）包含额外的元数据流：
+```
+Stream #0:0(und): Video: h264 ...
+Stream #0:1(und): Audio: aac ...
+Stream #0:2(und): Data: none (mebx / 0x7862656D)  // Core Media Metadata
+Stream #0:3(und): Data: none (mebx / 0x7862656D)
+Stream #0:4(und): Data: none (mebx / 0x7862656D)
+```
+
+对于 `AVMEDIA_TYPE_DATA`、`AVMEDIA_TYPE_SUBTITLE`、`AVMEDIA_TYPE_ATTACHMENT`、`AVMEDIA_TYPE_UNKNOWN` 这些类型的流：
+1. 没有对应的解码器
+2. 但 `decoding_needed_` 默认为 `true`
+3. 导致 `init_input_stream()` 检查 `dec_` 为空时返回错误
+
+### 6.3 解决方案
+
+在 `choose_decoder` 函数中，对非 VIDEO/AUDIO 类型的流设置为 copy 模式：
+
+```cpp
+// input_file.cc: choose_decoder()
+int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
+                              const AVCodec *&codec) {
+  std::string codec_name;
+  auto &st = ist->st_;
+  int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st, "c",
+                                 codec_name);
+  if (ret != 0) return ret;
+
+  // 对于非 VIDEO/AUDIO 类型的流，不支持解码，设置为 copy 模式
+  switch (st->codecpar->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+    case AVMEDIA_TYPE_AUDIO:
+      break;
+    default:
+      /* no decoding supported for other media types */
+      codec_name = "copy";
+      break;
+  }
+
+  codec = nullptr;
+  if (codec_name.empty() || codec_name == "copy") {
+    if (codec_name != "copy") {
+      codec = avcodec_find_decoder(st->codecpar->codec_id);
+    }
+    ist->decoding_needed_ = (codec_name != "copy");
+  } else {
+    // ... 其他逻辑
+    ist->decoding_needed_ = true;
+  }
+
+  return 0;
+}
+```
+
+**效果**：
+- DATA/SUBTITLE/ATTACHMENT/UNKNOWN 类型的流 → `codec_name = "copy"` → `decoding_needed_ = false`
+- 不会尝试打开不存在的解码器
+- 转码后这些元数据流会被丢弃（正常行为）
+
+**相关文件**：
+- `pkg/cv/video/input_file.cc`
+
+---
+
+## 7. 自定义过滤器支持
+
+### 7.1 功能描述
+
+支持通过 `video_filter_spec_` 和 `audio_filter_spec_` 成员变量设置自定义过滤器。
+
+### 7.2 实现方式
+
+在 `InputFile` 类中添加过滤器成员变量：
+
+```cpp
+// input_file.h
+class InputFile {
+ public:
+  // 自定义过滤器参数
+  // 视频过滤器，如 "scale=1280:720", "transpose=1"
+  std::string video_filter_spec_;
+  // 音频过滤器，如 "aresample=44100", "volume=0.5"
+  std::string audio_filter_spec_;
+};
+```
+
+修改 `init_filters()` 使用自定义过滤器：
+
+```cpp
+// input_file.cc: init_filters()
+int InputFile::init_filters() {
+  for (unsigned int i = 0; i < ifmt_ctx_->nb_streams; i++) {
+    std::string filter_spec;
+    if (ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+      if (!video_filter_spec_.empty()) {
+        // 使用自定义视频过滤器
+        filter_spec = bitexact_ ? "sws_flags=bitexact;" + video_filter_spec_ 
+                                : video_filter_spec_;
+      } else {
+        // 默认 passthrough 过滤器
+        filter_spec = bitexact_ ? "sws_flags=bitexact;null" : "null";
+      }
+    } else {
+      if (!audio_filter_spec_.empty()) {
+        filter_spec = audio_filter_spec_;
+      } else {
+        filter_spec = "anull";
+      }
+    }
+    // ...
+  }
+}
+```
+
+### 7.3 常用过滤器
+
+#### 视频过滤器
+
+| 过滤器 | 说明 | 示例 |
+|--------|------|------|
+| `scale` | 缩放 | `scale=1280:720`, `scale=-1:720`(保持比例) |
+| `transpose` | 旋转 | `transpose=1`(顺时针90°) |
+| `crop` | 裁剪 | `crop=640:480:0:0` |
+| `hflip/vflip` | 水平/垂直翻转 | `hflip` |
+| `fps` | 改变帧率 | `fps=30` |
+| `framestep` | 跳帧 | `framestep=2`(每2帧取1帧) |
+
+#### 音频过滤器
+
+| 过滤器 | 说明 | 示例 |
+|--------|------|------|
+| `aresample` | 重采样 | `aresample=44100` |
+| `volume` | 调节音量 | `volume=0.5` |
+| `atempo` | 调节速度 | `atempo=1.5` |
+
+#### 跳帧过滤器
+
+```bash
+# 每 2 帧取 1 帧
+VIDEO_FILTER="framestep=2"
+
+# 每 5 帧取 1 帧
+VIDEO_FILTER="framestep=5"
+
+# 降低到指定帧率（如 10fps）
+VIDEO_FILTER="fps=10"
+
+# 跳帧 + 缩放组合
+VIDEO_FILTER="framestep=2,scale=1280:720"
+```
+
+**相关文件**：
+- `pkg/cv/video/input_file.h`
+- `pkg/cv/video/input_file.cc`
+
+---
+
+## 8. 测试程序使用说明
+
+### 8.1 基本用法
+
+```bash
+# 编译
+make -j8
+
+# 使用默认路径
+./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 指定输入文件（输出自动生成为 video.copy.mp4）
+VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 同时指定输入和输出
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_OUTPUT=/path/to/output.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+```
+
+### 8.2 使用过滤器
+
+```bash
+# 缩放到 1280x720
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 旋转 90 度
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="transpose=1" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 多个过滤器组合
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720,transpose=1" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 跳帧 - 每 2 帧取 1 帧
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=2" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 降低到 10fps
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="fps=10" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 音频重采样
+VIDEO_INPUT=/path/to/input.mp4 AUDIO_FILTER="aresample=44100" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 同时使用视频和音频过滤器
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" AUDIO_FILTER="volume=0.5" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+```
+
+### 8.3 环境变量说明
+
+| 环境变量 | 说明 | 默认值 |
+|---------|------|--------|
+| `VIDEO_INPUT` | 输入视频路径 | `./testdata/sce_video.mp4` |
+| `VIDEO_OUTPUT` | 输出视频路径 | `{input}.copy.{ext}` |
+| `VIDEO_FILTER` | 视频过滤器 | 无（passthrough） |
+| `AUDIO_FILTER` | 音频过滤器 | 无（passthrough） |
+
+**相关文件**：
+- `test/pkg/test_cv_video.cc`
+
+---
+
 ## 总结
 
 | 问题类型 | 根本原因 | 关键修复点 |
 |---------|---------|-----------|
 | 编译问题 | FFmpeg C 头文件在 C++ 中需要 `extern "C"` | 正确包裹头文件，使用自定义删除器 |
-| Core Dump | 空指针访问、资源释放顺序错误 | 空指针检查，正确的析构顺序 |
+| CMake 配置 | protobuf 版本冲突、gtest 集成不完整、ABI 兼容性 | 统一 protobuf 3.6.1、修复 gtest 集成、添加 `_GLIBCXX_USE_CXX11_ABI=0` |
+| Core Dump | 空指针访问、资源释放顺序错误、指针被修改 | 空指针检查，正确的析构顺序，`avformat_open_input` 后创建 `shared_ptr` |
 | moov atom | 未正确关闭文件 | 设置 `movflags +faststart`，确保调用 `flush()` 和 `av_write_trailer()` |
 | PTS 问题 | 解码后帧的 `time_base` 未设置 | 在 `decode_video/decode_audio` 中设置 `decoded_frame->time_base` |
 | FPS 问题 | 编码器时间基设置错误 | 使用 `init_encoder_time_base` 正确设置 `enc_ctx->time_base = av_inv_q(framerate)` |
+| 特殊流处理 | 非音视频流无解码器但 `decoding_needed_=true` | 在 `choose_decoder` 中对非音视频流设置 `codec_name="copy"` |
+| 过滤器支持 | 需要自定义视频/音频处理 | 添加 `video_filter_spec_` 和 `audio_filter_spec_` 成员变量 |
 
 ## 参考资料
 
