@@ -142,6 +142,9 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
                                 AVFormatContext *s, AVStream *st,
                                 const AVCodec *codec);
 
+AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
+                                           AVDictionary *codec_opts);
+
 const AVPixelFormat *get_compliance_normal_pix_fmts(
     const AVCodec *codec, const AVPixelFormat default_formats[]);
 
