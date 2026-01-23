@@ -50,6 +50,10 @@ VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="fps=10" ./output/bin/kingfisher_bas
 # 跳帧 + 缩放组合
 VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=2,scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
 
+# 获取视频帧数
+ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 input.mp4
+ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 input.mp4
+
 */
 
 // 生成默认输出路径：在文件名后添加 .copy
