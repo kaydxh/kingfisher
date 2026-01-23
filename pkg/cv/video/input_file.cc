@@ -1423,13 +1423,29 @@ int InputFile::init_filters() {
     }
     std::string filter_spec;
     if (ifmt_ctx_->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-      if (bitexact_) {
-        filter_spec = "sws_flags=bitexact;null"; /* passthrough (dummy) filter for video */
+      if (!video_filter_spec_.empty()) {
+        // 使用自定义视频过滤器
+        if (bitexact_) {
+          filter_spec = "sws_flags=bitexact;" + video_filter_spec_;
+        } else {
+          filter_spec = video_filter_spec_;
+        }
       } else {
-        filter_spec = "null"; /* passthrough (dummy) filter for video */
+        // 默认 passthrough 过滤器
+        if (bitexact_) {
+          filter_spec = "sws_flags=bitexact;null";
+        } else {
+          filter_spec = "null";
+        }
       }
     } else {
-      filter_spec = "anull"; /* passthrough (dummy) filter for audio */
+      if (!audio_filter_spec_.empty()) {
+        // 使用自定义音频过滤器
+        filter_spec = audio_filter_spec_;
+      } else {
+        // 默认 passthrough 过滤器
+        filter_spec = "anull";
+      }
     }
 
     auto &ist = input_streams_[i];
