@@ -23,6 +23,33 @@ VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=
 # 同时指定输入和输出
 VIDEO_INPUT=/path/to/input.mp4 VIDEO_OUTPUT=/path/to/output.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
 
+# 使用视频过滤器（缩放到 1280x720）
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 使用视频过滤器（旋转 90 度）
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="transpose=1" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 使用多个视频过滤器组合
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720,transpose=1" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 使用音频过滤器（重采样到 44100Hz）
+VIDEO_INPUT=/path/to/input.mp4 AUDIO_FILTER="aresample=44100" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 同时使用视频和音频过滤器
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" AUDIO_FILTER="volume=0.5" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 跳帧 - 每 2 帧取 1 帧
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=2" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 跳帧 - 每 5 帧取 1 帧
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=5" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 跳帧 - 降低到指定帧率（如 10fps）
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="fps=10" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 跳帧 + 缩放组合
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=2,scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
 */
 
 // 生成默认输出路径：在文件名后添加 .copy
@@ -45,6 +72,18 @@ static std::string get_output_url(const std::string& input_url) {
   return env ? env : generate_output_url(input_url);
 }
 
+// 获取视频过滤器
+static std::string get_video_filter() {
+  const char* env = std::getenv("VIDEO_FILTER");
+  return env ? env : "";
+}
+
+// 获取音频过滤器
+static std::string get_audio_filter() {
+  const char* env = std::getenv("AUDIO_FILTER");
+  return env ? env : "";
+}
+
 class test_Video : public testing::Test {
  public:
   test_Video() {}
@@ -60,11 +99,22 @@ class test_Video : public testing::Test {
 TEST_F(test_Video, Transcode) {
   std::string input_url = get_input_url();
   std::string output_url = get_output_url(input_url);
+  std::string video_filter = get_video_filter();
+  std::string audio_filter = get_audio_filter();
 
   av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
   av_log(nullptr, AV_LOG_INFO, "Output: %s\n", output_url.c_str());
+  if (!video_filter.empty()) {
+    av_log(nullptr, AV_LOG_INFO, "Video Filter: %s\n", video_filter.c_str());
+  }
+  if (!audio_filter.empty()) {
+    av_log(nullptr, AV_LOG_INFO, "Audio Filter: %s\n", audio_filter.c_str());
+  }
 
   InputFile input_file;
+  // 设置自定义过滤器
+  input_file.video_filter_spec_ = video_filter;
+  input_file.audio_filter_spec_ = audio_filter;
 
   // 输出文件使用默认编码器（重新编码）
   OutputFile output_file;

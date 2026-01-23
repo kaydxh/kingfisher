@@ -120,6 +120,12 @@ class InputFile {
   bool subtitle_disable_ = false;
   bool data_disable_ = false;
 
+  // 自定义过滤器参数
+  // 视频过滤器，如 "scale=1280:720", "transpose=1", "scale=1280:720,transpose=1"
+  std::string video_filter_spec_;
+  // 音频过滤器，如 "aresample=44100", "volume=0.5"
+  std::string audio_filter_spec_;
+
  private:
   const AVClass *av_class_ = nullptr;
   bool debug_ts_ = false;
