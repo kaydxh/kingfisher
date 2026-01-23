@@ -31,23 +31,12 @@ static const AVClass input_file_class = {
     .version = LIBAVUTIL_VERSION_INT,
 };
 
-InputFile::InputFile()
-    : ifmt_ctx_(std::shared_ptr<AVFormatContext>(
-          avformat_alloc_context(),
-          [](AVFormatContext *ctx) { avformat_close_input(&ctx); })),
-
-      pkt_(av_packet_alloc()),
-      av_class_(&input_file_class) {
+InputFile::InputFile() : pkt_(av_packet_alloc()), av_class_(&input_file_class) {
   av_dict_set(&format_opts_, "rtsp_transport", "tcp", 0);
   av_dict_set(&format_opts_, "buffer_size", "10240000", 0);
   av_dict_set(&format_opts_, "probesize", "50000000", 0);
   av_dict_set(&format_opts_, "stimeout", "5000000", 0);
   av_dict_set(&format_opts_, "max_delay", "5000000", 0);
-
-  ifmt_ctx_->flags |= AVFMT_FLAG_NONBLOCK;
-  if (bitexact_) {
-    ifmt_ctx_->flags |= AVFMT_FLAG_BITEXACT;
-  }
 }
 
 InputFile::~InputFile() {
@@ -75,7 +64,18 @@ int InputFile::open(const std::string &filename, FormatContext &format_ctx) {
     scan_all_pmts_set = true;
   }
 
-  AVFormatContext *ifmt_ctx = ifmt_ctx_.get();
+  // 分配 AVFormatContext 并设置 flags
+  AVFormatContext *ifmt_ctx = avformat_alloc_context();
+  if (!ifmt_ctx) {
+    av_log(this, AV_LOG_ERROR, "Could not alloc avformat context\n");
+    return AVERROR(ENOMEM);
+  }
+
+  ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
+  if (bitexact_) {
+    ifmt_ctx->flags |= AVFMT_FLAG_BITEXACT;
+  }
+
   /* open the input file with generic avformat function */
   ret = avformat_open_input(&ifmt_ctx, filename.c_str(), file_iformat,
                             &format_opts_);
@@ -86,14 +86,33 @@ int InputFile::open(const std::string &filename, FormatContext &format_ctx) {
     return ret;
   }
 
+  // avformat_open_input 成功后才创建 shared_ptr
+  ifmt_ctx_ = std::shared_ptr<AVFormatContext>(
+      ifmt_ctx, [](AVFormatContext *ctx) { avformat_close_input(&ctx); });
+
   if (scan_all_pmts_set) {
     av_dict_set(&format_opts_, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
   }
 
   if (find_stream_info_) {
+    AVDictionary **opts =
+        setup_find_stream_info_opts(ifmt_ctx_.get(), decoder_opts_);
+    unsigned int orig_nb_streams = ifmt_ctx_->nb_streams;
+
+    // RAII 方式释放 opts
+    auto opts_guard = std::shared_ptr<void>(nullptr, [&opts, orig_nb_streams](void *) {
+      if (!opts) {
+        return;
+      }
+      for (unsigned int i = 0; i < orig_nb_streams; i++) {
+        av_dict_free(&opts[i]);
+      }
+      av_freep(&opts);
+    });
+
     /* If not enough info to get the stream parameters, we decode the
        first frames to get it. (used in mpeg case for example) */
-    ret = avformat_find_stream_info(ifmt_ctx, &decoder_opts_);
+    ret = avformat_find_stream_info(ifmt_ctx_.get(), opts);
     if (ret < 0) {
       av_log(this, AV_LOG_ERROR, "Cannot find stream information '%s': %s\n",
              filename.c_str(), av_err2str(ret));
@@ -652,20 +671,31 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
                               const AVCodec *&codec) {
   std::string codec_name;
   auto &st = ist->st_;
-  ist->decoding_needed_ = true;
   int ret = match_per_stream_opt(this, command_opts_, ifmt_ctx_.get(), st, "c",
                                  codec_name);
   if (ret != 0) {
     return ret;
   }
 
+  // 对于非 VIDEO/AUDIO 类型的流，不支持解码，设置为 copy 模式
+  switch (st->codecpar->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+    case AVMEDIA_TYPE_AUDIO:
+      break;
+    default:
+      /* no decoding supported for other media types */
+      codec_name = "copy";
+      break;
+  }
+
+  codec = nullptr;
   if (codec_name.empty() || codec_name == "copy") {
-    codec = avcodec_find_decoder(st->codecpar->codec_id);
-    if (codec_name == "copy") {
-      ist->decoding_needed_ = false;
+    if (codec_name != "copy") {
+      codec = avcodec_find_decoder(st->codecpar->codec_id);
     }
+    ist->decoding_needed_ = (codec_name != "copy");
   } else {
-    int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
+    ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
     if (ret) {
       return ret;
     }
@@ -673,6 +703,7 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
     if (recast_media_ && st->codecpar->codec_type != codec->type) {
       st->codecpar->codec_type = codec->type;
     }
+    ist->decoding_needed_ = true;
   }
 
   return 0;

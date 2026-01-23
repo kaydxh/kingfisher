@@ -140,6 +140,26 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
   return ret;
 }
 
+AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
+                                           AVDictionary *codec_opts) {
+  int i;
+  AVDictionary **opts;
+
+  if (!s->nb_streams) {
+    return nullptr;
+  }
+  opts = static_cast<AVDictionary **>(av_calloc(s->nb_streams, sizeof(*opts)));
+  if (!opts) {
+    av_log(s, AV_LOG_ERROR, "Could not alloc memory for stream options.\n");
+    return nullptr;
+  }
+  for (i = 0; i < static_cast<int>(s->nb_streams); i++) {
+    opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
+                                s, s->streams[i], nullptr);
+  }
+  return opts;
+}
+
 // FIXME: YUV420P etc. are actually supported with full color range,
 // yet the latter information isn't available here.
 const AVPixelFormat *get_compliance_normal_pix_fmts(

@@ -1,11 +1,49 @@
 #include <gtest/gtest.h>
 
+#include <cstdlib>
+#include <cstring>
+#include <string>
+
 #include "cv/video/ffmpeg_error.h"
 #include "cv/video/ffmpeg_types.h"
 #include "cv/video/input_file.h"
 #include "cv/video/output_file.h"
 
 using namespace kingfisher::cv;
+/*
+# 编译
+make -j8
+
+# 使用默认路径
+./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 指定输入文件（输出自动生成为 video.copy.mp4）
+VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 同时指定输入和输出
+VIDEO_INPUT=/path/to/input.mp4 VIDEO_OUTPUT=/path/to/output.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+*/
+
+// 生成默认输出路径：在文件名后添加 .copy
+static std::string generate_output_url(const std::string& input_url) {
+  size_t dot_pos = input_url.rfind('.');
+  if (dot_pos != std::string::npos) {
+    return input_url.substr(0, dot_pos) + ".copy" + input_url.substr(dot_pos);
+  }
+  return input_url + ".copy";
+}
+
+// 从环境变量获取参数
+static std::string get_input_url() {
+  const char* env = std::getenv("VIDEO_INPUT");
+  return env ? env : "./testdata/sce_video.mp4";
+}
+
+static std::string get_output_url(const std::string& input_url) {
+  const char* env = std::getenv("VIDEO_OUTPUT");
+  return env ? env : generate_output_url(input_url);
+}
 
 class test_Video : public testing::Test {
  public:
@@ -17,12 +55,16 @@ class test_Video : public testing::Test {
   virtual void TearDown(void) {}
 };
 
-//./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+// ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+// 或使用环境变量: VIDEO_INPUT=/path/to/input.mp4 VIDEO_OUTPUT=/path/to/output.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
 TEST_F(test_Video, Transcode) {
-  std::string input_url = "./testdata/bodyhead.mp4";
+  std::string input_url = get_input_url();
+  std::string output_url = get_output_url(input_url);
+
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+  av_log(nullptr, AV_LOG_INFO, "Output: %s\n", output_url.c_str());
 
   InputFile input_file;
-  std::string output_url = "./testdata/bodyhead.copy.mp4";
 
   // 输出文件使用默认编码器（重新编码）
   OutputFile output_file;
@@ -142,3 +184,5 @@ TEST_F(test_Video, Transcode) {
   avformat_close_input(&format_ctx);
 #endif
 }
+
+
