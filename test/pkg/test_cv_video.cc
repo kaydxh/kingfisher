@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <cinttypes>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -50,6 +51,24 @@ VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="fps=10" ./output/bin/kingfisher_bas
 # 跳帧 + 缩放组合
 VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="framestep=2,scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
 
+# 使用 GPU 硬件加速（CUDA 解码 + NVENC 编码）
+GPU_ID=0 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# GPU 加速 + 视频滤镜
+GPU_ID=0 VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# Seek 测试（默认 seek 到视频中间位置）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+
+# Seek 测试 - 指定 seek 时间（秒）
+SEEK_TIME=10.5 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+
+# Seek 测试 - 指定 seek 帧号
+SEEK_FRAME=250 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+
+# Seek 测试 + GPU 加速
+GPU_ID=0 SEEK_TIME=5.0 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+
 # 获取视频帧数
 ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 input.mp4
 ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 input.mp4
@@ -88,6 +107,12 @@ static std::string get_audio_filter() {
   return env ? env : "";
 }
 
+// 获取 GPU ID（-1 表示使用软件编解码，>= 0 表示使用指定 GPU）
+static int64_t get_gpu_id() {
+  const char* env = std::getenv("GPU_ID");
+  return env ? std::stoll(env) : -1;
+}
+
 class test_Video : public testing::Test {
  public:
   test_Video() {}
@@ -105,6 +130,7 @@ TEST_F(test_Video, Transcode) {
   std::string output_url = get_output_url(input_url);
   std::string video_filter = get_video_filter();
   std::string audio_filter = get_audio_filter();
+  int64_t gpu_id = get_gpu_id();
 
   av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
   av_log(nullptr, AV_LOG_INFO, "Output: %s\n", output_url.c_str());
@@ -114,14 +140,23 @@ TEST_F(test_Video, Transcode) {
   if (!audio_filter.empty()) {
     av_log(nullptr, AV_LOG_INFO, "Audio Filter: %s\n", audio_filter.c_str());
   }
+  if (gpu_id >= 0) {
+    av_log(nullptr, AV_LOG_INFO, "GPU ID: %" PRId64 " (Hardware Acceleration Enabled)\n", gpu_id);
+  } else {
+    av_log(nullptr, AV_LOG_INFO, "GPU ID: %" PRId64 " (Software Codec)\n", gpu_id);
+  }
 
   InputFile input_file;
   // 设置自定义过滤器
   input_file.video_filter_spec_ = video_filter;
   input_file.audio_filter_spec_ = audio_filter;
+  // 设置 GPU ID
+  input_file.gpu_id_ = gpu_id;
 
   // 输出文件使用默认编码器（重新编码）
   OutputFile output_file;
+  // 设置 GPU ID
+  output_file.gpu_id_ = gpu_id;
   // AVFormatContext format_ctx;
   FormatContext format_ctx;
   int ret = input_file.open(input_url, format_ctx);
@@ -200,6 +235,152 @@ TEST_F(test_Video, Transcode) {
   }
 
   av_log(nullptr, AV_LOG_INFO, "Transcode completed\n");
+}
+
+// Seek 功能测试
+// SEEK_TIME=10.5 VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+// SEEK_FRAME=250 VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+TEST_F(test_Video, Seek) {
+  std::string input_url = get_input_url();
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Seek Test ===\n");
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+
+  InputFile input_file;
+  input_file.gpu_id_ = gpu_id;
+
+  FormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open input file: %s\n", av_err2str(ret));
+    FAIL();
+    return;
+  }
+
+  // 获取视频基本信息
+  double duration = input_file.get_duration();
+  int64_t total_frames = input_file.get_total_frames();
+  double fps = input_file.get_frame_rate();
+
+  av_log(nullptr, AV_LOG_INFO, "Video Info:\n");
+  av_log(nullptr, AV_LOG_INFO, "  Duration: %.2f seconds\n", duration);
+  av_log(nullptr, AV_LOG_INFO, "  Total frames: %" PRId64 "\n", total_frames);
+  av_log(nullptr, AV_LOG_INFO, "  Frame rate: %.2f fps\n", fps);
+
+  EXPECT_GT(duration, 0.0);
+  EXPECT_GT(fps, 0.0);
+
+  // 读取开头几帧
+  av_log(nullptr, AV_LOG_INFO, "\n--- Reading frames from beginning ---\n");
+  std::vector<Frame> video_frames, audio_frames;
+  bool finished = false;
+
+  ret = input_file.read_frames(video_frames, audio_frames, 5, finished);
+  EXPECT_GE(ret, 0);
+  av_log(nullptr, AV_LOG_INFO, "Read %lu video frames, %lu audio frames from beginning\n",
+         video_frames.size(), audio_frames.size());
+
+  if (!video_frames.empty()) {
+    av_log(nullptr, AV_LOG_INFO, "First frame PTS: %" PRId64 "\n", video_frames[0].pts);
+  }
+
+  // 测试 seek 到中间位置（按时间）
+  double seek_time = duration / 2.0;
+  const char* env_seek_time = std::getenv("SEEK_TIME");
+  if (env_seek_time) {
+    seek_time = std::stod(env_seek_time);
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "\n--- Seeking to %.2f seconds ---\n", seek_time);
+  ret = input_file.seek(seek_time);
+  EXPECT_EQ(ret, 0);
+
+  if (ret == 0) {
+    video_frames.clear();
+    audio_frames.clear();
+    finished = false;
+
+    ret = input_file.read_frames(video_frames, audio_frames, 5, finished);
+    EXPECT_GE(ret, 0);
+    av_log(nullptr, AV_LOG_INFO, "Read %lu video frames, %lu audio frames after seek to %.2f s\n",
+           video_frames.size(), audio_frames.size(), seek_time);
+
+    if (!video_frames.empty()) {
+      av_log(nullptr, AV_LOG_INFO, "Frame after seek - PTS: %" PRId64 ", frame_number: %" PRId64 "\n",
+             video_frames[0].pts, video_frames[0].frame_number);
+    }
+  }
+
+  // 测试 seek_frame（按帧号）
+  int64_t seek_frame_num = total_frames / 4;
+  const char* env_seek_frame = std::getenv("SEEK_FRAME");
+  if (env_seek_frame) {
+    seek_frame_num = std::stoll(env_seek_frame);
+  }
+
+  if (seek_frame_num > 0 && fps > 0) {
+    av_log(nullptr, AV_LOG_INFO, "\n--- Seeking to frame %" PRId64 " ---\n", seek_frame_num);
+    ret = input_file.seek_frame(seek_frame_num);
+    EXPECT_EQ(ret, 0);
+
+    if (ret == 0) {
+      video_frames.clear();
+      audio_frames.clear();
+      finished = false;
+
+      ret = input_file.read_frames(video_frames, audio_frames, 5, finished);
+      EXPECT_GE(ret, 0);
+      av_log(nullptr, AV_LOG_INFO, "Read %lu video frames, %lu audio frames after seek to frame %" PRId64 "\n",
+             video_frames.size(), audio_frames.size(), seek_frame_num);
+
+      if (!video_frames.empty()) {
+        av_log(nullptr, AV_LOG_INFO, "Frame after seek_frame - PTS: %" PRId64 ", frame_number: %" PRId64 "\n",
+               video_frames[0].pts, video_frames[0].frame_number);
+      }
+    }
+  }
+
+  // 测试 seek 回到开头
+  av_log(nullptr, AV_LOG_INFO, "\n--- Seeking back to beginning (0.0 s) ---\n");
+  ret = input_file.seek(0.0);
+  EXPECT_EQ(ret, 0);
+
+  if (ret == 0) {
+    video_frames.clear();
+    audio_frames.clear();
+    finished = false;
+
+    ret = input_file.read_frames(video_frames, audio_frames, 5, finished);
+    EXPECT_GE(ret, 0);
+    av_log(nullptr, AV_LOG_INFO, "Read %lu video frames, %lu audio frames after seek to beginning\n",
+           video_frames.size(), audio_frames.size());
+
+    if (!video_frames.empty()) {
+      av_log(nullptr, AV_LOG_INFO, "First frame after seek back - PTS: %" PRId64 "\n", video_frames[0].pts);
+    }
+  }
+
+  // 测试 seek 到接近结尾
+  double near_end = duration - 1.0;
+  if (near_end > 0) {
+    av_log(nullptr, AV_LOG_INFO, "\n--- Seeking near end (%.2f s) ---\n", near_end);
+    ret = input_file.seek(near_end);
+    EXPECT_EQ(ret, 0);
+
+    if (ret == 0) {
+      video_frames.clear();
+      audio_frames.clear();
+      finished = false;
+
+      ret = input_file.read_frames(video_frames, audio_frames, 10, finished);
+      av_log(nullptr, AV_LOG_INFO, "Read %lu video frames near end, finished=%d\n",
+             video_frames.size(), finished);
+    }
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "\n=== Seek Test Completed ===\n");
+}
 
 #if 0
   // 打开输入文件
@@ -237,6 +418,3 @@ TEST_F(test_Video, Transcode) {
   // 关闭输入文件
   avformat_close_input(&format_ctx);
 #endif
-}
-
-

@@ -17,6 +17,8 @@
 9. [FFmpeg 核心概念](#9-ffmpeg-核心概念)
 10. [音视频同步机制](#10-音视频同步机制)
 11. [CUDA 硬件编解码支持](#11-cuda-硬件编解码支持)
+12. [Seek（随机访问）功能](#12-seek随机访问功能)
+13. [av_log 与 AVClass 使用问题](#13-av_log-与-avclass-使用问题)
 
 ---
 
@@ -1140,6 +1142,8 @@ while (!finished) {
 | 过滤器支持 | 需要自定义视频/音频处理 | 添加 `video_filter_spec_` 和 `audio_filter_spec_` 成员变量 |
 | 音视频同步 | 音视频分开处理后需保证同步 | `av_interleaved_write_frame` 按 DTS 排序 + 时间基转换 + DTS 单调递增检查 |
 | CUDA 硬件编解码 | GPU 设备初始化、环境权限问题 | 设置 `gpu` 选项、自动回退机制、检查系统环境 |
+| Seek 随机访问 | 需要跳转到指定位置读取 | `seek()`/`seek_frame()` + `flush_after_seek()` 清空缓冲区重置状态 |
+| av_log 段错误 | `AVClass*` 不是类的第一个成员 | 使用 `nullptr` 或 `ifmt_ctx_.get()` 代替 `this` |
 
 ## 核心概念速查
 
@@ -1467,3 +1471,303 @@ Successfully switched to software encoder [libx264] for stream #0:0
 - `pkg/cv/video/input_stream.h/cc` - CUDA 解码器初始化
 - `pkg/cv/video/output_file.h/cc` - NVENC 编码器选择
 - `test/pkg/test_cv_video.cc` - GPU_ID 环境变量支持
+
+---
+
+## 12. Seek（随机访问）功能
+
+### 12.1 功能概述
+
+支持对视频文件进行随机访问（Seek），可以跳转到指定的时间位置、PTS 或帧号。
+
+| 方法 | 功能 | 参数 |
+|------|------|------|
+| `seek(timestamp, flags)` | 按时间戳跳转 | timestamp: 秒, flags: AVSEEK_FLAG_* |
+| `seek_pts(pts, stream_index, flags)` | 按 PTS 跳转 | pts: PTS 值, stream_index: 流索引 |
+| `seek_frame(frame_number)` | 按帧号跳转 | frame_number: 目标帧号 |
+| `get_duration()` | 获取视频时长 | 返回秒 |
+| `get_position()` | 获取当前位置 | 返回秒 |
+| `get_total_frames()` | 获取总帧数 | 返回帧数（估算） |
+| `get_frame_rate()` | 获取帧率 | 返回 fps |
+
+### 12.2 API 说明
+
+#### 12.2.1 seek - 按时间戳跳转
+
+```cpp
+// 跳转到指定时间位置
+// timestamp: 目标时间（秒）
+// flags: seek 标志
+//   AVSEEK_FLAG_BACKWARD (1): 向后搜索到最近的关键帧（默认）
+//   AVSEEK_FLAG_BYTE (2): 按字节位置搜索
+//   AVSEEK_FLAG_ANY (4): 搜索到任意帧（不一定是关键帧）
+//   AVSEEK_FLAG_FRAME (8): 按帧号搜索
+int seek(double timestamp, int flags = AVSEEK_FLAG_BACKWARD);
+```
+
+#### 12.2.2 seek_pts - 按 PTS 跳转
+
+```cpp
+// 跳转到指定 PTS 位置
+// pts: 目标 PTS 值
+// stream_index: 流索引，-1 表示使用默认流
+// flags: seek 标志
+int seek_pts(int64_t pts, int stream_index = -1,
+             int flags = AVSEEK_FLAG_BACKWARD);
+```
+
+#### 12.2.3 seek_frame - 按帧号跳转
+
+```cpp
+// 跳转到指定帧号位置
+// frame_number: 目标帧号（从 0 开始）
+int seek_frame(int64_t frame_number);
+```
+
+### 12.3 使用示例
+
+```cpp
+#include "input_file.h"
+
+kingfisher::cv::InputFile input;
+kingfisher::cv::FormatContext format_ctx;
+
+// 打开视频文件
+int ret = input.open("video.mp4", format_ctx);
+if (ret < 0) {
+  // 错误处理
+}
+
+// 获取视频信息
+double duration = input.get_duration();     // 总时长（秒）
+int64_t total = input.get_total_frames();   // 总帧数
+double fps = input.get_frame_rate();        // 帧率
+
+printf("Duration: %.2f s, Frames: %ld, FPS: %.2f\n", duration, total, fps);
+
+// 方式1: 按时间跳转到第 10 秒
+ret = input.seek(10.0);
+
+// 方式2: 按帧号跳转到第 250 帧
+ret = input.seek_frame(250);
+
+// 方式3: 精确跳转（可能落在非关键帧）
+ret = input.seek(15.5, AVSEEK_FLAG_ANY);
+
+// 读取 seek 后的帧
+std::vector<kingfisher::cv::Frame> video_frames, audio_frames;
+bool finished = false;
+ret = input.read_frames(video_frames, audio_frames, 1, finished);
+
+// 获取当前位置
+double pos = input.get_position();
+printf("Current position: %.2f s\n", pos);
+```
+
+### 12.4 实现细节
+
+#### 12.4.1 核心实现
+
+```cpp
+int InputFile::seek(double timestamp, int flags) {
+  // 将秒转换为 AV_TIME_BASE 单位
+  int64_t seek_target = static_cast<int64_t>(timestamp * AV_TIME_BASE);
+
+  // 加上文件开始时间偏移
+  if (ifmt_ctx_->start_time != AV_NOPTS_VALUE) {
+    seek_target += ifmt_ctx_->start_time;
+  }
+
+  // 执行 seek
+  int ret = avformat_seek_file(ifmt_ctx_.get(), -1, INT64_MIN, seek_target,
+                               seek_target, flags);
+  if (ret < 0) {
+    return ret;
+  }
+
+  // 清空缓冲区和重置状态
+  flush_after_seek();
+  return 0;
+}
+```
+
+#### 12.4.2 Seek 后状态重置
+
+```cpp
+void InputFile::flush_after_seek() {
+  // 重置 EOF 标志
+  eof_reached_ = false;
+  eagain_ = false;
+
+  // 清空每个输入流的缓冲区
+  for (auto &ist : input_streams_) {
+    // 清空帧缓冲区
+    ist->frames_.clear();
+
+    // 重置时间戳状态
+    ist->saw_first_ts_ = false;
+    ist->dts_ = AV_NOPTS_VALUE;
+    ist->pts_ = AV_NOPTS_VALUE;
+    ist->next_dts_ = AV_NOPTS_VALUE;
+    ist->next_pts_ = AV_NOPTS_VALUE;
+
+    // 刷新解码器
+    avcodec_flush_buffers(ist->codec_ctx_.get());
+
+    // 重置过滤器
+    if (ist->ifilt_) {
+      ist->ifilt_->flush();
+    }
+  }
+}
+```
+
+### 12.5 Seek 标志说明
+
+| 标志 | 值 | 说明 |
+|------|---|------|
+| `AVSEEK_FLAG_BACKWARD` | 1 | 向后搜索到最近的关键帧（推荐默认使用） |
+| `AVSEEK_FLAG_BYTE` | 2 | 按字节位置搜索（不推荐，精度低） |
+| `AVSEEK_FLAG_ANY` | 4 | 搜索到任意帧（可能需要额外解码） |
+| `AVSEEK_FLAG_FRAME` | 8 | 按帧号搜索 |
+
+### 12.6 注意事项
+
+1. **关键帧限制**：默认 `AVSEEK_FLAG_BACKWARD` 只能跳转到关键帧（I 帧），实际位置可能略早于目标位置
+
+2. **精确 Seek**：如需精确跳转到指定帧，可使用 `AVSEEK_FLAG_ANY`，但需要额外解码 B/P 帧
+
+3. **时间戳处理**：
+   - 视频文件可能有非零的 `start_time`，seek 时会自动处理
+   - 某些格式（如 FLV）的 seek 精度较低
+
+4. **性能考虑**：
+   - 频繁 seek 会影响性能
+   - seek 后第一帧可能需要较长解码时间（需要参考帧）
+
+5. **音视频同步**：seek 后音视频流都会被重置，下次读取时会自动同步
+
+### 12.7 相关文件
+
+- `pkg/cv/video/input_file.h` - Seek API 声明
+- `pkg/cv/video/input_file.cc` - Seek 实现
+- `pkg/cv/video/ffmpeg_filter.h/cc` - 过滤器 flush 支持
+
+---
+
+## 13. av_log 与 AVClass 使用问题
+
+### 13.1 问题描述
+
+在 `InputFile` 类中使用 `av_log(this, AV_LOG_INFO, ...)` 时发生段错误（Segmentation fault）：
+
+```
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff156d854 in av_vlog (avcl=0x7fffffffd050, level=32, 
+    fmt=0xc6fcb8 "Using CUDA decoder [%s] for stream #%d:%d...")
+    at libavutil/log.c:430
+```
+
+### 13.2 原因分析
+
+FFmpeg 的 `av_log(avcl, level, fmt, ...)` 函数期望第一个参数 `avcl` 是一个指向**以 `AVClass*` 开头**的结构体的指针。
+
+当传入 C++ 类的 `this` 指针时，FFmpeg 会从该地址读取前 8 字节作为 `AVClass*` 指针。如果类的第一个成员不是 `AVClass*`，就会读取到错误的内存地址，导致段错误。
+
+**错误示例**：
+
+```cpp
+class InputFile {
+ public:
+  // ... 其他成员 ...
+ private:
+  const AVClass *av_class_ = nullptr;  // 不是第一个成员，位置错误！
+};
+
+// 调用 av_log(this, ...) 会导致段错误
+av_log(this, AV_LOG_INFO, "message");
+```
+
+### 13.3 解决方案
+
+#### 方案 1：确保 `av_class_` 是类的第一个成员
+
+```cpp
+class InputFile {
+  // av_class_ 必须是类的第一个成员
+  const AVClass *av_class_ = nullptr;
+
+ public:
+  InputFile();
+  // ...
+};
+
+// 定义 AVClass 结构体
+static const AVClass input_file_class = {
+    .class_name = "InputFile",
+    .item_name = av_default_item_name,
+    .option = nullptr,
+    .version = LIBAVUTIL_VERSION_INT,
+};
+
+// 构造函数中初始化
+InputFile::InputFile() : av_class_(&input_file_class) {}
+```
+
+**缺点**：维护成本高，容易因类成员顺序变化而出错。
+
+#### 方案 2：使用 `nullptr` 或 `ifmt_ctx_`（推荐）
+
+不使用自定义 `AVClass`，直接传入 `nullptr` 或已有的 FFmpeg 上下文：
+
+```cpp
+// 方案 A: 使用 nullptr（不显示上下文信息）
+av_log(nullptr, AV_LOG_INFO, "Using CUDA decoder [%s]\n", decoder_name);
+
+// 方案 B: 使用 ifmt_ctx_.get()（显示输入文件上下文信息）
+av_log(ifmt_ctx_.get(), AV_LOG_INFO, "Using CUDA decoder [%s]\n", decoder_name);
+```
+
+**优点**：
+- 无需维护 `AVClass` 成员
+- 使用 `ifmt_ctx_.get()` 可以显示有意义的上下文信息
+- 不依赖类成员的内存布局
+
+#### 方案 3：封装日志宏
+
+```cpp
+// 在头文件中定义
+#define IFILE_LOG(level, fmt, ...) \
+    av_log(ifmt_ctx_ ? ifmt_ctx_.get() : nullptr, level, \
+           "[InputFile] " fmt, ##__VA_ARGS__)
+
+// 使用
+IFILE_LOG(AV_LOG_INFO, "Using CUDA decoder [%s]\n", decoder_name);
+```
+
+### 13.4 AVClass 结构体说明
+
+```cpp
+static const AVClass input_file_class = {
+    .class_name = "InputFile",          // 日志输出时显示的类名
+    .item_name = av_default_item_name,  // 获取实例名称的回调函数
+    .option = nullptr,                  // 命令行选项（不需要时为空）
+    .version = LIBAVUTIL_VERSION_INT,   // FFmpeg 版本号
+};
+```
+
+**日志输出效果**：
+```
+[InputFile @ 0x7fff12345678] Using CUDA decoder [h264_cuvid] for stream #0:0
+```
+
+### 13.5 总结
+
+| 方案 | 优点 | 缺点 |
+|------|------|------|
+| `av_class_` 作为第一个成员 | 日志输出包含自定义类名 | 维护成本高，易出错 |
+| 使用 `nullptr` | 简单，无需额外代码 | 日志不显示上下文 |
+| 使用 `ifmt_ctx_.get()` | 简单，显示文件上下文 | 需要确保 `ifmt_ctx_` 已初始化 |
+| 封装日志宏 | 灵活，可自定义前缀 | 需要额外定义宏 |
+
+**推荐**：使用方案 2B（`ifmt_ctx_.get()`），在 `ifmt_ctx_` 初始化后的代码中使用；在初始化前使用 `nullptr`。
