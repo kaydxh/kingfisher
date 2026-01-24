@@ -18,6 +18,10 @@ class Stream;
 class FilterGraph;
 
 class InputFilter {
+  // av_class_ 必须是类的第一个成员，因为 FFmpeg 的 av_log 期望
+  // 第一个参数指向一个以 AVClass* 开头的结构体
+  const AVClass *av_class_ = nullptr;
+
  public:
   InputFilter(const std::shared_ptr<FilterGraph> &fg,
               const std::weak_ptr<Stream> &ist);
@@ -36,7 +40,6 @@ class InputFilter {
   int ifilter_parameters_from_codecpar(const AVCodecParameters *par);
 
  public:
-  const AVClass *av_class_ = nullptr;
   // std::shared_ptr<AVFilterContext> filter_;
   AVFilterContext *filter_;
   // 避免相互引用

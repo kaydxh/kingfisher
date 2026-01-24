@@ -19,6 +19,7 @@
 11. [CUDA 硬件编解码支持](#11-cuda-硬件编解码支持)
 12. [Seek（随机访问）功能](#12-seek随机访问功能)
 13. [av_log 与 AVClass 使用问题](#13-av_log-与-avclass-使用问题)
+14. [进度回调与取消机制](#14-进度回调与取消机制)
 
 ---
 
@@ -1144,6 +1145,7 @@ while (!finished) {
 | CUDA 硬件编解码 | GPU 设备初始化、环境权限问题 | 设置 `gpu` 选项、自动回退机制、检查系统环境 |
 | Seek 随机访问 | 需要跳转到指定位置读取 | `seek()`/`seek_frame()` + `flush_after_seek()` 清空缓冲区重置状态 |
 | av_log 段错误 | `AVClass*` 不是类的第一个成员 | 使用 `nullptr` 或 `ifmt_ctx_.get()` 代替 `this` |
+| 进度回调与取消 | 需要监控处理进度和支持取消操作 | `set_progress_callback()` + `set_cancel_callback()` |
 
 ## 核心概念速查
 
@@ -1761,13 +1763,318 @@ static const AVClass input_file_class = {
 [InputFile @ 0x7fff12345678] Using CUDA decoder [h264_cuvid] for stream #0:0
 ```
 
-### 13.5 总结
+### 13.5 虚函数与 `av_class_` 内存布局问题
 
-| 方案 | 优点 | 缺点 |
-|------|------|------|
-| `av_class_` 作为第一个成员 | 日志输出包含自定义类名 | 维护成本高，易出错 |
-| 使用 `nullptr` | 简单，无需额外代码 | 日志不显示上下文 |
-| 使用 `ifmt_ctx_.get()` | 简单，显示文件上下文 | 需要确保 `ifmt_ctx_` 已初始化 |
-| 封装日志宏 | 灵活，可自定义前缀 | 需要额外定义宏 |
+#### 13.5.1 问题描述
 
-**推荐**：使用方案 2B（`ifmt_ctx_.get()`），在 `ifmt_ctx_` 初始化后的代码中使用；在初始化前使用 `nullptr`。
+在有虚函数的类中，即使 `av_class_` 是源码中声明的第一个成员，使用 `av_log(this, ...)` 仍然会导致段错误：
+
+```
+Program received signal SIGSEGV, Segmentation fault.
+format_line (type=<synthetic pointer>, print_prefix=..., part=..., vl=..., 
+    fmt=0xc7c3b8 "Setting GPU ID %ld for CUDA decoder [%s] stream #%d:%d\n", 
+    level=32, avcl=0x13872a0) at libavutil/log.c:306
+```
+
+#### 13.5.2 原因分析
+
+C++ 类如果有虚函数（`virtual`），编译器会在对象的内存布局**开头**插入一个隐藏的**虚表指针（vptr）**。
+
+**内存布局对比**：
+
+```
+无虚函数的类:
++----------------+
+| av_class_      |  <- this 指向这里，FFmpeg 正确读取 AVClass*
+| 其他成员...     |
++----------------+
+
+有虚函数的类:
++----------------+
+| vptr (隐藏)    |  <- this 指向这里，FFmpeg 错误地把 vptr 当作 AVClass*
+| av_class_      |
+| 其他成员...     |
++----------------+
+```
+
+当 FFmpeg 的 `av_log()` 从 `this` 地址读取前 8 字节作为 `AVClass*` 时，实际读到的是 vptr，导致访问非法内存。
+
+**项目中的具体案例**：
+
+`Stream` 类有虚函数 `virtual AVStream *av_stream() const;`：
+
+```cpp
+class Stream {
+  const AVClass *av_class_ = nullptr;  // 源码中是第一个，但实际内存中不是！
+
+ public:
+  virtual AVStream *av_stream() const;  // 虚函数导致 vptr 被插入
+  // ...
+};
+
+class InputStream : public Stream {
+  // 继承了 Stream 的虚函数，同样有 vptr 问题
+};
+
+// 在 InputStream 的方法中使用 av_log(this, ...) 会崩溃
+av_log(this, AV_LOG_INFO, "Setting GPU ID %ld...\n", gpu_id_);  // SIGSEGV!
+```
+
+#### 13.5.3 解决方案
+
+**对于有虚函数或继承自有虚函数基类的类，不能使用 `av_log(this, ...)`**。
+
+必须使用 `av_log(nullptr, ...)` 或传入其他 FFmpeg 上下文对象：
+
+```cpp
+// 错误：有虚函数的类不能用 this
+av_log(this, AV_LOG_INFO, "message");  // 崩溃！
+
+// 正确：使用 nullptr
+av_log(nullptr, AV_LOG_INFO, "message");
+
+// 正确：使用 FFmpeg 上下文对象
+av_log(codec_ctx_.get(), AV_LOG_INFO, "message");
+```
+
+#### 13.5.4 项目中的修复
+
+移除了 `Stream` 类的 `av_class_` 成员，并将 `InputStream` 中的所有 `av_log(this, ...)` 改回 `av_log(nullptr, ...)`：
+
+```cpp
+// stream.h - 移除 av_class_
+class Stream {
+ public:
+  Stream(...);
+  virtual AVStream *av_stream() const;
+  // av_class_ 已移除
+};
+
+// input_stream.cc - 使用 nullptr
+av_log(nullptr, AV_LOG_INFO,
+       "Setting GPU ID %" PRId64 " for CUDA decoder [%s] stream #%d:%d\n",
+       gpu_id_, dec_->name, file_index_, stream_index_);
+```
+
+#### 13.5.5 类的 `av_log(this, ...)` 可用性判断
+
+| 类 | 有虚函数 | 可用 `av_log(this, ...)` |
+|----|---------|--------------------------|
+| `InputFile` | 否 | ✅ 可以 |
+| `OutputFile` | 否 | ✅ 可以 |
+| `FilterGraph` | 否 | ✅ 可以 |
+| `InputFilter` | 否 | ✅ 可以 |
+| `OutputFilter` | 否 | ✅ 可以 |
+| `Stream` | **是** | ❌ 不可以 |
+| `InputStream` | 继承自 Stream | ❌ 不可以 |
+| `OutputStream` | 继承自 Stream | ❌ 不可以 |
+
+### 13.6 总结
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|------|------|------|---------|
+| `av_class_` 作为第一个成员 | 日志输出包含自定义类名 | 维护成本高，易出错；**不适用于有虚函数的类** | 无虚函数的类 |
+| 使用 `nullptr` | 简单，无需额外代码 | 日志不显示上下文 | 通用 |
+| 使用 `ifmt_ctx_.get()` | 简单，显示文件上下文 | 需要确保 `ifmt_ctx_` 已初始化 | InputFile |
+| 封装日志宏 | 灵活，可自定义前缀 | 需要额外定义宏 | 通用 |
+
+**关键规则**：
+1. **无虚函数的类**：可以将 `av_class_` 作为第一个成员，使用 `av_log(this, ...)`
+2. **有虚函数或继承自有虚函数基类的类**：**必须**使用 `av_log(nullptr, ...)` 或其他 FFmpeg 上下文
+
+**推荐**：
+- 对于 `InputFile`、`OutputFile` 等无虚函数的类：使用 `av_log(this, ...)`
+- 对于 `InputStream`、`OutputStream` 等有虚函数的类：使用 `av_log(nullptr, ...)` 或 `av_log(codec_ctx_.get(), ...)`
+
+---
+
+## 14. 进度回调与取消机制
+
+### 14.1 功能概述
+
+为 `InputFile` 和 `OutputFile` 添加了进度回调和取消机制，支持：
+
+1. **进度监控**：实时获取视频处理进度（当前帧号、时间、百分比）
+2. **任务取消**：在处理过程中随时取消操作
+
+### 14.2 类型定义
+
+在 `ffmpeg_types.h` 中定义了以下类型：
+
+```cpp
+// 进度信息结构体
+struct ProgressInfo {
+  int64_t current_frame = 0;    // 当前处理的帧号
+  int64_t total_frames = 0;     // 总帧数（估算值，可能不准确）
+  double current_seconds = 0.0; // 当前处理位置（秒）
+  double total_seconds = 0.0;   // 总时长（秒）
+  double progress = 0.0;        // 进度百分比 [0.0, 1.0]
+  int64_t bytes_processed = 0;  // 已处理的字节数
+};
+
+// 进度回调函数类型
+using ProgressCallback = std::function<void(const ProgressInfo &info)>;
+
+// 取消检查回调函数类型
+// 返回 true 表示应该取消操作
+using CancelCallback = std::function<bool()>;
+```
+
+### 14.3 InputFile 接口
+
+```cpp
+class InputFile {
+public:
+  // 设置进度回调
+  // callback: 进度回调函数，每处理一批帧后调用
+  // interval: 回调间隔（帧数），默认每 10 帧回调一次
+  void set_progress_callback(ProgressCallback callback, int interval = 10);
+
+  // 设置取消回调
+  // callback: 取消检查函数，返回 true 时停止读取
+  void set_cancel_callback(CancelCallback callback);
+
+  // 检查是否已取消
+  bool is_cancelled() const;
+};
+```
+
+### 14.4 OutputFile 接口
+
+```cpp
+class OutputFile {
+public:
+  // 设置进度回调
+  void set_progress_callback(ProgressCallback callback, int interval = 10);
+
+  // 设置取消回调
+  void set_cancel_callback(CancelCallback callback);
+
+  // 检查是否已取消
+  bool is_cancelled() const;
+
+  // 设置总帧数（用于进度计算）
+  void set_total_frames(int64_t total_frames);
+};
+```
+
+### 14.5 使用示例
+
+#### 基本使用
+
+```cpp
+#include "input_file.h"
+#include "output_file.h"
+
+// 创建取消标志
+std::atomic<bool> cancelled{false};
+
+InputFile input_file;
+OutputFile output_file;
+
+// 设置进度回调
+input_file.set_progress_callback([](const ProgressInfo &info) {
+  printf("读取进度: %.1f%% (帧 %ld/%ld, %.2fs/%.2fs)\n",
+         info.progress * 100.0,
+         info.current_frame, info.total_frames,
+         info.current_seconds, info.total_seconds);
+}, 30);  // 每 30 帧回调一次
+
+output_file.set_progress_callback([](const ProgressInfo &info) {
+  printf("写入进度: %.1f%% (帧 %ld/%ld)\n",
+         info.progress * 100.0,
+         info.current_frame, info.total_frames);
+}, 30);
+
+// 设置取消回调
+input_file.set_cancel_callback([&cancelled]() {
+  return cancelled.load();
+});
+
+output_file.set_cancel_callback([&cancelled]() {
+  return cancelled.load();
+});
+
+// 在另一个线程中取消操作
+// cancelled.store(true);
+
+// 处理视频
+FormatContext format_ctx;
+input_file.open("input.mp4", format_ctx);
+output_file.open("output.mp4", format_ctx);
+output_file.set_total_frames(input_file.get_total_frames());
+
+std::vector<Frame> video_frames, audio_frames;
+bool finished = false;
+
+while (!finished) {
+  int ret = input_file.read_frames(video_frames, audio_frames, 30, finished);
+  if (ret == AVERROR_EXIT) {
+    printf("操作已取消\n");
+    break;
+  }
+  if (ret < 0) {
+    break;
+  }
+  
+  ret = output_file.write_frames(video_frames);
+  if (ret == AVERROR_EXIT) {
+    printf("操作已取消\n");
+    break;
+  }
+}
+
+output_file.flush();
+```
+
+#### 带超时的取消
+
+```cpp
+#include <chrono>
+
+auto start_time = std::chrono::steady_clock::now();
+const auto timeout = std::chrono::seconds(60);  // 60 秒超时
+
+input_file.set_cancel_callback([&start_time, &timeout]() {
+  auto elapsed = std::chrono::steady_clock::now() - start_time;
+  return elapsed > timeout;
+});
+```
+
+#### 基于进度的取消
+
+```cpp
+double max_progress = 0.5;  // 只处理前 50%
+
+input_file.set_progress_callback([&max_progress](const ProgressInfo &info) {
+  if (info.progress >= max_progress) {
+    // 可以在这里设置取消标志
+  }
+}, 10);
+```
+
+### 14.6 返回值说明
+
+当操作被取消时，`read_frames()` 和 `write_frames()` 返回 `AVERROR_EXIT`：
+
+```cpp
+int ret = input_file.read_frames(video_frames, audio_frames, batch_size, finished);
+if (ret == AVERROR_EXIT) {
+  // 操作被取消
+} else if (ret < 0) {
+  // 其他错误
+}
+```
+
+### 14.7 注意事项
+
+1. **回调线程安全**：回调函数在调用 `read_frames`/`write_frames` 的同一线程中执行，注意线程安全
+2. **回调频率**：`interval` 参数控制回调频率，过小会影响性能，过大会降低响应性
+3. **总帧数估算**：`total_frames` 是估算值，某些视频格式可能不准确
+4. **取消延迟**：取消操作会在下一批帧处理时生效，不是立即中断
+
+### 14.8 相关文件
+
+- `pkg/cv/video/ffmpeg_types.h` - 类型定义（ProgressInfo, ProgressCallback, CancelCallback）
+- `pkg/cv/video/input_file.h/cc` - InputFile 进度回调和取消实现
+- `pkg/cv/video/output_file.h/cc` - OutputFile 进度回调和取消实现
