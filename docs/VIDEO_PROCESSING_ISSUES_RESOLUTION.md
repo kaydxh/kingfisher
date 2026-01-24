@@ -16,6 +16,7 @@
 8. [测试程序使用说明](#8-测试程序使用说明)
 9. [FFmpeg 核心概念](#9-ffmpeg-核心概念)
 10. [音视频同步机制](#10-音视频同步机制)
+11. [CUDA 硬件编解码支持](#11-cuda-硬件编解码支持)
 
 ---
 
@@ -1138,6 +1139,7 @@ while (!finished) {
 | 特殊流处理 | 非音视频流无解码器但 `decoding_needed_=true` | 在 `choose_decoder` 中对非音视频流设置 `codec_name="copy"` |
 | 过滤器支持 | 需要自定义视频/音频处理 | 添加 `video_filter_spec_` 和 `audio_filter_spec_` 成员变量 |
 | 音视频同步 | 音视频分开处理后需保证同步 | `av_interleaved_write_frame` 按 DTS 排序 + 时间基转换 + DTS 单调递增检查 |
+| CUDA 硬件编解码 | GPU 设备初始化、环境权限问题 | 设置 `gpu` 选项、自动回退机制、检查系统环境 |
 
 ## 核心概念速查
 
@@ -1155,3 +1157,313 @@ while (!finished) {
 - [FFmpeg Formats - mov, mp4, ismv](https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv)
 - [FFmpeg Time Base and PTS](https://ffmpeg.org/doxygen/trunk/group__lavc__packet.html)
 - [FFmpeg Source Code - fftools/ffmpeg.c](https://github.com/FFmpeg/FFmpeg/blob/master/fftools/ffmpeg.c)
+
+---
+
+## 11. CUDA 硬件编解码支持
+
+### 11.1 功能概述
+
+支持使用 NVIDIA GPU 进行硬件加速的视频编解码：
+
+| 功能 | 硬件加速器 | 支持的编解码器 |
+|------|-----------|---------------|
+| 解码 | CUVID (NVDEC) | h264_cuvid, hevc_cuvid, av1_cuvid, mjpeg_cuvid, mpeg1/2/4_cuvid, vp8/9_cuvid |
+| 编码 | NVENC | h264_nvenc, hevc_nvenc, av1_nvenc |
+
+### 11.2 实现架构
+
+#### 11.2.1 核心参数
+
+```cpp
+// gpu_id_ 参数含义
+// >= 0 : 使用指定 GPU 进行硬件编解码
+// < 0  : 使用软件编解码（默认）
+int64_t gpu_id_ = -1;
+
+// 自动回退开关
+// true  : 硬件编解码失败时自动切换到软件编解码
+// false : 硬件编解码失败时直接返回错误
+bool auto_switch_to_soft_codec_ = true;
+```
+
+#### 11.2.2 修改的文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `ffmpeg_hw.h/cc` | GPU 检测和编解码器名称映射函数 |
+| `input_file.h/cc` | 添加 `gpu_id_` 成员，CUDA 解码器选择逻辑 |
+| `input_stream.h/cc` | 添加 `gpu_id_`，CUDA 解码器初始化和自动回退 |
+| `output_file.h/cc` | 添加 `gpu_id_`，NVENC 编码器选择和 GPU ID 设置 |
+| `test_cv_video.cc` | 添加 `GPU_ID` 环境变量支持 |
+
+### 11.3 使用方法
+
+```bash
+# 软件编解码（默认）
+./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# GPU 硬件加速
+GPU_ID=0 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# GPU + 滤镜
+GPU_ID=0 VIDEO_FILTER="scale=1280:720" VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test
+```
+
+### 11.4 遇到的问题及解决方案
+
+#### 11.4.1 CUDA_ERROR_OUT_OF_MEMORY 错误
+
+**问题描述**：
+```
+[h264_cuvid @ 0x...] ctx->cvdl->cuvidGetDecoderCaps(&ctx->caps8) failed -> CUDA_ERROR_OUT_OF_MEMORY: out of memory
+```
+
+**原因分析**：
+这个错误通常 **不是真正的显存不足**，而是 CUDA 解码器初始化时没有正确设置 GPU 设备。
+
+**解决方案**：
+在 `avcodec_open2()` 之前为 CUDA 解码器设置必要的选项：
+
+```cpp
+// input_stream.cc: init_input_stream()
+if (is_prefer_gpu(gpu_id_) && is_cuda_decoder(dec_->name)) {
+  // 设置 GPU ID
+  av_dict_set_int(&decoder_opts_, "gpu", gpu_id_, 0);
+  // 设置去隔行模式
+  av_dict_set(&decoder_opts_, "deint", "adaptive", 0);
+  // 去隔行时不复制第二场
+  av_dict_set_int(&decoder_opts_, "drop_second_field", 1, 0);
+}
+```
+
+#### 11.4.2 av_err2str 在 C++ 中编译错误
+
+**问题描述**：
+```
+error: taking address of temporary array
+```
+
+**原因分析**：
+`av_err2str` 宏在 C++ 中使用临时数组会导致编译错误。
+
+**解决方案**：
+使用 `av_strerror()` 替代：
+
+```cpp
+// 错误写法
+av_log(nullptr, AV_LOG_WARNING, "Error: %s\n", av_err2str(ret));
+
+// 正确写法
+char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+av_strerror(ret, errbuf, sizeof(errbuf));
+av_log(nullptr, AV_LOG_WARNING, "Error: %s\n", errbuf);
+```
+
+#### 11.4.3 shared_ptr::get() 不能作为左值
+
+**问题描述**：
+```
+error: lvalue required as unary '&' operand
+avcodec_free_context(&codec_ctx_.get());
+```
+
+**原因分析**：
+`shared_ptr::get()` 返回的是右值，不能取地址传给需要指针的指针的函数。
+
+**解决方案**：
+使用 `reset()` 释放 shared_ptr 管理的资源：
+
+```cpp
+// 错误写法
+avcodec_free_context(&codec_ctx_.get());
+
+// 正确写法
+codec_ctx_.reset();
+```
+
+#### 11.4.4 CUDA_ERROR_NOT_PERMITTED 错误
+
+**问题描述**：
+```
+[h264_nvenc @ 0x...] cuCtxCreate(&ctx->cu_context_internal, 0, cu_device) failed -> CUDA_ERROR_NOT_PERMITTED: operation not permitted
+[h264_nvenc @ 0x...] No NVENC capable devices found
+```
+
+**原因分析**：
+这是 **系统环境问题**，不是代码问题。常见于：
+
+1. **vQGPU 虚拟化环境** - GPU 的 NVENC/NVDEC 功能被云平台策略禁用
+2. **NVIDIA 设备节点缺失** - `/dev/nvidia*` 设备文件不完整
+3. **驱动模块未加载** - `nvidia_uvm` 等模块未正确加载
+
+**诊断方法**：
+
+```bash
+# 1. 检查 GPU 设备
+nvidia-smi -L
+
+# 2. 检查设备节点
+ls -la /dev/nvidia*
+
+# 3. 检查驱动模块
+lsmod | grep nvidia
+
+# 4. 测试 CUDA 初始化
+python3 -c "import ctypes; cuda = ctypes.CDLL('libcuda.so.1'); print('cuInit:', cuda.cuInit(0))"
+
+# 5. 测试 FFmpeg 硬件加速
+ffmpeg -y -i input.mp4 -c:v h264_nvenc -frames:v 10 test.mp4
+```
+
+**解决方案**：
+
+| 问题 | 解决方案 |
+|------|---------|
+| 设备节点缺失 | `sudo mknod -m 666 /dev/nvidia1 c 195 1` |
+| nvidia_uvm 未加载 | `sudo insmod /lib/modules/.../nvidia_uvm.ko` |
+| vQGPU 功能受限 | 联系云平台管理员开通 NVENC/NVDEC 功能，或使用专用 GPU 实例 |
+| 驱动版本不匹配 | 升级/重装 NVIDIA 驱动 |
+
+### 11.5 自动回退机制
+
+当硬件编解码不可用时，代码会自动回退到软件编解码。
+
+#### 11.5.1 CUVID 解码器回退
+
+```cpp
+// input_stream.cc
+int ret = avcodec_open2(codec_ctx_.get(), dec_, &decoder_opts_);
+if (ret < 0) {
+  // 硬件解码失败，尝试回退到软件解码
+  if (using_cuda && auto_switch_to_soft_codec_) {
+    const AVCodec *sw_dec = avcodec_find_decoder(st_->codecpar->codec_id);
+    if (sw_dec) {
+      codec_ctx_.reset();
+      codec_ctx_ = std::shared_ptr<AVCodecContext>(
+          avcodec_alloc_context3(sw_dec), ...);
+      // ... 重新配置并打开软件解码器
+    }
+  }
+}
+```
+
+日志输出示例：
+```
+Using CUDA decoder [h264_cuvid] for stream #0:0 (codec_id=27, gpu_id=0)
+Setting GPU ID 0 for CUDA decoder [h264_cuvid] stream #0:0
+CUDA decoder [h264_cuvid] failed for stream #0:0, falling back to software decoder: ...
+Successfully switched to software decoder [h264] for stream #0:0
+```
+
+#### 11.5.2 NVENC 编码器回退
+
+**问题描述**：
+
+当 NVENC 硬件编码器初始化失败时，之前没有自动回退机制，导致整个转码失败：
+
+```
+[h264_nvenc @ 0x...] dl_fn->cuda_dl->cuCtxCreate(&ctx->cu_context_internal, 0, cu_device) failed -> CUDA_ERROR_INVALID_VALUE: invalid argument
+[h264_nvenc @ 0x...] No capable devices found
+Error while opening encoder for output stream #0:0 -- Generic error in an external library
+```
+
+**解决方案**：
+
+在 `output_file.cc` 的 `init_output_stream` 函数中添加 NVENC 编码器自动回退机制：
+
+```cpp
+// output_file.cc: init_output_stream()
+bool using_nvenc = is_prefer_gpu(gpu_id_) && is_nvenc_encoder(ost->codec_ctx_->codec->name);
+if (using_nvenc) {
+  av_dict_set_int(&ost->codec_opts_, "gpu", gpu_id_, AV_DICT_DONT_OVERWRITE);
+}
+
+ret = avcodec_open2(ost->codec_ctx_.get(), codec, &ost->codec_opts_);
+if (ret < 0) {
+  // NVENC 编码器初始化失败，尝试回退到软件编码器
+  if (using_nvenc && auto_switch_to_soft_codec_) {
+    char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+    av_strerror(ret, errbuf, sizeof(errbuf));
+    av_log(this, AV_LOG_WARNING,
+           "NVENC encoder [%s] failed for stream #%d:%d, falling back to "
+           "software encoder: %s\n",
+           codec->name, file_index_, ost->stream_index_, errbuf);
+
+    // 查找软件编码器
+    const AVCodec *sw_enc = avcodec_find_encoder(st->codecpar->codec_id);
+    if (sw_enc && !is_nvenc_encoder(sw_enc->name)) {
+      // 重新分配 codec context
+      ost->codec_ctx_.reset();
+      ost->codec_ctx_ = std::shared_ptr<AVCodecContext>(
+          avcodec_alloc_context3(sw_enc),
+          [](AVCodecContext *ctx) { avcodec_free_context(&ctx); });
+
+      // 重新设置编码器参数
+      AVCodecContext *enc_ctx = ost->codec_ctx_.get();
+      enc_ctx->codec_type = st->codecpar->codec_type;
+      enc_ctx->width = st->codecpar->width;
+      enc_ctx->height = st->codecpar->height;
+      enc_ctx->pix_fmt = static_cast<AVPixelFormat>(st->codecpar->format);
+      enc_ctx->framerate = ost->framerate_;
+      enc_ctx->time_base = av_inv_q(ost->framerate_);
+
+      // 清除 NVENC 相关选项
+      av_dict_set(&ost->codec_opts_, "gpu", nullptr, 0);
+
+      // 设置软件编码器选项
+      if (enc_ctx->codec_id == AV_CODEC_ID_H264 || enc_ctx->codec_id == AV_CODEC_ID_HEVC) {
+        av_dict_set(&ost->codec_opts_, "tune", "zerolatency", AV_DICT_DONT_OVERWRITE);
+      }
+
+      // 重新尝试打开编码器
+      ret = avcodec_open2(ost->codec_ctx_.get(), sw_enc, &ost->codec_opts_);
+      if (ret >= 0) {
+        av_log(this, AV_LOG_INFO,
+               "Successfully switched to software encoder [%s] for stream #%d:%d\n",
+               sw_enc->name, file_index_, ost->stream_index_);
+      }
+    }
+  }
+}
+```
+
+**回退流程**：
+
+1. 检测是否正在使用 NVENC 编码器
+2. `avcodec_open2` 失败后检查是否启用自动回退
+3. 查找对应的软件编码器（如 `libx264`）
+4. 重新分配 `AVCodecContext`
+5. 复制视频参数（宽高、像素格式、帧率、时间基）
+6. 清除 NVENC 相关选项（`gpu`）
+7. 设置软件编码器选项（`tune=zerolatency`）
+8. 重新尝试打开编码器
+
+**日志输出示例**：
+
+```
+Using NVENC encoder [h264_nvenc] for stream #0:0 (codec_id=27, gpu_id=0)
+Setting GPU ID 0 for NVENC encoder [h264_nvenc] stream #0:0
+NVENC encoder [h264_nvenc] failed for stream #0:0, falling back to software encoder: Generic error in an external library
+Successfully switched to software encoder [libx264] for stream #0:0
+```
+
+### 11.6 环境要求
+
+| 组件 | 最低版本 | 推荐版本 |
+|------|---------|---------|
+| NVIDIA 驱动 | 418.x | 515.x+ |
+| CUDA | 10.0 | 11.7+ |
+| FFmpeg | 4.2 | 5.1+ |
+| GPU | Kepler (GTX 600+) | Turing/Ampere (RTX 20/30/40) |
+
+**注意**：FFmpeg 4.2 的 CUDA 支持有限，建议使用 FFmpeg 5.x 以获得更好的兼容性。
+
+### 11.7 相关文件
+
+- `pkg/cv/video/ffmpeg_hw.h` - GPU 检测函数声明
+- `pkg/cv/video/ffmpeg_hw.cc` - GPU 检测函数实现
+- `pkg/cv/video/input_file.h/cc` - CUDA 解码器选择
+- `pkg/cv/video/input_stream.h/cc` - CUDA 解码器初始化
+- `pkg/cv/video/output_file.h/cc` - NVENC 编码器选择
+- `test/pkg/test_cv_video.cc` - GPU_ID 环境变量支持
