@@ -19,6 +19,10 @@ namespace cv {
 class InputStream;
 
 class InputFile {
+  // av_class_ 必须是类的第一个成员，因为 FFmpeg 的 av_log 期望
+  // 第一个参数指向一个以 AVClass* 开头的结构体
+  const AVClass *av_class_ = nullptr;
+
  public:
   InputFile();
   ~InputFile();
@@ -29,6 +33,40 @@ class InputFile {
   int read_frames(std::vector<Frame> &video_frames,
                   std::vector<Frame> &audio_frames, int32_t batch_size,
                   bool &finished);
+
+  // Seek 到指定时间位置
+  // timestamp: 目标时间戳，单位为秒
+  // flags: seek 标志，参考 AVSEEK_FLAG_*
+  //   AVSEEK_FLAG_BACKWARD (1): 向后搜索到最近的关键帧
+  //   AVSEEK_FLAG_BYTE (2): 按字节位置搜索
+  //   AVSEEK_FLAG_ANY (4): 搜索到任意帧（不一定是关键帧）
+  //   AVSEEK_FLAG_FRAME (8): 按帧号搜索
+  // 返回值: 0 成功, < 0 失败
+  int seek(double timestamp, int flags = AVSEEK_FLAG_BACKWARD);
+
+  // Seek 到指定时间位置（使用 pts 时间戳）
+  // pts: 目标 PTS 值
+  // stream_index: 流索引，-1 表示使用默认流
+  // flags: seek 标志
+  int seek_pts(int64_t pts, int stream_index = -1,
+               int flags = AVSEEK_FLAG_BACKWARD);
+
+  // Seek 到指定帧号位置
+  // frame_number: 目标帧号（从 0 开始）
+  // 返回值: 0 成功, < 0 失败
+  int seek_frame(int64_t frame_number);
+
+  // 获取视频时长（秒）
+  double get_duration() const;
+
+  // 获取当前位置（秒）
+  double get_position() const;
+
+  // 获取总帧数（估算）
+  int64_t get_total_frames() const;
+
+  // 获取帧率
+  double get_frame_rate() const;
 
  private:
   int choose_decoder(const std::shared_ptr<InputStream> &ist,
@@ -74,6 +112,9 @@ class InputFile {
   int init_filters();
 
   void get_format_context(FormatContext &format_ctx) const;
+
+  // Seek 后清空缓冲区和重置状态
+  void flush_after_seek();
 
  public:
   int file_index_ = 0;
@@ -136,7 +177,6 @@ class InputFile {
   bool auto_switch_to_soft_codec_ = true;
 
  private:
-  const AVClass *av_class_ = nullptr;
   bool debug_ts_ = false;
   bool copy_ts_ = false;
   float dts_delta_threshold_ = 10;

@@ -1495,5 +1495,212 @@ int InputFile::init_filters() {
 
   return 0;
 }
+
+int InputFile::seek(double timestamp, int flags) {
+  if (!ifmt_ctx_) {
+    return AVERROR(EINVAL);
+  }
+
+  // 将秒转换为 AV_TIME_BASE 单位
+  int64_t seek_target = static_cast<int64_t>(timestamp * AV_TIME_BASE);
+
+  // 加上文件开始时间偏移
+  if (ifmt_ctx_->start_time != AV_NOPTS_VALUE) {
+    seek_target += ifmt_ctx_->start_time;
+  }
+
+  int ret = avformat_seek_file(ifmt_ctx_.get(), -1, INT64_MIN, seek_target,
+                               seek_target, flags);
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Failed to seek to position %.3f: %s\n",
+           timestamp, av_err2str(ret));
+    return ret;
+  }
+
+  // 清空所有流的缓冲区和状态
+  flush_after_seek();
+
+  av_log(this, AV_LOG_INFO, "Seek to position %.3f seconds\n", timestamp);
+  return 0;
+}
+
+int InputFile::seek_pts(int64_t pts, int stream_index, int flags) {
+  if (!ifmt_ctx_) {
+    return AVERROR(EINVAL);
+  }
+
+  int ret = 0;
+  if (stream_index >= 0 &&
+      stream_index < static_cast<int>(ifmt_ctx_->nb_streams)) {
+    // 使用指定流的时间基进行 seek
+    ret = av_seek_frame(ifmt_ctx_.get(), stream_index, pts, flags);
+  } else {
+    // 使用默认时间基 (AV_TIME_BASE)
+    ret = avformat_seek_file(ifmt_ctx_.get(), -1, INT64_MIN, pts, pts, flags);
+  }
+
+  if (ret < 0) {
+    av_log(this, AV_LOG_ERROR, "Failed to seek to pts %" PRId64 ": %s\n", pts,
+           av_err2str(ret));
+    return ret;
+  }
+
+  // 清空所有流的缓冲区和状态
+  flush_after_seek();
+
+  av_log(this, AV_LOG_INFO, "Seek to pts %" PRId64 "\n", pts);
+  return 0;
+}
+
+int InputFile::seek_frame(int64_t frame_number) {
+  if (!ifmt_ctx_) {
+    return AVERROR(EINVAL);
+  }
+
+  // 获取视频流的帧率
+  double fps = get_frame_rate();
+  if (fps <= 0) {
+    av_log(this, AV_LOG_ERROR, "Cannot seek by frame number: invalid frame rate\n");
+    return AVERROR(EINVAL);
+  }
+
+  // 将帧号转换为时间戳（秒）
+  double timestamp = static_cast<double>(frame_number) / fps;
+
+  return seek(timestamp, AVSEEK_FLAG_BACKWARD);
+}
+
+double InputFile::get_duration() const {
+  if (!ifmt_ctx_ || ifmt_ctx_->duration == AV_NOPTS_VALUE) {
+    return 0.0;
+  }
+  return static_cast<double>(ifmt_ctx_->duration) / AV_TIME_BASE;
+}
+
+double InputFile::get_position() const {
+  if (!ifmt_ctx_) {
+    return 0.0;
+  }
+
+  // 优先使用视频流的位置
+  if (first_video_stream_index_ >= 0 &&
+      first_video_stream_index_ < static_cast<int>(input_streams_.size())) {
+    const auto &ist = input_streams_[first_video_stream_index_];
+    if (ist && ist->pts_ != AV_NOPTS_VALUE) {
+      return static_cast<double>(ist->pts_) / AV_TIME_BASE;
+    }
+  }
+
+  // 回退到音频流
+  if (first_audio_stream_index_ >= 0 &&
+      first_audio_stream_index_ < static_cast<int>(input_streams_.size())) {
+    const auto &ist = input_streams_[first_audio_stream_index_];
+    if (ist && ist->pts_ != AV_NOPTS_VALUE) {
+      return static_cast<double>(ist->pts_) / AV_TIME_BASE;
+    }
+  }
+
+  return 0.0;
+}
+
+int64_t InputFile::get_total_frames() const {
+  if (!ifmt_ctx_) {
+    return 0;
+  }
+
+  // 尝试从视频流获取帧数
+  if (first_video_stream_index_ >= 0 &&
+      first_video_stream_index_ < static_cast<int>(ifmt_ctx_->nb_streams)) {
+    AVStream *st = ifmt_ctx_->streams[first_video_stream_index_];
+    if (st->nb_frames > 0) {
+      return st->nb_frames;
+    }
+
+    // 如果 nb_frames 不可用，通过时长和帧率估算
+    double duration = get_duration();
+    double fps = get_frame_rate();
+    if (duration > 0 && fps > 0) {
+      return static_cast<int64_t>(duration * fps);
+    }
+  }
+
+  return 0;
+}
+
+double InputFile::get_frame_rate() const {
+  if (!ifmt_ctx_) {
+    return 0.0;
+  }
+
+  if (first_video_stream_index_ >= 0 &&
+      first_video_stream_index_ < static_cast<int>(ifmt_ctx_->nb_streams)) {
+    AVStream *st = ifmt_ctx_->streams[first_video_stream_index_];
+
+    // 优先使用 r_frame_rate（实际帧率）
+    if (st->r_frame_rate.num && st->r_frame_rate.den) {
+      return av_q2d(st->r_frame_rate);
+    }
+
+    // 回退到 avg_frame_rate
+    if (st->avg_frame_rate.num && st->avg_frame_rate.den) {
+      return av_q2d(st->avg_frame_rate);
+    }
+
+    // 回退到 codec context 的 framerate
+    if (first_video_stream_index_ < static_cast<int>(input_streams_.size())) {
+      const auto &ist = input_streams_[first_video_stream_index_];
+      if (ist && ist->codec_ctx_ && ist->codec_ctx_->framerate.num &&
+          ist->codec_ctx_->framerate.den) {
+        return av_q2d(ist->codec_ctx_->framerate);
+      }
+    }
+  }
+
+  return 0.0;
+}
+
+void InputFile::flush_after_seek() {
+  // 重置 EOF 标志
+  eof_reached_ = false;
+  eagain_ = false;
+
+  // 清空每个输入流的缓冲区和状态
+  for (auto &ist : input_streams_) {
+    if (!ist) {
+      continue;
+    }
+
+    // 清空帧缓冲区
+    ist->frames_.clear();
+
+    // 重置时间戳状态
+    ist->saw_first_ts_ = false;
+    ist->dts_ = AV_NOPTS_VALUE;
+    ist->pts_ = AV_NOPTS_VALUE;
+    ist->next_dts_ = AV_NOPTS_VALUE;
+    ist->next_pts_ = AV_NOPTS_VALUE;
+    ist->first_dts_ = AV_NOPTS_VALUE;
+    ist->min_pts_ = INT64_MAX;
+    ist->max_pts_ = INT64_MIN;
+    ist->wrap_correction_done_ = 0;
+
+    // 刷新解码器
+    if (ist->codec_ctx_) {
+      avcodec_flush_buffers(ist->codec_ctx_.get());
+    }
+
+    // 清空 DTS 缓冲区
+    ist->dts_buffer_.clear();
+
+    // 重置过滤器状态
+    if (ist->ifilt_) {
+      ist->ifilt_->flush();
+    }
+  }
+
+  // 重置时间戳偏移
+  last_ts_ = AV_NOPTS_VALUE;
+}
+
 }  // namespace cv
 }  // namespace kingfisher
