@@ -14,6 +14,8 @@
 6. [特殊视频流处理问题](#6-特殊视频流处理问题)
 7. [自定义过滤器支持](#7-自定义过滤器支持)
 8. [测试程序使用说明](#8-测试程序使用说明)
+9. [FFmpeg 核心概念](#9-ffmpeg-核心概念)
+10. [音视频同步机制](#10-音视频同步机制)
 
 ---
 
@@ -870,6 +872,259 @@ VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" AUDIO_FILTER="volum
 
 ---
 
+## 9. FFmpeg 核心概念
+
+### 9.1 AVPacket vs AVFrame
+
+AVPacket 和 AVFrame 是 FFmpeg 中两个核心数据结构，代表视频处理流水线中不同阶段的数据。
+
+#### 9.1.1 基本对比
+
+| 特性 | AVPacket | AVFrame |
+|------|----------|---------|
+| **数据状态** | 压缩数据（编码后） | 原始数据（解码后） |
+| **存储内容** | 编码的比特流 | 像素/采样数据 |
+| **数据大小** | 小（压缩） | 大（未压缩） |
+| **来源** | 从容器读取 / 编码器输出 | 解码器输出 / 待编码输入 |
+
+#### 9.1.2 数据流位置
+
+```
+┌─────────────┐    demux     ┌─────────────┐    decode    ┌─────────────┐
+│  容器文件    │ ──────────> │  AVPacket   │ ──────────> │  AVFrame    │
+│ (mp4/mkv)   │             │  (压缩数据)  │             │  (原始数据)  │
+└─────────────┘             └─────────────┘             └─────────────┘
+                                   ▲                          │
+                                   │         encode           │
+                                   └──────────────────────────┘
+```
+
+#### 9.1.3 结构对比
+
+**AVPacket（压缩数据包）**：
+```c
+typedef struct AVPacket {
+    uint8_t *data;      // 压缩数据指针（H.264/AAC等编码数据）
+    int size;           // 数据大小（通常几KB~几百KB）
+    int64_t pts;        // 显示时间戳
+    int64_t dts;        // 解码时间戳（B帧时 dts != pts）
+    int stream_index;   // 所属流索引
+    int flags;          // 关键帧标志等
+    int64_t duration;   // 持续时间
+} AVPacket;
+```
+
+**AVFrame（原始帧）**：
+```c
+typedef struct AVFrame {
+    // 视频
+    uint8_t *data[8];   // 像素数据（YUV各平面或RGB）
+    int linesize[8];    // 每行字节数
+    int width, height;  // 分辨率
+    int format;         // 像素格式（AV_PIX_FMT_YUV420P等）
+    
+    // 音频
+    uint8_t **extended_data;  // 采样数据
+    int nb_samples;           // 采样数
+    int sample_rate;          // 采样率
+    int channels;             // 声道数
+    
+    // 通用
+    int64_t pts;              // 显示时间戳
+    AVRational time_base;     // 时间基
+} AVFrame;
+```
+
+#### 9.1.4 在项目中的使用
+
+```cpp
+// InputFile::process_input_packet() - 处理 AVPacket
+int InputFile::process_input_packet(AVPacketPtr pkt) {
+    // pkt 是从文件读取的压缩数据
+    return decode(ist, pkt.get(), ...);  // 解码成 AVFrame
+}
+
+// decode_video() - AVPacket -> AVFrame
+int InputFile::decode_video(InputStream* ist, AVPacket* pkt, ...) {
+    avcodec_send_packet(dec, pkt);           // 发送压缩包
+    avcodec_receive_frame(dec, frame);       // 接收原始帧
+    // frame 现在包含解码后的像素数据
+}
+
+// OutputFile::encode() - AVFrame -> AVPacket
+int OutputFile::encode(OutputStream* ost, AVFrame* frame) {
+    avcodec_send_frame(enc, frame);          // 发送原始帧
+    avcodec_receive_packet(enc, pkt);        // 接收压缩包
+    // pkt 现在包含编码后的比特流
+}
+```
+
+#### 9.1.5 典型数据大小对比
+
+| 类型 | AVPacket | AVFrame |
+|------|----------|---------|
+| 1080p 视频帧 | ~50KB (H.264) | ~3MB (YUV420P) |
+| 音频 1024 采样 | ~1KB (AAC) | ~8KB (PCM 16bit stereo) |
+
+**核心区别**：AVPacket 是传输/存储用的压缩格式，AVFrame 是处理用的原始格式。解码是 Packet→Frame，编码是 Frame→Packet。
+
+---
+
+## 10. 音视频同步机制
+
+### 10.1 问题背景
+
+在转码过程中，音频和视频是分开处理的，需要确保输出文件中音视频保持同步。
+
+### 10.2 同步保证机制
+
+项目通过以下几个关键机制保证音视频同步：
+
+#### 10.2.1 统一时间基转换
+
+```
+┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│ 输入流 time_base │ -> │ 编码器 time_base │ -> │ 输出流 time_base │
+│  (解码阶段)      │    │   (编码阶段)     │    │   (写入阶段)     │
+└──────────────────┘    └──────────────────┘    └──────────────────┘
+```
+
+关键代码在 `output_file.cc`：
+
+```cpp
+// 写入前转换帧时间基到编码器时间基
+if (frame->time_base.num > 0 && frame->time_base.den > 0 &&
+    (frame->time_base.num != enc_ctx->time_base.num ||
+     frame->time_base.den != enc_ctx->time_base.den)) {
+  av_frame_rescale_ts(frame.get(), frame->time_base, enc_ctx->time_base);
+  frame->time_base = enc_ctx->time_base;
+}
+
+// 写入前转换 packet 时间基到输出流时间基
+av_packet_rescale_ts(pkt, pkt->time_base, st->time_base);
+pkt->time_base = st->time_base;
+```
+
+#### 10.2.2 交织写入（Interleaved Write）
+
+```cpp
+// output_file.cc: of_write_packet()
+// 使用 av_interleaved_write_frame 而非 av_write_frame
+ret = av_interleaved_write_frame(ofmt_ctx_.get(), pkt);
+```
+
+`av_interleaved_write_frame` 会：
+- 内部维护音频和视频的 packet 队列
+- 按 **DTS 升序** 自动排序后再写入
+- 确保输出文件中音视频 packet 交错存储
+
+#### 10.2.3 DTS 单调递增保证
+
+```cpp
+// output_file.cc: of_write_packet()
+if (!(s->oformat->flags & AVFMT_NOTIMESTAMPS)) {
+    // 检查 DTS > PTS 的非法情况
+    if (pkt->dts != AV_NOPTS_VALUE && pkt->pts != AV_NOPTS_VALUE &&
+        pkt->dts > pkt->pts) {
+        // 自动修正
+        pkt->pts = pkt->dts = ...;
+    }
+    
+    // 检查 DTS 非单调递增
+    if (pkt->dts < max) {
+        // 修正为 max，保证单调递增
+        if (pkt->pts >= pkt->dts) {
+            pkt->pts = FFMAX(pkt->pts, max);
+        }
+        pkt->dts = max;
+    }
+}
+
+// 记录上次 DTS 用于下次比较
+ost->last_mux_dts_ = pkt->dts;
+```
+
+#### 10.2.4 音视频时间基设置
+
+| 流类型 | 编码器 time_base 设置 |
+|--------|---------------------|
+| 视频 | `1 / framerate`（如 1/25） |
+| 音频 | `1 / sample_rate`（如 1/44100） |
+
+```cpp
+// output_file.cc: init_output_stream_encode()
+// 音频编码器时间基
+init_encoder_time_base(ost, av_make_q(1, enc_ctx->sample_rate));
+
+// 视频编码器时间基
+enc_ctx->time_base = av_inv_q(ost->codec_ctx_->framerate);
+```
+
+### 10.3 同步流程图
+
+```
+┌─────────┐                              ┌─────────┐
+│ 视频流  │                              │ 音频流  │
+└────┬────┘                              └────┬────┘
+     │ encode                                 │ encode
+     ▼                                        ▼
+┌─────────────────┐                   ┌─────────────────┐
+│ AVPacket        │                   │ AVPacket        │
+│ pts=100, dts=100│                   │ pts=4410,dts=4410│
+└────────┬────────┘                   └────────┬────────┘
+         │ rescale_ts                          │ rescale_ts
+         │ (enc_tb -> st_tb)                   │ (enc_tb -> st_tb)
+         ▼                                     ▼
+    ┌────────────────────────────────────────────┐
+    │        av_interleaved_write_frame          │
+    │  ┌──────────────────────────────────────┐  │
+    │  │  内部队列（按 DTS 排序）              │  │
+    │  │  Audio DTS=0.1s, Video DTS=0.1s      │  │
+    │  └──────────────────────────────────────┘  │
+    └─────────────────────┬──────────────────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │  输出文件    │
+                   │ (DTS 升序)   │
+                   └─────────────┘
+```
+
+### 10.4 测试代码中的同步
+
+在 `test_cv_video.cc` 中的写入方式：
+
+```cpp
+while (!finished) {
+    // 1. 读取帧（音视频分开存储）
+    input_file.read_frames(video_frames, audio_frames, 8, finished);
+    
+    // 2. 先写视频帧
+    output_file.write_frames(video_frames);
+    
+    // 3. 再写音频帧
+    output_file.write_frames(audio_frames);
+}
+```
+
+虽然写入顺序是先视频后音频，但由于 `av_interleaved_write_frame` 内部会重新按 DTS 排序，**最终输出文件的音视频是同步的**。
+
+### 10.5 同步机制总结
+
+| 机制 | 作用 |
+|------|------|
+| `av_packet_rescale_ts` | 统一时间基，确保 PTS/DTS 可比较 |
+| `av_interleaved_write_frame` | 自动交织排序，按 DTS 顺序写入 |
+| DTS 单调递增检查 | 修正乱序/回退的时间戳 |
+| `last_mux_dts_` 追踪 | 记录每个流的最后 DTS，用于单调性检查 |
+
+**相关文件**：
+- `pkg/cv/video/output_file.cc`
+- `pkg/cv/video/input_file.cc`
+- `test/pkg/test_cv_video.cc`
+
+---
+
 ## 总结
 
 | 问题类型 | 根本原因 | 关键修复点 |
@@ -882,6 +1137,18 @@ VIDEO_INPUT=/path/to/input.mp4 VIDEO_FILTER="scale=1280:720" AUDIO_FILTER="volum
 | FPS 问题 | 编码器时间基设置错误 | 使用 `init_encoder_time_base` 正确设置 `enc_ctx->time_base = av_inv_q(framerate)` |
 | 特殊流处理 | 非音视频流无解码器但 `decoding_needed_=true` | 在 `choose_decoder` 中对非音视频流设置 `codec_name="copy"` |
 | 过滤器支持 | 需要自定义视频/音频处理 | 添加 `video_filter_spec_` 和 `audio_filter_spec_` 成员变量 |
+| 音视频同步 | 音视频分开处理后需保证同步 | `av_interleaved_write_frame` 按 DTS 排序 + 时间基转换 + DTS 单调递增检查 |
+
+## 核心概念速查
+
+| 概念 | 说明 |
+|------|------|
+| AVPacket | 压缩数据（编码后），用于存储/传输 |
+| AVFrame | 原始数据（解码后），用于处理 |
+| PTS | 显示时间戳（Presentation Time Stamp） |
+| DTS | 解码时间戳（Decoding Time Stamp），B帧时 DTS ≠ PTS |
+| time_base | 时间基，PTS/DTS 的单位（如 1/25 表示每单位 40ms） |
+| `av_interleaved_write_frame` | 交织写入，内部按 DTS 排序后写入文件 |
 
 ## 参考资料
 
