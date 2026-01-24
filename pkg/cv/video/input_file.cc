@@ -271,7 +271,7 @@ int InputFile::read_batch_frames(std::vector<Frame> &video_frames_buffer,
 
   // 检查是否已取消
   if (is_cancelled()) {
-    av_log(nullptr, AV_LOG_INFO, "Read operation cancelled\n");
+    av_log(this, AV_LOG_INFO, "Read operation cancelled\n");
     return AVERROR_EXIT;
   }
 
@@ -382,18 +382,18 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
     }
 
     if (ret == AVERROR_EOF) {
-      av_log(nullptr, AV_LOG_VERBOSE,
+      av_log(this, AV_LOG_VERBOSE,
              "av_read_frame all packets finished for input file #%d: %s\n",
              file_index_, av_err2str(ret));
 
       eof_reached_ = true;
       ret = 0;
 
-      av_log(nullptr, AV_LOG_DEBUG,
+      av_log(this, AV_LOG_DEBUG,
              "Going to flush all filters for input file #%d\n", file_index_);
 
     } else if (ret < 0) {
-      av_log(nullptr, AV_LOG_ERROR,
+      av_log(this, AV_LOG_ERROR,
              "failed to av_read_frame for input file #%d: %s\n", file_index_,
              av_err2str(ret));
       return ret;
@@ -540,7 +540,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
             delta > 1LL * dts_delta_threshold_ * AV_TIME_BASE ||
             pkt_dts + AV_TIME_BASE / 10 < FFMAX(ist->pts_, ist->dts_)) {
           ts_offset_ -= delta;
-          av_log(nullptr, AV_LOG_DEBUG,
+          av_log(this, AV_LOG_DEBUG,
                  "timestamp discontinuity for stream #%d:%d "
                  "(id=%d, type=%s): %" PRId64 ", new offset= %" PRId64 "\n",
                  ist->file_index_, st->index, st->id,
@@ -554,7 +554,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
       } else {
         if (delta < -1LL * dts_error_threshold_ * AV_TIME_BASE ||
             delta > 1LL * dts_error_threshold_ * AV_TIME_BASE) {
-          av_log(nullptr, AV_LOG_WARNING,
+          av_log(this, AV_LOG_WARNING,
                  "DTS %" PRId64 ", next:%" PRId64 " st:%d invalid dropping\n",
                  pkt->dts, ist->next_dts_, pkt->stream_index);
           pkt->dts = AV_NOPTS_VALUE;
@@ -565,7 +565,7 @@ int InputFile::read_frames(const std::function<bool()> &stop_waiting) {
           delta = pkt_pts - ist->next_dts_;
           if (delta < -1LL * dts_error_threshold_ * AV_TIME_BASE ||
               delta > 1LL * dts_error_threshold_ * AV_TIME_BASE) {
-            av_log(nullptr, AV_LOG_WARNING,
+            av_log(this, AV_LOG_WARNING,
                    "PTS %" PRId64 ", next:%" PRId64 " invalid dropping st:%d\n",
                    pkt->pts, ist->next_dts_, pkt->stream_index);
             pkt->pts = AV_NOPTS_VALUE;
@@ -729,7 +729,7 @@ int InputFile::add_input_streams() {
     /* init input streams */
     ret = ist->init_input_stream();
     if (ret < 0) {
-      av_log(nullptr, AV_LOG_ERROR,
+      av_log(this, AV_LOG_ERROR,
              "Failed to init input stream #%d:%d -- %s\n", file_index_,
              stream_id, av_err2str(ret));
       return ret;

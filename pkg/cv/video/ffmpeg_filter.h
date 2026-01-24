@@ -19,6 +19,10 @@ class OutputFilter;
 class Stream;
 
 class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
+  // av_class_ 必须是类的第一个成员，因为 FFmpeg 的 av_log 期望
+  // 第一个参数指向一个以 AVClass* 开头的结构体
+  const AVClass *av_class_ = nullptr;
+
  public:
   FilterGraph(std::weak_ptr<Stream> stream, const std::string &graph_desc);
   ~FilterGraph();
@@ -43,7 +47,6 @@ class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
   void flush();
 
  public:
-  const AVClass *av_class_ = nullptr;
   std::shared_ptr<AVFilterGraph> filter_graph_;
   std::vector<std::shared_ptr<InputFilter>> inputs_;
   std::vector<std::shared_ptr<OutputFilter>> outputs_;

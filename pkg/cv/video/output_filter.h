@@ -18,6 +18,10 @@ class Stream;
 class FilterGraph;
 
 class OutputFilter {
+  // av_class_ 必须是类的第一个成员，因为 FFmpeg 的 av_log 期望
+  // 第一个参数指向一个以 AVClass* 开头的结构体
+  const AVClass *av_class_ = nullptr;
+
  public:
   OutputFilter(const std::shared_ptr<FilterGraph> &fg,
                const std::weak_ptr<Stream> &ost);
@@ -31,7 +35,6 @@ class OutputFilter {
                    bool need_filtered_frames);
 
  public:
-  const AVClass *av_class_ = nullptr;
   AVFilterContext *filter_ = nullptr;
   std::weak_ptr<FilterGraph> graph_;
   std::weak_ptr<Stream> ost_;

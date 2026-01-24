@@ -188,7 +188,7 @@ int FilterGraph::configure_filtergraph() {
       if (!ost->codec_ctx_->codec) {
         /* identical to the same check in ffmpeg.c, needed because
            complex filter graphs are initialized earlier */
-        av_log((void *)(&(this->av_class_)), AV_LOG_ERROR,
+        av_log(this, AV_LOG_ERROR,
                "Encoder (codec %s) not found for output stream #%d:%d\n",
                avcodec_get_name(st->codecpar->codec_id), ost->file_index_,
                ost->stream_index_);
@@ -239,7 +239,7 @@ int FilterGraph::reap_filters(
       ret = 0; /* ignore */
     }
     if (ret < 0) {
-      av_log((void *)(&(this->av_class_)), AV_LOG_ERROR,
+      av_log(this, AV_LOG_ERROR,
              "Failed to inject frame into filter network: %s\n",
              av_err2str(ret));
       break;
@@ -308,7 +308,7 @@ int FilterGraph::send_frame_to_filters(
       ret = 0; /* ignore */
     }
     if (ret < 0) {
-      av_log(nullptr, AV_LOG_ERROR,
+      av_log(this, AV_LOG_ERROR,
              "Failed to inject frame into filter network: %s\n",
              av_err2str(ret));
       break;
@@ -325,7 +325,7 @@ int FilterGraph::send_filter_eof(int64_t pts) {
       ret = 0; /* ignore */
     }
     if (ret < 0) {
-      av_log(nullptr, AV_LOG_ERROR,
+      av_log(this, AV_LOG_ERROR,
              "Failed to inject frame into filter network: %s\n",
              av_err2str(ret));
       break;

@@ -18,6 +18,10 @@ namespace cv {
 class OutputStream;
 
 class OutputFile {
+  // av_class_ 必须是类的第一个成员，因为 FFmpeg 的 av_log 期望
+  // 第一个参数指向一个以 AVClass* 开头的结构体
+  const AVClass *av_class_ = nullptr;
+
  public:
   OutputFile();
   ~OutputFile();
@@ -95,8 +99,6 @@ class OutputFile {
   int write_avframe(int stream_index, const std::shared_ptr<AVFrame> &frame);
 
  public:
-  const AVClass *av_class_ = nullptr;
-
   AVDictionary *command_opts_ = nullptr;
   AVDictionary *encoder_opts_ = nullptr;
 

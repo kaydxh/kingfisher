@@ -120,7 +120,7 @@ int InputFilter::ifilter_send_frame(const std::shared_ptr<AVFrame> &frame,
     }
     ret = fg->configure_filtergraph();
     if (ret < 0) {
-      av_log(nullptr, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
+      av_log(this, AV_LOG_ERROR, "Error reinitializing filters!: %s\n",
              av_err2str(ret));
       return ret;
     }

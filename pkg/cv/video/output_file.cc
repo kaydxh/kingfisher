@@ -558,7 +558,7 @@ int OutputFile::init_output_stream_wrapper(
 
   ret = init_output_stream(ost, frame);
   if (ret < 0) {
-    av_log(nullptr, AV_LOG_ERROR,
+    av_log(this, AV_LOG_ERROR,
            "Error initializing output stream %d:%d -- %s\n", ost->file_index_,
            ost->stream_index_, av_err2str(ret));
     return ret;
@@ -595,7 +595,7 @@ int OutputFile::init_output_stream_encode(
 
     if (ist && !ost->framerate_.num && !ost->max_frame_rate_.num) {
       ost->framerate_ = (AVRational){25, 1};
-      av_log(nullptr, AV_LOG_WARNING,
+      av_log(this, AV_LOG_WARNING,
              "No information "
              "about the input framerate is available. Falling "
              "back to a default value of 25fps for output stream #%d:%d. Use "
@@ -639,7 +639,7 @@ int OutputFile::init_output_stream_encode(
         enc_ctx->sample_rate = frame->sample_rate;
         ret = av_channel_layout_copy(&enc_ctx->ch_layout, &frame->ch_layout);
         if (ret < 0) {
-          av_log(nullptr, AV_LOG_ERROR,
+          av_log(this, AV_LOG_ERROR,
                  "Failed to copy channel layout from frame: %s\n",
                  av_err2str(ret));
           return ret;
@@ -650,13 +650,13 @@ int OutputFile::init_output_stream_encode(
         enc_ctx->sample_rate = ist->codecpar->sample_rate;
         ret = av_channel_layout_copy(&enc_ctx->ch_layout, &ist->codecpar->ch_layout);
         if (ret < 0) {
-          av_log(nullptr, AV_LOG_ERROR,
+          av_log(this, AV_LOG_ERROR,
                  "Failed to copy channel layout from input stream: %s\n",
                  av_err2str(ret));
           return ret;
         }
       } else {
-        av_log(nullptr, AV_LOG_ERROR,
+        av_log(this, AV_LOG_ERROR,
                "No filter, frame, or valid input stream available for audio encoding\n");
         return AVERROR(EINVAL);
       }
@@ -1520,14 +1520,14 @@ int OutputFile::write_frames(const std::vector<Frame> &raw_frames) {
   
   // 检查是否已取消
   if (is_cancelled()) {
-    av_log(nullptr, AV_LOG_INFO, "Write operation cancelled\n");
+    av_log(this, AV_LOG_INFO, "Write operation cancelled\n");
     return AVERROR_EXIT;
   }
 
   for (const auto &raw_frame : raw_frames) {
     // 在每帧写入前检查取消
     if (is_cancelled()) {
-      av_log(nullptr, AV_LOG_INFO, "Write operation cancelled\n");
+      av_log(this, AV_LOG_INFO, "Write operation cancelled\n");
       return AVERROR_EXIT;
     }
 
