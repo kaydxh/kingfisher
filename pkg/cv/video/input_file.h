@@ -68,6 +68,18 @@ class InputFile {
   // 获取帧率
   double get_frame_rate() const;
 
+  // 设置进度回调
+  // callback: 进度回调函数，每处理一批帧后调用
+  // interval: 回调间隔（帧数），默认每 10 帧回调一次
+  void set_progress_callback(ProgressCallback callback, int interval = 10);
+
+  // 设置取消回调
+  // callback: 取消检查函数，返回 true 时停止读取
+  void set_cancel_callback(CancelCallback callback);
+
+  // 检查是否已取消
+  bool is_cancelled() const;
+
  private:
   int choose_decoder(const std::shared_ptr<InputStream> &ist,
                      const AVCodec *&codec);
@@ -183,6 +195,15 @@ class InputFile {
   float dts_error_threshold_ = 3600 * 30;
   int first_video_stream_index_ = -1;
   int first_audio_stream_index_ = -1;
+
+  // 进度回调相关
+  ProgressCallback progress_callback_;
+  int progress_callback_interval_ = 10;
+  int64_t frames_since_last_callback_ = 0;
+
+  // 取消机制
+  CancelCallback cancel_callback_;
+  mutable bool cancelled_ = false;
 };
 
 }  // namespace cv

@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_FFMPEG_TYPES_H_
 #define KINGFISHER_PKG_CV_VIDEO_FFMPEG_TYPES_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,6 +22,29 @@ extern "C" {
 
 namespace kingfisher {
 namespace cv {
+
+// ======================= 进度回调与取消机制 =======================
+
+// 进度信息结构体
+struct ProgressInfo {
+  int64_t current_frame = 0;    // 当前处理的帧号
+  int64_t total_frames = 0;     // 总帧数（估算值，可能不准确）
+  double current_seconds = 0.0; // 当前处理位置（秒）
+  double total_seconds = 0.0;   // 总时长（秒）
+  double progress = 0.0;        // 进度百分比 [0.0, 1.0]
+  int64_t bytes_processed = 0;  // 已处理的字节数
+};
+
+// 进度回调函数类型
+// 参数: ProgressInfo 包含当前进度信息
+// 返回值: 无
+using ProgressCallback = std::function<void(const ProgressInfo &info)>;
+
+// 取消检查回调函数类型
+// 返回值: true 表示应该取消操作，false 表示继续
+using CancelCallback = std::function<bool()>;
+
+// ======================= 数据结构 =======================
 
 struct Frame {
   std::shared_ptr<AVPacket> packet;

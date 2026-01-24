@@ -46,6 +46,30 @@ OutputFile::~OutputFile() {
   av_dict_free(&opts_);
 }
 
+void OutputFile::set_progress_callback(ProgressCallback callback, int interval) {
+  progress_callback_ = std::move(callback);
+  progress_callback_interval_ = interval > 0 ? interval : 10;
+}
+
+void OutputFile::set_cancel_callback(CancelCallback callback) {
+  cancel_callback_ = std::move(callback);
+}
+
+bool OutputFile::is_cancelled() const {
+  if (cancelled_) {
+    return true;
+  }
+  if (cancel_callback_ && cancel_callback_()) {
+    cancelled_ = true;
+    return true;
+  }
+  return false;
+}
+
+void OutputFile::set_total_frames(int64_t total_frames) {
+  total_frames_ = total_frames;
+}
+
 int OutputFile::open(const std::string &filename, FormatContext &format_ctx) {
   int ret = 0;
   AVFormatContext *ofmt_ctx = nullptr;
@@ -1493,9 +1517,48 @@ int OutputFile::write_frame(const Frame &raw_frame) {
 
 int OutputFile::write_frames(const std::vector<Frame> &raw_frames) {
   int ret = 0;
+  
+  // 检查是否已取消
+  if (is_cancelled()) {
+    av_log(nullptr, AV_LOG_INFO, "Write operation cancelled\n");
+    return AVERROR_EXIT;
+  }
+
   for (const auto &raw_frame : raw_frames) {
+    // 在每帧写入前检查取消
+    if (is_cancelled()) {
+      av_log(nullptr, AV_LOG_INFO, "Write operation cancelled\n");
+      return AVERROR_EXIT;
+    }
+
     if ((ret = write_frame(raw_frame)) < 0) {
       return ret;
+    }
+    
+    // 统计视频帧
+    if (raw_frame.codec_type == AVMEDIA_TYPE_VIDEO) {
+      frames_written_++;
+      
+      // 进度回调
+      if (progress_callback_ && 
+          (frames_written_ % progress_callback_interval_ == 0)) {
+        ProgressInfo info;
+        info.current_frame = frames_written_;
+        info.total_frames = total_frames_;
+        
+        // 使用帧的时间信息
+        if (raw_frame.pts != AV_NOPTS_VALUE) {
+          info.current_seconds = av_q2d(raw_frame.time_base) * raw_frame.pts;
+        }
+        
+        // 计算进度百分比
+        if (total_frames_ > 0) {
+          info.progress = static_cast<double>(frames_written_) / total_frames_;
+          if (info.progress > 1.0) info.progress = 1.0;
+        }
+        
+        progress_callback_(info);
+      }
     }
   }
   return 0;

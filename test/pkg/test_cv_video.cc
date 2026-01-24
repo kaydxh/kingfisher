@@ -1,9 +1,12 @@
 #include <gtest/gtest.h>
 
+#include <atomic>
+#include <chrono>
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <thread>
 
 #include "cv/video/ffmpeg_error.h"
 #include "cv/video/ffmpeg_types.h"
@@ -68,6 +71,15 @@ SEEK_FRAME=250 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test 
 
 # Seek 测试 + GPU 加速
 GPU_ID=0 SEEK_TIME=5.0 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Seek
+
+# 进度回调测试
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.ProgressCallback
+
+# 取消机制测试（在处理 50% 后取消）
+CANCEL_AT=0.5 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.CancelCallback
+
+# 带进度回调的完整转码测试
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeWithProgress
 
 # 获取视频帧数
 ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 input.mp4
@@ -380,6 +392,251 @@ TEST_F(test_Video, Seek) {
   }
 
   av_log(nullptr, AV_LOG_INFO, "\n=== Seek Test Completed ===\n");
+}
+
+// 进度回调测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.ProgressCallback
+TEST_F(test_Video, ProgressCallback) {
+  std::string input_url = get_input_url();
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Progress Callback Test ===\n");
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+
+  InputFile input_file;
+  input_file.gpu_id_ = gpu_id;
+
+  // 设置进度回调
+  int callback_count = 0;
+  input_file.set_progress_callback([&callback_count](const ProgressInfo &info) {
+    callback_count++;
+    av_log(nullptr, AV_LOG_INFO,
+           "[Progress] %.1f%% - Frame: %" PRId64 "/%" PRId64 ", Time: %.2fs/%.2fs\n",
+           info.progress * 100.0,
+           info.current_frame, info.total_frames,
+           info.current_seconds, info.total_seconds);
+  }, 30);  // 每 30 帧回调一次
+
+  FormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open input file: %s\n", av_err2str(ret));
+    FAIL();
+    return;
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "Duration: %.2f s, Total frames: %" PRId64 "\n",
+         input_file.get_duration(), input_file.get_total_frames());
+
+  std::vector<Frame> video_frames, audio_frames;
+  bool finished = false;
+  int64_t total_read_frames = 0;
+
+  while (!finished) {
+    video_frames.clear();
+    audio_frames.clear();
+
+    ret = input_file.read_frames(video_frames, audio_frames, 30, finished);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "read_frames failed: %s\n", av_err2str(ret));
+      break;
+    }
+    total_read_frames += video_frames.size();
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "\n--- Results ---\n");
+  av_log(nullptr, AV_LOG_INFO, "Total frames read: %" PRId64 "\n", total_read_frames);
+  av_log(nullptr, AV_LOG_INFO, "Progress callbacks: %d\n", callback_count);
+
+  EXPECT_GT(callback_count, 0);
+  av_log(nullptr, AV_LOG_INFO, "\n=== Progress Callback Test Completed ===\n");
+}
+
+// 取消机制测试
+// CANCEL_AT=0.5 VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.CancelCallback
+TEST_F(test_Video, CancelCallback) {
+  std::string input_url = get_input_url();
+  int64_t gpu_id = get_gpu_id();
+
+  // 获取取消进度（默认 50%）
+  double cancel_at = 0.5;
+  const char* env_cancel_at = std::getenv("CANCEL_AT");
+  if (env_cancel_at) {
+    cancel_at = std::stod(env_cancel_at);
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "=== Cancel Callback Test ===\n");
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+  av_log(nullptr, AV_LOG_INFO, "Cancel at: %.1f%%\n", cancel_at * 100.0);
+
+  InputFile input_file;
+  input_file.gpu_id_ = gpu_id;
+
+  // 用于取消的标志
+  std::atomic<bool> should_cancel{false};
+  double current_progress = 0.0;
+
+  // 设置进度回调，更新当前进度
+  input_file.set_progress_callback([&current_progress, &should_cancel, cancel_at](const ProgressInfo &info) {
+    current_progress = info.progress;
+    av_log(nullptr, AV_LOG_INFO,
+           "[Progress] %.1f%% - Frame: %" PRId64 "\n",
+           info.progress * 100.0, info.current_frame);
+    
+    // 达到取消进度时设置取消标志
+    if (info.progress >= cancel_at && !should_cancel.load()) {
+      av_log(nullptr, AV_LOG_WARNING, ">>> Triggering cancel at %.1f%% <<<\n", info.progress * 100.0);
+      should_cancel.store(true);
+    }
+  }, 10);
+
+  // 设置取消回调
+  input_file.set_cancel_callback([&should_cancel]() {
+    return should_cancel.load();
+  });
+
+  FormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open input file: %s\n", av_err2str(ret));
+    FAIL();
+    return;
+  }
+
+  std::vector<Frame> video_frames, audio_frames;
+  bool finished = false;
+  int64_t total_read_frames = 0;
+  bool was_cancelled = false;
+
+  while (!finished) {
+    video_frames.clear();
+    audio_frames.clear();
+
+    ret = input_file.read_frames(video_frames, audio_frames, 10, finished);
+    if (ret == AVERROR_EXIT) {
+      av_log(nullptr, AV_LOG_INFO, "Operation cancelled!\n");
+      was_cancelled = true;
+      break;
+    }
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "read_frames failed: %s\n", av_err2str(ret));
+      break;
+    }
+    total_read_frames += video_frames.size();
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "\n--- Results ---\n");
+  av_log(nullptr, AV_LOG_INFO, "Total frames read: %" PRId64 "\n", total_read_frames);
+  av_log(nullptr, AV_LOG_INFO, "Final progress: %.1f%%\n", current_progress * 100.0);
+  av_log(nullptr, AV_LOG_INFO, "Was cancelled: %s\n", was_cancelled ? "YES" : "NO");
+  av_log(nullptr, AV_LOG_INFO, "is_cancelled(): %s\n", input_file.is_cancelled() ? "YES" : "NO");
+
+  // 验证取消机制生效
+  EXPECT_TRUE(was_cancelled);
+  EXPECT_TRUE(input_file.is_cancelled());
+  EXPECT_GE(current_progress, cancel_at - 0.1);  // 允许一定误差
+  EXPECT_LT(current_progress, 1.0);  // 没有完成
+
+  av_log(nullptr, AV_LOG_INFO, "\n=== Cancel Callback Test Completed ===\n");
+}
+
+// 带进度回调的完整转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeWithProgress
+TEST_F(test_Video, TranscodeWithProgress) {
+  std::string input_url = get_input_url();
+  std::string output_url = get_output_url(input_url);
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode With Progress Test ===\n");
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+  av_log(nullptr, AV_LOG_INFO, "Output: %s\n", output_url.c_str());
+
+  InputFile input_file;
+  input_file.gpu_id_ = gpu_id;
+
+  OutputFile output_file;
+  output_file.gpu_id_ = gpu_id;
+
+  // 设置输入进度回调
+  int read_callbacks = 0;
+  input_file.set_progress_callback([&read_callbacks](const ProgressInfo &info) {
+    read_callbacks++;
+    av_log(nullptr, AV_LOG_INFO,
+           "[READ ] %.1f%% - Frame: %" PRId64 ", Time: %.2fs\n",
+           info.progress * 100.0, info.current_frame, info.current_seconds);
+  }, 50);
+
+  // 设置输出进度回调
+  int write_callbacks = 0;
+  output_file.set_progress_callback([&write_callbacks](const ProgressInfo &info) {
+    write_callbacks++;
+    av_log(nullptr, AV_LOG_INFO,
+           "[WRITE] %.1f%% - Frame: %" PRId64 "\n",
+           info.progress * 100.0, info.current_frame);
+  }, 50);
+
+  FormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open input file: %s\n", av_err2str(ret));
+    FAIL();
+    return;
+  }
+
+  ret = output_file.open(output_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open output file: %s\n", av_err2str(ret));
+    FAIL();
+    return;
+  }
+
+  // 设置输出文件的总帧数，用于进度计算
+  output_file.set_total_frames(input_file.get_total_frames());
+
+  std::vector<Frame> video_frames, audio_frames;
+  bool finished = false;
+  auto start_time = std::chrono::steady_clock::now();
+
+  while (!finished) {
+    video_frames.clear();
+    audio_frames.clear();
+
+    ret = input_file.read_frames(video_frames, audio_frames, 30, finished);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "read_frames failed: %s\n", av_err2str(ret));
+      break;
+    }
+
+    ret = output_file.write_frames(video_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_video_frames failed: %s\n", av_err2str(ret));
+      break;
+    }
+
+    ret = output_file.write_frames(audio_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_audio_frames failed: %s\n", av_err2str(ret));
+      break;
+    }
+  }
+
+  ret = output_file.flush();
+  if (ret < 0) {
+    av_log(nullptr, AV_LOG_ERROR, "flush failed: %s\n", av_err2str(ret));
+  }
+
+  auto end_time = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+  av_log(nullptr, AV_LOG_INFO, "\n--- Results ---\n");
+  av_log(nullptr, AV_LOG_INFO, "Read progress callbacks: %d\n", read_callbacks);
+  av_log(nullptr, AV_LOG_INFO, "Write progress callbacks: %d\n", write_callbacks);
+  av_log(nullptr, AV_LOG_INFO, "Total time: %.2f seconds\n", duration.count() / 1000.0);
+
+  EXPECT_GT(read_callbacks, 0);
+  EXPECT_GT(write_callbacks, 0);
+
+  av_log(nullptr, AV_LOG_INFO, "\n=== Transcode With Progress Test Completed ===\n");
 }
 
 #if 0
