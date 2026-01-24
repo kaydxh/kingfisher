@@ -120,6 +120,10 @@ class InputStream : public Stream {
   unsigned int decoded_frame_count_ = 0;
   unsigned int filtered_frame_count_ = 0;
   unsigned int filtered_packet_count_ = 0;
+
+  // GPU 硬件加速参数
+  int64_t gpu_id_ = -1;  // >= 0 表示使用指定 GPU，< 0 表示使用软件解码
+  bool auto_switch_to_soft_codec_ = true;  // 硬件解码失败时自动切换到软件解码
 };
 
 }  // namespace cv
