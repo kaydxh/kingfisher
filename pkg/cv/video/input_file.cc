@@ -5,6 +5,7 @@
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
+#include "ffmpeg_hw.h"
 #include "ffmpeg_types.h"
 #include "ffmpeg_utils.h"
 #include "input_stream.h"
@@ -652,6 +653,10 @@ int InputFile::add_input_streams() {
       return ret;
     }
 
+    // 传递 GPU ID 给 InputStream
+    ist->gpu_id_ = gpu_id_;
+    ist->auto_switch_to_soft_codec_ = auto_switch_to_soft_codec_;
+
     /* init input streams */
     ret = ist->init_input_stream();
     if (ret < 0) {
@@ -691,7 +696,50 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
   codec = nullptr;
   if (codec_name.empty() || codec_name == "copy") {
     if (codec_name != "copy") {
-      codec = avcodec_find_decoder(st->codecpar->codec_id);
+      // 如果启用 GPU 且是视频流，尝试使用 CUDA 硬件解码器
+      // https://gist.github.com/Brainiarc7/c6164520f082c27ae7bbea9556d4a3ba
+      // 支持的 CUDA 解码器:
+      //   h264_cuvid, hevc_cuvid, mjpeg_cuvid, mpeg1_cuvid, mpeg2_cuvid,
+      //   mpeg4_cuvid, vc1_cuvid, vp8_cuvid, vp9_cuvid, av1_cuvid
+      if (is_prefer_gpu(gpu_id_) &&
+          st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+        const char *cuda_decoder = get_cuda_decoder_name(st->codecpar->codec_id);
+        if (cuda_decoder) {
+          codec = avcodec_find_decoder_by_name(cuda_decoder);
+          if (codec) {
+            av_log(this, AV_LOG_INFO,
+                   "Using CUDA decoder [%s] for stream #%d:%d (codec_id=%d, "
+                   "gpu_id=%" PRId64 ")\n",
+                   cuda_decoder, file_index_, st->index, st->codecpar->codec_id,
+                   gpu_id_);
+          } else {
+            av_log(this, AV_LOG_WARNING,
+                   "CUDA decoder [%s] not found for stream #%d:%d, "
+                   "will try software decoder\n",
+                   cuda_decoder, file_index_, st->index);
+          }
+        }
+      }
+
+      // 如果没找到 CUDA 解码器或不使用 GPU，回退到软件解码器
+      if (!codec) {
+        codec = avcodec_find_decoder(st->codecpar->codec_id);
+        if (codec && is_prefer_gpu(gpu_id_) &&
+            st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+          if (auto_switch_to_soft_codec_) {
+            av_log(this, AV_LOG_WARNING,
+                   "Falling back to software decoder [%s] for stream #%d:%d "
+                   "(CUDA decoder not available)\n",
+                   codec->name, file_index_, st->index);
+          } else {
+            av_log(this, AV_LOG_ERROR,
+                   "CUDA decoder not available for stream #%d:%d and "
+                   "auto_switch_to_soft_codec_ is disabled\n",
+                   file_index_, st->index);
+            return AVERROR_DECODER_NOT_FOUND;
+          }
+        }
+      }
     }
     ist->decoding_needed_ = (codec_name != "copy");
   } else {
@@ -707,23 +755,6 @@ int InputFile::choose_decoder(const std::shared_ptr<InputStream> &ist,
   }
 
   return 0;
-
-#if 0
-  if (!codec_name.empty()) {
-    int ret = find_decoder(codec_name, st->codecpar->codec_type, codec);
-    if (ret) {
-      return ret;
-    }
-    st->codecpar->codec_id = codec->id;
-    if (recast_media_ && st->codecpar->codec_type != codec->type) {
-      st->codecpar->codec_type = codec->type;
-    }
-    return 0;
-  } else {
-    codec = avcodec_find_decoder(st->codecpar->codec_id);
-  }
-  return 0;
-#endif
 }
 
 int InputFile::find_decoder(const std::string &name, enum AVMediaType type,

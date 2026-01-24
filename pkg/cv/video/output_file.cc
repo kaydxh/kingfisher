@@ -3,6 +3,7 @@
 #include "core/scope_guard.h"
 #include "ffmpeg_error.h"
 #include "ffmpeg_filter.h"
+#include "ffmpeg_hw.h"
 #include "ffmpeg_utils.h"
 #include "output_filter.h"
 #include "output_stream.h"
@@ -440,7 +441,50 @@ int OutputFile::choose_encoder(const std::shared_ptr<OutputStream> &ost,
       st->codecpar->codec_id =
           av_guess_codec(ofmt_ctx_->oformat, nullptr, ofmt_ctx_->url, nullptr,
                          st->codecpar->codec_type);
-      codec = avcodec_find_encoder(st->codecpar->codec_id);
+
+      // 如果启用 GPU 且是视频流，尝试使用 NVENC 硬件编码器
+      // https://gist.github.com/Brainiarc7/c6164520f082c27ae7bbea9556d4a3ba
+      // 支持的 NVENC 编码器:
+      //   h264_nvenc, hevc_nvenc, av1_nvenc
+      if (is_prefer_gpu(gpu_id_) && type == AVMEDIA_TYPE_VIDEO) {
+        const char *nvenc_encoder = get_nvenc_encoder_name(st->codecpar->codec_id);
+        if (nvenc_encoder) {
+          codec = avcodec_find_encoder_by_name(nvenc_encoder);
+          if (codec) {
+            av_log(this, AV_LOG_INFO,
+                   "Using NVENC encoder [%s] for stream #%d:%d (codec_id=%d, "
+                   "gpu_id=%" PRId64 ")\n",
+                   nvenc_encoder, file_index_, st->index, st->codecpar->codec_id,
+                   gpu_id_);
+            st->codecpar->codec_id = codec->id;
+          } else {
+            av_log(this, AV_LOG_WARNING,
+                   "NVENC encoder [%s] not found for stream #%d:%d, "
+                   "will try software encoder\n",
+                   nvenc_encoder, file_index_, st->index);
+          }
+        }
+      }
+
+      // 如果没找到 NVENC 编码器或不使用 GPU，回退到软件编码器
+      if (!codec) {
+        codec = avcodec_find_encoder(st->codecpar->codec_id);
+        if (codec && is_prefer_gpu(gpu_id_) && type == AVMEDIA_TYPE_VIDEO) {
+          if (auto_switch_to_soft_codec_) {
+            av_log(this, AV_LOG_WARNING,
+                   "Falling back to software encoder [%s] for stream #%d:%d "
+                   "(NVENC encoder not available)\n",
+                   codec->name, file_index_, st->index);
+          } else {
+            av_log(this, AV_LOG_ERROR,
+                   "NVENC encoder not available for stream #%d:%d and "
+                   "auto_switch_to_soft_codec_ is disabled\n",
+                   file_index_, st->index);
+            return AVERROR_ENCODER_NOT_FOUND;
+          }
+        }
+      }
+
       if (!codec) {
         av_log(NULL, AV_LOG_FATAL,
                "Automatic encoder selection failed for "
@@ -821,17 +865,117 @@ int OutputFile::init_output_stream(const std::shared_ptr<OutputStream> &ost,
       }
     }
 
-    // todo hw_device_setup_for_encode
+    // hw_device_setup_for_encode
+    // 为 NVENC 编码器设置 GPU ID
+    // ffmpeg -h encoder=h264_nvenc 可查看支持的选项
+    bool using_nvenc = is_prefer_gpu(gpu_id_) && is_nvenc_encoder(ost->codec_ctx_->codec->name);
+    if (using_nvenc) {
+      av_dict_set_int(&ost->codec_opts_, "gpu", gpu_id_,
+                      AV_DICT_DONT_OVERWRITE);
+      av_log(this, AV_LOG_INFO,
+             "Setting GPU ID %" PRId64 " for NVENC encoder [%s] stream #%d:%d\n",
+             gpu_id_, ost->codec_ctx_->codec->name, file_index_,
+             ost->stream_index_);
+    }
+
     const AVCodec *codec = ost->codec_ctx_->codec;
     auto st = ost->av_stream();
     ret = avcodec_open2(ost->codec_ctx_.get(), codec, &ost->codec_opts_);
     if (ret < 0) {
-      av_log(this, AV_LOG_ERROR,
-             "Error while opening encoder for output stream #%d:%d -- %s - "
-             "maybe incorrect parameters such as bit_rate, rate, width or "
-             "height\n",
-             file_index_, ost->stream_index_, av_err2str(ret));
-      return ret;
+      // 如果 NVENC 编码器初始化失败，尝试回退到软件编码器
+      if (using_nvenc && auto_switch_to_soft_codec_) {
+        char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+        av_strerror(ret, errbuf, sizeof(errbuf));
+        av_log(this, AV_LOG_WARNING,
+               "NVENC encoder [%s] failed for stream #%d:%d, falling back to "
+               "software encoder: %s\n",
+               codec->name, file_index_, ost->stream_index_, errbuf);
+
+        // 查找软件编码器
+        const AVCodec *sw_enc = avcodec_find_encoder(st->codecpar->codec_id);
+        if (sw_enc && !is_nvenc_encoder(sw_enc->name)) {
+          // 重新分配 codec context
+          ost->codec_ctx_.reset();
+          ost->codec_ctx_ = std::shared_ptr<AVCodecContext>(
+              avcodec_alloc_context3(sw_enc),
+              [](AVCodecContext *ctx) { avcodec_free_context(&ctx); });
+          if (!ost->codec_ctx_) {
+            return AVERROR(ENOMEM);
+          }
+
+          // 重新设置编码器参数
+          AVCodecContext *enc_ctx = ost->codec_ctx_.get();
+          enc_ctx->codec_type = st->codecpar->codec_type;
+          
+          if (enc_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
+            enc_ctx->width = st->codecpar->width;
+            enc_ctx->height = st->codecpar->height;
+            enc_ctx->sample_aspect_ratio = st->codecpar->sample_aspect_ratio;
+            enc_ctx->pix_fmt = static_cast<AVPixelFormat>(st->codecpar->format);
+            if (enc_ctx->pix_fmt == AV_PIX_FMT_NONE) {
+              enc_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+            }
+            enc_ctx->framerate = ost->framerate_;
+            enc_ctx->time_base = av_inv_q(ost->framerate_);
+          }
+
+          // 清除 NVENC 相关选项
+          av_dict_set(&ost->codec_opts_, "gpu", nullptr, 0);
+
+          // 重新设置通用选项
+          if (!av_dict_get(ost->codec_opts_, "threads", nullptr, 0)) {
+            av_dict_set(&ost->codec_opts_, "threads", "auto", 0);
+          }
+          if (!av_dict_get(ost->codec_opts_, "preset", nullptr, 0)) {
+            av_dict_set(&ost->codec_opts_, "preset", "fast", AV_DICT_DONT_OVERWRITE);
+          }
+
+          // 设置软件编码器的 tune 选项
+          if (enc_ctx->codec_id == AV_CODEC_ID_H264 || enc_ctx->codec_id == AV_CODEC_ID_HEVC) {
+            if (!av_dict_get(ost->codec_opts_, "tune", nullptr, 0)) {
+              av_dict_set(&ost->codec_opts_, "tune", "zerolatency", AV_DICT_DONT_OVERWRITE);
+            }
+          }
+
+          if (bitexact_) {
+            enc_ctx->flags |= AV_CODEC_FLAG_BITEXACT;
+          }
+          if (ofmt_ctx_->oformat->flags & AVFMT_GLOBALHEADER) {
+            enc_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+          }
+
+          // 重新尝试打开编码器
+          ret = avcodec_open2(ost->codec_ctx_.get(), sw_enc, &ost->codec_opts_);
+          if (ret >= 0) {
+            av_log(this, AV_LOG_INFO,
+                   "Successfully switched to software encoder [%s] for stream "
+                   "#%d:%d\n",
+                   sw_enc->name, file_index_, ost->stream_index_);
+            codec = sw_enc;
+          } else {
+            char errbuf2[AV_ERROR_MAX_STRING_SIZE] = {0};
+            av_strerror(ret, errbuf2, sizeof(errbuf2));
+            av_log(this, AV_LOG_ERROR,
+                   "Software encoder [%s] also failed for stream #%d:%d: %s\n",
+                   sw_enc->name, file_index_, ost->stream_index_, errbuf2);
+            return ret;
+          }
+        } else {
+          av_log(this, AV_LOG_ERROR,
+                 "No software encoder found for stream #%d:%d\n",
+                 file_index_, ost->stream_index_);
+          return ret;
+        }
+      } else {
+        char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+        av_strerror(ret, errbuf, sizeof(errbuf));
+        av_log(this, AV_LOG_ERROR,
+               "Error while opening encoder for output stream #%d:%d -- %s - "
+               "maybe incorrect parameters such as bit_rate, rate, width or "
+               "height\n",
+               file_index_, ost->stream_index_, errbuf);
+        return ret;
+      }
     }
     if (codec->type == AVMEDIA_TYPE_AUDIO &&
         !(codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE)) {

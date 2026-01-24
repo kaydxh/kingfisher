@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_INPUT_FILE_H_
 #define KINGFISHER_PKG_CV_VIDEO_INPUT_FILE_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -125,6 +126,14 @@ class InputFile {
   std::string video_filter_spec_;
   // 音频过滤器，如 "aresample=44100", "volume=0.5"
   std::string audio_filter_spec_;
+
+  // GPU 硬件加速参数
+  // gpu_id >= 0 时启用 CUDA 硬件解码（如 h264_cuvid, hevc_cuvid）
+  // gpu_id < 0 时使用软件解码（默认）
+  int64_t gpu_id_ = -1;
+
+  // 当 GPU 解码器不可用时，是否自动切换到软件解码器
+  bool auto_switch_to_soft_codec_ = true;
 
  private:
   const AVClass *av_class_ = nullptr;

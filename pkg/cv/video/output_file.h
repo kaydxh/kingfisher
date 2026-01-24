@@ -1,6 +1,7 @@
 #ifndef KINGFISHER_PKG_CV_VIDEO_OUTPUT_FILE_H_
 #define KINGFISHER_PKG_CV_VIDEO_OUTPUT_FILE_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -104,6 +105,17 @@ class OutputFile {
   bool header_written_ = false;
   bool bitexact_ = true;
   bool debug_ts_ = false;
+
+  // GPU 硬件加速参数
+  // gpu_id >= 0 时启用 NVENC 硬件编码（如 h264_nvenc, hevc_nvenc）
+  // gpu_id < 0 时使用软件编码（默认）
+  int64_t gpu_id_ = -1;
+
+  // 当 GPU 编码器不可用时，是否自动切换到软件编码器
+  bool auto_switch_to_soft_codec_ = true;
+
+  // GOP 大小（关键帧间隔），仅对视频有效
+  int gop_ = 250;
 
  private:
   std::vector<std::shared_ptr<OutputStream>> output_streams_;
