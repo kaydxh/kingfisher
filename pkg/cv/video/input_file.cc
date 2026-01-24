@@ -45,6 +45,26 @@ InputFile::~InputFile() {
   av_packet_free(&pkt_);
 }
 
+void InputFile::set_progress_callback(ProgressCallback callback, int interval) {
+  progress_callback_ = std::move(callback);
+  progress_callback_interval_ = interval > 0 ? interval : 10;
+}
+
+void InputFile::set_cancel_callback(CancelCallback callback) {
+  cancel_callback_ = std::move(callback);
+}
+
+bool InputFile::is_cancelled() const {
+  if (cancelled_) {
+    return true;
+  }
+  if (cancel_callback_ && cancel_callback_()) {
+    cancelled_ = true;
+    return true;
+  }
+  return false;
+}
+
 // https://sourcegraph.com/github.com/FFmpeg/FFmpeg@release/5.1/-/blob/fftools/ffmpeg_opt.c?L1151:59&popover=pinned
 int InputFile::open(const std::string &filename, FormatContext &format_ctx) {
   const AVInputFormat *file_iformat = nullptr;
@@ -248,7 +268,19 @@ int InputFile::read_batch_frames(std::vector<Frame> &video_frames_buffer,
     finished = eof_reached_ && video_frames_buffer.empty() &&
                audio_frames_buffer.empty();
   };
+
+  // 检查是否已取消
+  if (is_cancelled()) {
+    av_log(nullptr, AV_LOG_INFO, "Read operation cancelled\n");
+    return AVERROR_EXIT;
+  }
+
   int ret = read_frames([&]() {
+    // 检查取消
+    if (is_cancelled()) {
+      return true;
+    }
+
     if (eof_reached_) {
       return true;
     }
@@ -261,6 +293,12 @@ int InputFile::read_batch_frames(std::vector<Frame> &video_frames_buffer,
 
     return false;
   });
+
+  // 如果是因为取消而返回，设置特定错误码
+  if (is_cancelled()) {
+    return AVERROR_EXIT;
+  }
+
   if (ret < 0) {
     return ret;
   }
@@ -272,6 +310,37 @@ int InputFile::read_batch_frames(std::vector<Frame> &video_frames_buffer,
   ret = read_to_frames(audio_frames_buffer, audio_frames, batch_size);
   if (ret < 0) {
     return ret;
+  }
+
+  // 进度回调
+  if (progress_callback_ && !video_frames.empty()) {
+    frames_since_last_callback_ += video_frames.size();
+    if (frames_since_last_callback_ >= progress_callback_interval_) {
+      ProgressInfo info;
+      info.total_frames = get_total_frames();
+      info.total_seconds = get_duration();
+      
+      // 使用最后一帧的信息计算进度
+      const auto &last_frame = video_frames.back();
+      info.current_frame = last_frame.frame_number;
+      if (last_frame.pts != AV_NOPTS_VALUE) {
+        info.current_seconds = av_q2d(last_frame.time_base) * last_frame.pts;
+      } else {
+        info.current_seconds = get_position();
+      }
+      
+      // 计算进度百分比
+      if (info.total_seconds > 0) {
+        info.progress = info.current_seconds / info.total_seconds;
+        if (info.progress > 1.0) info.progress = 1.0;
+        if (info.progress < 0.0) info.progress = 0.0;
+      } else if (info.total_frames > 0) {
+        info.progress = static_cast<double>(info.current_frame) / info.total_frames;
+      }
+      
+      progress_callback_(info);
+      frames_since_last_callback_ = 0;
+    }
   }
 
   return 0;

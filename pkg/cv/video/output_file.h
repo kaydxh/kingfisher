@@ -26,6 +26,21 @@ class OutputFile {
   int write_frames(const std::vector<Frame> &raw_frames);
   int flush();
 
+  // 设置进度回调
+  // callback: 进度回调函数，每写入一批帧后调用
+  // interval: 回调间隔（帧数），默认每 10 帧回调一次
+  void set_progress_callback(ProgressCallback callback, int interval = 10);
+
+  // 设置取消回调
+  // callback: 取消检查函数，返回 true 时停止写入
+  void set_cancel_callback(CancelCallback callback);
+
+  // 检查是否已取消
+  bool is_cancelled() const;
+
+  // 设置总帧数（用于进度计算）
+  void set_total_frames(int64_t total_frames);
+
  private:
   int init_output_stream_wrapper(const std::shared_ptr<OutputStream> &ost,
                                  AVFrame *frame);
@@ -123,6 +138,16 @@ class OutputFile {
   int video_stream_index_ = -1;
   int audio_stream_index_ = -1;
   bool flush_once_ = false;  // 防止重复 flush
+
+  // 进度回调相关
+  ProgressCallback progress_callback_;
+  int progress_callback_interval_ = 10;
+  int64_t frames_written_ = 0;
+  int64_t total_frames_ = 0;
+
+  // 取消机制
+  CancelCallback cancel_callback_;
+  mutable bool cancelled_ = false;
 };
 
 }  // namespace cv
