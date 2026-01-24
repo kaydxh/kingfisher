@@ -39,6 +39,9 @@ class FilterGraph : public std::enable_shared_from_this<FilterGraph> {
 
   int init_simple_filtergraph();
 
+  // 刷新过滤器图（用于 seek 后重置状态）
+  void flush();
+
  public:
   const AVClass *av_class_ = nullptr;
   std::shared_ptr<AVFilterGraph> filter_graph_;

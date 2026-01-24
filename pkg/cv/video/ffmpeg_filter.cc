@@ -334,5 +334,28 @@ int FilterGraph::send_filter_eof(int64_t pts) {
   return ret;
 }
 
+void FilterGraph::flush() {
+  // 清理并重建过滤器图
+  // 由于 FFmpeg 的过滤器图没有直接的 flush 接口，
+  // 我们通过重新配置过滤器图来实现刷新
+  if (filter_graph_) {
+    // 标记需要重新配置
+    reconfiguration_ = true;
+    
+    // 清理现有的过滤器图
+    cleanup_filtergraph();
+    filter_graph_.reset();
+    
+    // 重新初始化
+    auto stream = stream_.lock();
+    if (stream) {
+      inputs_.emplace_back(
+          std::make_shared<InputFilter>(shared_from_this(), stream_));
+      outputs_.emplace_back(
+          std::make_shared<OutputFilter>(shared_from_this(), stream_));
+    }
+  }
+}
+
 }  // namespace cv
 }  // namespace kingfisher
