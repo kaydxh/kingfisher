@@ -1013,6 +1013,653 @@ VIDEO_FILTER="framestep=2,scale=1280:720"
 - `pkg/cv/video/input_file.h`
 - `pkg/cv/video/input_file.cc`
 
+### 7.4 FilterBuilder 高级过滤器构建器
+
+为了简化复杂过滤器的构建，提供了 `FilterBuilder` 类，支持水印叠加、文字叠加、裁剪、填充、视频拼接等功能。
+
+#### 7.4.1 头文件引入
+
+```cpp
+#include "filter_builder.h"
+
+using namespace kingfisher::cv;
+```
+
+#### 7.4.2 水印叠加
+
+```cpp
+// 基本水印
+WatermarkConfig watermark;
+watermark.image_path = "/path/to/logo.png";
+watermark.position = Position::kBottomRight;
+watermark.margin = 10;
+watermark.opacity = 0.8f;
+watermark.scale = 0.5f;
+
+std::string filter = FilterBuilder()
+    .add_watermark(watermark)
+    .build();
+// 输出: movie=/path/to/logo.png,scale=iw*0.5:ih*0.5,format=rgba,colorchannelmixer=aa=0.8[watermark];[in][watermark]overlay=W-w-10:H-h-10[out]
+
+// 各位置示例
+watermark.position = Position::kTopLeft;      // 左上角
+watermark.position = Position::kTopCenter;    // 顶部居中
+watermark.position = Position::kCenter;       // 正中央
+watermark.position = Position::kCustom;       // 自定义位置
+watermark.x = 100;
+watermark.y = 50;
+```
+
+#### 7.4.3 文字叠加
+
+```cpp
+// 基本文字
+TextConfig text;
+text.text = "Copyright 2025";
+text.font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+text.font_size = 24;
+text.font_color = "white";
+text.border_width = 2;
+text.border_color = "black";
+text.position = Position::kBottomRight;
+
+std::string filter = FilterBuilder()
+    .add_text(text)
+    .build();
+// 输出: drawtext=fontfile='/usr/share/fonts/...':text='Copyright 2025':fontsize=24:fontcolor=white:borderw=2:bordercolor=black:x=w-text_w-10:y=h-text_h-10
+
+// 带阴影的文字
+text.enable_shadow = true;
+text.shadow_x = 2;
+text.shadow_y = 2;
+text.shadow_color = "black@0.5";
+
+// 带背景框的文字
+text.enable_box = true;
+text.box_color = "black@0.5";
+text.box_border_width = 5;
+
+// 显示时间戳
+TextConfig timestamp;
+timestamp.show_timestamp = true;
+timestamp.font_file = "/path/to/font.ttf";
+timestamp.font_size = 18;
+timestamp.position = Position::kTopLeft;
+```
+
+#### 7.4.4 裁剪
+
+```cpp
+// 自定义区域裁剪
+CropConfig crop;
+crop.x = 100;
+crop.y = 50;
+crop.width = 1280;
+crop.height = 720;
+
+std::string filter = FilterBuilder()
+    .crop(crop)
+    .build();
+// 输出: crop=1280:720:100:50
+
+// 居中裁剪
+CropConfig center_crop;
+center_crop.center_crop = true;
+center_crop.out_width = 1280;
+center_crop.out_height = 720;
+// 输出: crop=1280:720:(iw-1280)/2:(ih-720)/2
+
+// 保持宽高比裁剪（裁剪为 16:9）
+CropConfig aspect_crop;
+aspect_crop.keep_aspect = true;
+aspect_crop.target_aspect = 16.0f / 9.0f;
+```
+
+#### 7.4.5 填充（Pad）
+
+```cpp
+// 添加边框
+PadConfig pad;
+pad.add_border = true;
+pad.border_top = 50;
+pad.border_bottom = 50;
+pad.border_left = 100;
+pad.border_right = 100;
+pad.color = "black";
+
+std::string filter = FilterBuilder()
+    .pad(pad)
+    .build();
+// 输出: pad=iw+200:ih+100:100:50:black
+
+// 等比例填充到指定尺寸（信箱模式）
+PadConfig letterbox;
+letterbox.fit_to_size = true;
+letterbox.target_width = 1920;
+letterbox.target_height = 1080;
+letterbox.color = "black";
+// 输出: scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black
+```
+
+#### 7.4.6 缩放
+
+```cpp
+// 基本缩放
+ScaleConfig scale;
+scale.width = 1280;
+scale.height = 720;
+scale.flags = "lanczos";
+
+std::string filter = FilterBuilder()
+    .scale(scale)
+    .build();
+// 输出: scale=1280:720:flags=lanczos
+
+// 简化版本
+std::string filter = FilterBuilder()
+    .scale(1280, 720, "bicubic")
+    .build();
+
+// 保持宽高比缩放
+ScaleConfig aspect_scale;
+aspect_scale.width = 1280;
+aspect_scale.height = -1;  // 自动计算高度
+// 输出: scale=1280:-1:flags=bicubic
+```
+
+#### 7.4.7 颜色调整
+
+```cpp
+ColorConfig color;
+color.brightness = 0.1f;    // 稍微提亮
+color.contrast = 1.2f;      // 增加对比度
+color.saturation = 1.3f;    // 增加饱和度
+color.gamma = 1.0f;
+
+std::string filter = FilterBuilder()
+    .adjust_color(color)
+    .build();
+// 输出: eq=brightness=0.1:contrast=1.2:saturation=1.3:gamma=1:gamma_r=1:gamma_g=1:gamma_b=1
+```
+
+#### 7.4.8 旋转/翻转
+
+```cpp
+TransformConfig transform;
+transform.hflip = true;     // 水平翻转
+transform.vflip = false;    // 垂直翻转
+transform.transpose = true; // 90度旋转
+transform.transpose_dir = 1; // 0=顺时针90°, 1=逆时针90°
+
+std::string filter = FilterBuilder()
+    .transform(transform)
+    .build();
+// 输出: hflip,transpose=1
+
+// 任意角度旋转
+TransformConfig rotate;
+rotate.rotation_angle = 45.0;  // 旋转45度
+```
+
+#### 7.4.9 模糊
+
+```cpp
+// 高斯模糊
+BlurConfig blur;
+blur.type = BlurConfig::Type::kGaussian;
+blur.sigma = 2.0f;
+
+std::string filter = FilterBuilder()
+    .blur(blur)
+    .build();
+// 输出: gblur=sigma=2
+
+// 区域模糊（马赛克效果）
+BlurConfig region_blur;
+region_blur.type = BlurConfig::Type::kBox;
+region_blur.radius = 20;
+region_blur.region_blur = true;
+region_blur.region_x = 100;
+region_blur.region_y = 100;
+region_blur.region_width = 200;
+region_blur.region_height = 200;
+// 输出: split[main][blur];[blur]crop=200:200:100:100,boxblur=20:20[blurred];[main][blurred]overlay=100:100
+```
+
+#### 7.4.10 视频拼接
+
+```cpp
+// 水平拼接
+ConcatConfig concat;
+concat.mode = ConcatMode::kHorizontal;
+concat.input_files = {"video1.mp4", "video2.mp4"};
+
+std::string filter = FilterBuilder::build_concat_filter(concat);
+// 输出: [0][1]hstack=inputs=2
+
+// 垂直拼接
+concat.mode = ConcatMode::kVertical;
+// 输出: [0][1]vstack=inputs=2
+
+// 网格布局（2x2）
+concat.mode = ConcatMode::kGrid;
+concat.grid_cols = 2;
+concat.grid_rows = 2;
+concat.input_files = {"v1.mp4", "v2.mp4", "v3.mp4", "v4.mp4"};
+// 输出: [0][1][2][3]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0
+
+// 画中画
+std::string pip_filter = FilterBuilder::build_pip_filter(
+    "0", "1", concat, 1920, 1080);
+// 小画面在右下角，缩放为原视频的 25%
+```
+
+#### 7.4.11 组合多个过滤器
+
+```cpp
+// 链式调用，组合多个过滤器
+std::string filter = FilterBuilder()
+    .scale(1920, 1080, "lanczos")
+    .crop({.center_crop = true, .out_width = 1280, .out_height = 720})
+    .add_text({.text = "Demo Video", .font_size = 32, .position = Position::kTopLeft})
+    .adjust_color({.brightness = 0.05f, .contrast = 1.1f})
+    .build();
+// 输出: scale=1920:1080:flags=lanczos,crop=1280:720:(iw-1280)/2:(ih-720)/2,drawtext=text='Demo Video':fontsize=32:...,eq=brightness=0.05:contrast=1.1:...
+
+// 添加自定义 filter
+std::string filter = FilterBuilder()
+    .scale(1280, 720)
+    .add_custom("fps=30")
+    .add_custom("format=yuv420p")
+    .build();
+```
+
+#### 7.4.12 使用示例
+
+```cpp
+// 完整使用示例
+#include "input_file.h"
+#include "filter_builder.h"
+
+int main() {
+  kingfisher::cv::InputFile input_file;
+  
+  // 构建过滤器
+  kingfisher::cv::FilterBuilder builder;
+  
+  // 添加水印
+  kingfisher::cv::WatermarkConfig watermark;
+  watermark.image_path = "logo.png";
+  watermark.position = kingfisher::cv::Position::kBottomRight;
+  watermark.opacity = 0.7f;
+  builder.add_watermark(watermark);
+  
+  // 添加文字
+  kingfisher::cv::TextConfig text;
+  text.text = "Sample Video";
+  text.font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+  text.font_size = 24;
+  text.position = kingfisher::cv::Position::kTopLeft;
+  builder.add_text(text);
+  
+  // 设置到 InputFile
+  input_file.video_filter_spec_ = builder.build();
+  
+  // 打开并处理视频...
+  return 0;
+}
+```
+
+**相关文件**：
+- `pkg/cv/video/filter_builder.h` - FilterBuilder 类定义和配置结构体
+- `pkg/cv/video/filter_builder.cc` - FilterBuilder 实现
+
+### 7.5 Filter 实现原理与视频关联
+
+本节详细说明 Filter 的实现机制以及它与视频处理的关联。
+
+#### 7.5.1 整体数据流
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                              视频处理流水线                                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐   │
+│  │  InputFile  │───>│ FilterGraph │───>│ OutputFile  │───>│  输出文件    │   │
+│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘   │
+│        │                  │                  │                              │
+│        ▼                  ▼                  ▼                              │
+│  video_filter_spec_   FilterBuilder     write_frames()                      │
+│  audio_filter_spec_     .build()                                            │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 7.5.2 关联点 1：InputFile 中的 Filter 成员变量
+
+```cpp
+// input_file.h
+class InputFile {
+public:
+  // 用户通过这两个成员设置自定义过滤器
+  std::string video_filter_spec_;  // 视频过滤器，如 "scale=1280:720"
+  std::string audio_filter_spec_;  // 音频过滤器，如 "volume=0.5"
+};
+```
+
+#### 7.5.3 关联点 2：init_filters() 初始化过滤器
+
+当调用 `InputFile::open()` 时，会自动调用 `init_filters()`：
+
+```cpp
+// input_file.cc
+int InputFile::open(...) {
+  // 1. 打开输入文件
+  ret = avformat_open_input(...);
+  
+  // 2. 添加输入流
+  ret = add_input_streams();
+  
+  // 3. 初始化过滤器 ← 关键！
+  ret = init_filters();
+  
+  return 0;
+}
+
+int InputFile::init_filters() {
+  for (unsigned int i = 0; i < ifmt_ctx_->nb_streams; i++) {
+    std::string filter_spec;
+    
+    if (codec_type == AVMEDIA_TYPE_VIDEO) {
+      if (!video_filter_spec_.empty()) {
+        // 使用用户指定的视频过滤器
+        filter_spec = video_filter_spec_;  // 如 "scale=1280:720,transpose=1"
+      } else {
+        filter_spec = "null";  // 默认 passthrough（不做处理）
+      }
+    } else if (codec_type == AVMEDIA_TYPE_AUDIO) {
+      if (!audio_filter_spec_.empty()) {
+        filter_spec = audio_filter_spec_;
+      } else {
+        filter_spec = "anull";  // 默认 passthrough
+      }
+    }
+    
+    // 创建 FilterGraph 并关联到 InputStream
+    auto fg = std::make_shared<FilterGraph>(ist, filter_spec);
+    fg->init_simple_filtergraph();
+    ist->ifilt_ = fg;  // ← 过滤器与输入流关联
+  }
+}
+```
+
+#### 7.5.4 关联点 3：FilterGraph 核心类
+
+```cpp
+// ffmpeg_filter.cc
+class FilterGraph {
+  std::string graph_desc_;           // 过滤器描述字符串，如 "scale=1280:720"
+  std::shared_ptr<AVFilterGraph> filter_graph_;  // FFmpeg 原生过滤器图
+  std::vector<std::shared_ptr<InputFilter>> inputs_;   // 输入端点
+  std::vector<std::shared_ptr<OutputFilter>> outputs_; // 输出端点
+};
+
+int FilterGraph::configure_filtergraph() {
+  // 1. 创建 AVFilterGraph
+  filter_graph_ = avfilter_graph_alloc();
+  
+  // 2. 解析过滤器字符串
+  avfilter_graph_parse2(filter_graph_.get(), graph_desc_.c_str(), &inputs, &outputs);
+  // graph_desc_ = "scale=1280:720" 会被解析成：
+  //   [in] -> [scale filter] -> [out]
+  
+  // 3. 配置输入输出端点
+  for (cur = inputs) {
+    inputs_[i]->configure_input_filter(cur);  // buffersrc
+  }
+  for (cur = outputs) {
+    outputs_[i]->configure_output_filter(cur); // buffersink
+  }
+  
+  // 4. 完成配置
+  avfilter_graph_config(filter_graph_.get(), nullptr);
+}
+```
+
+#### 7.5.5 关联点 4：帧通过过滤器处理
+
+```cpp
+// input_file.cc
+int InputFile::send_frame_to_filters(ist, decoded_frame) {
+  auto &fg = ist->ifilt_;  // 获取关联的 FilterGraph
+  
+  // 1. 可能需要重新配置过滤器（如分辨率变化）
+  if (need_reinit) {
+    fg->configure_filtergraph();
+  }
+  
+  // 2. 将解码后的帧发送到过滤器输入端
+  av_buffersrc_add_frame(ifilter->filter_, decoded_frame);
+  
+  // 3. 从过滤器输出端获取处理后的帧
+  fg->reap_filters(filtered_frames, true);
+  
+  // 4. 存储到帧缓冲区
+  for (auto &frame : filtered_frames) {
+    ist->frames_.push_back(Frame{frame, ...});
+  }
+}
+```
+
+#### 7.5.6 关联点 5：FilterBuilder 生成过滤器字符串
+
+```cpp
+// filter_builder.h/cc
+class FilterBuilder {
+  std::vector<std::string> filters_;  // 存储各个过滤器
+  
+  FilterBuilder& scale(int w, int h) {
+    filters_.push_back("scale=" + std::to_string(w) + ":" + std::to_string(h));
+    return *this;
+  }
+  
+  FilterBuilder& add_text(const TextConfig& config) {
+    // 生成 drawtext=fontfile=...:text='...':fontsize=...
+    std::string font_file = config.font_file.empty() ? find_system_font() : config.font_file;
+    oss << "drawtext=fontfile='" << font_file << "':text='" << config.text << "'...";
+    filters_.push_back(oss.str());
+    return *this;
+  }
+  
+  std::string build() {
+    // 用逗号连接所有过滤器
+    return join(filters_, ",");  // "scale=1280:720,drawtext=..."
+  }
+};
+```
+
+#### 7.5.7 完整使用流程
+
+```cpp
+// 用户代码示例
+int main() {
+  InputFile input_file;
+  OutputFile output_file;
+  
+  // 1. 使用 FilterBuilder 构建过滤器字符串
+  std::string filter = FilterBuilder()
+      .scale(1280, 720)
+      .add_text({.text = "Hello", .font_size = 32})
+      .build();
+  // filter = "scale=1280:720,drawtext=text='Hello':fontsize=32:..."
+  
+  // 2. 设置到 InputFile
+  input_file.video_filter_spec_ = filter;
+  
+  // 3. 打开输入（内部调用 init_filters）
+  input_file.open("input.mp4", format_ctx);
+  // 内部：FilterGraph::configure_filtergraph() 解析 filter 字符串
+  //       创建 FFmpeg 原生过滤器链
+  
+  // 4. 打开输出
+  output_file.open("output.mp4", format_ctx);
+  
+  // 5. 读取帧（经过过滤器处理）
+  while (!finished) {
+    input_file.read_frames(video_frames, audio_frames, 30, finished);
+    // 内部：send_frame_to_filters() → av_buffersrc_add_frame() → reap_filters()
+    //       帧经过 scale → drawtext 过滤器链处理
+    
+    // 6. 写入输出
+    output_file.write_frames(video_frames);
+    output_file.write_frames(audio_frames);
+  }
+}
+```
+
+#### 7.5.8 核心类关系图
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           数据流向                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  FilterBuilder                                                          │
+│       │                                                                 │
+│       │ .build() → "scale=1280:720,drawtext=..."                       │
+│       ▼                                                                 │
+│  InputFile.video_filter_spec_ ─────────────────────┐                   │
+│       │                                             │                   │
+│       │ open()                                      │                   │
+│       ▼                                             ▼                   │
+│  init_filters() ──────────────────────────> FilterGraph                │
+│       │                                       │    │                   │
+│       │                                       │    │ graph_desc_       │
+│       │                                       ▼    ▼                   │
+│  InputStream.ifilt_ ◄────────────────── configure_filtergraph()        │
+│       │                                       │                        │
+│       │ decode_video()                        │ avfilter_graph_parse2()│
+│       ▼                                       ▼                        │
+│  send_frame_to_filters() ──────────────> AVFilterGraph                 │
+│       │                                    (FFmpeg 原生)               │
+│       │ av_buffersrc_add_frame()             │                        │
+│       ▼                                       │                        │
+│  [buffersrc] → [scale] → [drawtext] → [buffersink]                    │
+│       │                                       │                        │
+│       │ reap_filters()                        │                        │
+│       ▼                                       ▼                        │
+│  filtered_frames ───────────────────────> OutputFile.write_frames()   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 7.5.9 关键文件
+
+| 文件 | 职责 |
+|------|------|
+| `filter_builder.h/cc` | 高级 API，生成过滤器字符串 |
+| `input_file.h/cc` | 存储 `video_filter_spec_`，调用 `init_filters()` |
+| `ffmpeg_filter.h/cc` | `FilterGraph` 类，管理 FFmpeg 原生过滤器图 |
+| `input_filter.h/cc` | 过滤器输入端点（buffersrc） |
+| `output_filter.h/cc` | 过滤器输出端点（buffersink） |
+
+#### 7.5.10 总结
+
+**Filter 与 Video 的关联核心是 `video_filter_spec_` 字符串**：
+
+1. **用户层**：通过 `FilterBuilder` 链式调用生成过滤器字符串
+2. **接口层**：将字符串赋值给 `InputFile.video_filter_spec_`
+3. **初始化层**：`init_filters()` 创建 `FilterGraph`，解析字符串
+4. **执行层**：`send_frame_to_filters()` 将帧送入过滤器，`reap_filters()` 获取处理后的帧
+5. **输出层**：`OutputFile.write_frames()` 写入最终视频
+
+### 7.6 字体文件自动查找机制
+
+#### 7.6.1 问题背景
+
+FFmpeg 的 `drawtext` 滤镜在某些环境下强制要求 `fontfile` 参数，否则会报错：
+```
+[Parsed_drawtext_0 @ 0x...] No font filename provided
+[AVFilterGraph @ 0x...] Error initializing filter 'drawtext' with args '...'
+```
+
+#### 7.6.2 解决方案
+
+在 `filter_builder.cc` 中实现字体自动查找兜底机制：
+
+```cpp
+// filter_builder.cc
+#include <unistd.h>
+#include <vector>
+
+// 查找系统可用字体文件
+static std::string find_system_font() {
+  const std::vector<std::string> font_paths = {
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/TTF/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+    "/usr/share/fonts/gnu-free/FreeSans.ttf",
+    "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
+    "/usr/share/fonts/noto/NotoSans-Regular.ttf",
+    "/System/Library/Fonts/Helvetica.ttc",  // macOS
+    "/Library/Fonts/Arial.ttf",             // macOS
+  };
+  for (const auto& path : font_paths) {
+    if (access(path.c_str(), R_OK) == 0) {
+      return path;
+    }
+  }
+  return "";
+}
+```
+
+在 `add_text()` 方法中使用：
+
+```cpp
+// filter_builder.cc: add_text()
+FilterBuilder& FilterBuilder::add_text(const TextConfig& config) {
+  std::ostringstream oss;
+  oss << "drawtext=";
+  
+  // 字体文件：优先使用用户指定，否则查找系统字体
+  std::string font_file = config.font_file;
+  if (font_file.empty()) {
+    font_file = find_system_font();
+  }
+  if (!font_file.empty()) {
+    oss << "fontfile='" << font_file << "':";
+  }
+  
+  // 文字内容或时间戳
+  // ...
+}
+```
+
+#### 7.6.3 使用示例
+
+```cpp
+// 用户无需指定字体，FilterBuilder 会自动查找系统字体
+TextConfig text;
+text.text = "Kingfisher Video";
+text.font_size = 32;
+text.font_color = "white";
+text.position = Position::kBottomRight;
+
+std::string filter = FilterBuilder()
+    .add_text(text)  // font_file 为空时自动查找系统字体
+    .build();
+```
+
+#### 7.6.4 注意事项
+
+- 如果系统没有任何可用字体，`find_system_font()` 返回空字符串，FFmpeg 可能会使用内置默认字体（取决于 FFmpeg 编译配置）
+- 对于中文文字，需要使用支持中文的字体文件（如 Noto Sans CJK）
+- 可以通过明确指定 `text.font_file` 来覆盖自动查找行为
+
 ---
 
 ## 8. 测试程序使用说明

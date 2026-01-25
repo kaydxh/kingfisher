@@ -7,9 +7,11 @@
 #include <cstring>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "cv/video/ffmpeg_error.h"
 #include "cv/video/ffmpeg_types.h"
+#include "cv/video/filter_builder.h"
 #include "cv/video/input_file.h"
 #include "cv/video/output_file.h"
 
@@ -80,6 +82,41 @@ CANCEL_AT=0.5 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test -
 
 # 带进度回调的完整转码测试
 VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeWithProgress
+
+# ===================== FilterBuilder 转码测试（生成带效果的视频） =====================
+
+# 缩放（输出：input.scale.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeScale
+
+# 裁剪（输出：input.crop.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeCrop
+
+# 填充/黑边（输出：input.pad.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodePad
+
+# 文字叠加（输出：input.text.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeText
+
+# 时间戳叠加（输出：input.timestamp.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeTimestamp
+
+# 图片水印（输出：input.watermark.mp4）
+WATERMARK=/path/to/logo.png VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeWatermark
+
+# 颜色调整（输出：input.color.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeColor
+
+# 水平翻转（输出：input.hflip.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeTransform
+
+# 模糊效果（输出：input.blur.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeBlur
+
+# 组合效果：缩放+颜色+文字（输出：input.combo.mp4）
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeCombo
+
+# 运行所有转码测试
+VIDEO_INPUT=/path/to/input.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.Transcode*
 
 # 获取视频帧数
 ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 input.mp4
@@ -637,6 +674,343 @@ TEST_F(test_Video, TranscodeWithProgress) {
   EXPECT_GT(write_callbacks, 0);
 
   av_log(nullptr, AV_LOG_INFO, "\n=== Transcode With Progress Test Completed ===\n");
+}
+
+// ======================= FilterBuilder 测试 =======================
+
+// 辅助函数：使用指定 filter 进行转码
+static bool transcode_with_filter(const std::string& input_url,
+                                   const std::string& output_url,
+                                   const std::string& video_filter,
+                                   int64_t gpu_id = -1) {
+  av_log(nullptr, AV_LOG_INFO, "Input: %s\n", input_url.c_str());
+  av_log(nullptr, AV_LOG_INFO, "Output: %s\n", output_url.c_str());
+  av_log(nullptr, AV_LOG_INFO, "Filter: %s\n", video_filter.c_str());
+
+  InputFile input_file;
+  input_file.video_filter_spec_ = video_filter;
+  input_file.gpu_id_ = gpu_id;
+
+  OutputFile output_file;
+  output_file.gpu_id_ = gpu_id;
+
+  FormatContext format_ctx;
+  int ret = input_file.open(input_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open input: %s\n", av_err2str(ret));
+    return false;
+  }
+
+  ret = output_file.open(output_url, format_ctx);
+  if (ret != 0) {
+    av_log(nullptr, AV_LOG_ERROR, "Failed to open output: %s\n", av_err2str(ret));
+    return false;
+  }
+
+  std::vector<Frame> video_frames, audio_frames;
+  bool finished = false;
+  int64_t frame_count = 0;
+
+  while (!finished) {
+    video_frames.clear();
+    audio_frames.clear();
+
+    ret = input_file.read_frames(video_frames, audio_frames, 30, finished);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "read_frames failed: %s\n", av_err2str(ret));
+      return false;
+    }
+
+    ret = output_file.write_frames(video_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_video_frames failed: %s\n", av_err2str(ret));
+      return false;
+    }
+
+    ret = output_file.write_frames(audio_frames);
+    if (ret < 0) {
+      av_log(nullptr, AV_LOG_ERROR, "write_audio_frames failed: %s\n", av_err2str(ret));
+      return false;
+    }
+
+    frame_count += video_frames.size();
+  }
+
+  ret = output_file.flush();
+  if (ret < 0) {
+    av_log(nullptr, AV_LOG_ERROR, "flush failed: %s\n", av_err2str(ret));
+    return false;
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "Transcoded %" PRId64 " frames\n", frame_count);
+  return true;
+}
+
+// 生成带后缀的输出路径
+static std::string make_output_path(const std::string& input_url, const std::string& suffix) {
+  size_t dot_pos = input_url.rfind('.');
+  if (dot_pos != std::string::npos) {
+    return input_url.substr(0, dot_pos) + "." + suffix + input_url.substr(dot_pos);
+  }
+  return input_url + "." + suffix;
+}
+
+// ======================= 实际转码测试（生成带效果的视频） =======================
+
+// 缩放转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeScale
+TEST_F(test_Video, TranscodeScale) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "scale");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Scale Test ===\n");
+
+  std::string filter = FilterBuilder()
+      .scale(1280, 720, "lanczos")
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Scale Test Completed ===\n");
+}
+
+// 裁剪转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeCrop
+TEST_F(test_Video, TranscodeCrop) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "crop");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Crop Test ===\n");
+
+  // 居中裁剪
+  CropConfig crop;
+  crop.center_crop = true;
+  crop.out_width = 640;
+  crop.out_height = 480;
+
+  std::string filter = FilterBuilder()
+      .crop(crop)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Crop Test Completed ===\n");
+}
+
+// 填充转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodePad
+TEST_F(test_Video, TranscodePad) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "pad");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Pad Test ===\n");
+
+  // 添加黑边
+  PadConfig pad;
+  pad.add_border = true;
+  pad.border_top = 50;
+  pad.border_bottom = 50;
+  pad.border_left = 50;
+  pad.border_right = 50;
+  pad.color = "black";
+
+  std::string filter = FilterBuilder()
+      .pad(pad)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Pad Test Completed ===\n");
+}
+
+// 文字叠加转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeText
+TEST_F(test_Video, TranscodeText) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "text");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Text Test ===\n");
+
+  TextConfig text;
+  text.text = "Kingfisher Video";
+  // font_file 不指定时，FilterBuilder 会自动查找系统字体
+  text.font_size = 32;
+  text.font_color = "white";
+  text.border_width = 2;
+  text.border_color = "black";
+  text.position = Position::kBottomRight;
+  text.margin = 20;
+
+  std::string filter = FilterBuilder()
+      .add_text(text)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Text Test Completed ===\n");
+}
+
+// 时间戳叠加转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeTimestamp
+TEST_F(test_Video, TranscodeTimestamp) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "timestamp");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Timestamp Test ===\n");
+
+  TextConfig text;
+  text.show_timestamp = true;
+  // font_file 不指定时，FilterBuilder 会自动查找系统字体
+  text.font_size = 24;
+  text.font_color = "yellow";
+  text.position = Position::kTopLeft;
+  text.margin = 10;
+
+  std::string filter = FilterBuilder()
+      .add_text(text)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Timestamp Test Completed ===\n");
+}
+
+// 水印叠加转码测试
+// WATERMARK=/path/to/logo.png VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeWatermark
+TEST_F(test_Video, TranscodeWatermark) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "watermark");
+  int64_t gpu_id = get_gpu_id();
+
+  // 获取水印图片路径
+  const char* env_watermark = std::getenv("WATERMARK");
+  if (!env_watermark) {
+    av_log(nullptr, AV_LOG_WARNING, "WATERMARK env not set, skipping test\n");
+    GTEST_SKIP();
+    return;
+  }
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Watermark Test ===\n");
+
+  WatermarkConfig watermark;
+  watermark.image_path = env_watermark;
+  watermark.position = Position::kBottomRight;
+  watermark.margin = 20;
+  watermark.opacity = 0.7f;
+  watermark.scale = 0.3f;
+
+  std::string filter = FilterBuilder()
+      .add_watermark(watermark)
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Watermark Test Completed ===\n");
+}
+
+// 颜色调整转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeColor
+TEST_F(test_Video, TranscodeColor) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "color");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Color Test ===\n");
+
+  ColorConfig color;
+  color.brightness = 0.1f;   // 提亮
+  color.contrast = 1.2f;     // 增加对比度
+  color.saturation = 1.3f;   // 增加饱和度
+
+  std::string filter = FilterBuilder()
+      .adjust_color(color)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Color Test Completed ===\n");
+}
+
+// 旋转/翻转转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeTransform
+TEST_F(test_Video, TranscodeTransform) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "hflip");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Transform Test ===\n");
+
+  // 水平翻转
+  TransformConfig transform;
+  transform.hflip = true;
+
+  std::string filter = FilterBuilder()
+      .transform(transform)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Transform Test Completed ===\n");
+}
+
+// 模糊转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeBlur
+TEST_F(test_Video, TranscodeBlur) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "blur");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Blur Test ===\n");
+
+  BlurConfig blur;
+  blur.type = BlurConfig::Type::kGaussian;
+  blur.sigma = 3.0f;
+
+  std::string filter = FilterBuilder()
+      .blur(blur)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Blur Test Completed ===\n");
+}
+
+// 组合效果转码测试
+// VIDEO_INPUT=/path/to/video.mp4 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.TranscodeCombo
+TEST_F(test_Video, TranscodeCombo) {
+  std::string input_url = get_input_url();
+  std::string output_url = make_output_path(input_url, "combo");
+  int64_t gpu_id = get_gpu_id();
+
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Combo Test ===\n");
+
+  // 组合：缩放 + 颜色调整 + 文字
+  TextConfig text;
+  text.text = "Demo Video";
+  text.font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+  text.font_size = 28;
+  text.font_color = "white";
+  text.border_width = 2;
+  text.position = Position::kTopLeft;
+  text.margin = 15;
+
+  ColorConfig color;
+  color.brightness = 0.05f;
+  color.contrast = 1.1f;
+
+  std::string filter = FilterBuilder()
+      .scale(1280, 720)
+      .adjust_color(color)
+      .add_text(text)
+      .add_custom("format=yuv420p")
+      .build();
+
+  EXPECT_TRUE(transcode_with_filter(input_url, output_url, filter, gpu_id));
+  av_log(nullptr, AV_LOG_INFO, "=== Transcode Combo Test Completed ===\n");
 }
 
 #if 0
