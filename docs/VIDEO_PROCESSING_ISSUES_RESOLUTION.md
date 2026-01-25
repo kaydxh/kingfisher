@@ -20,6 +20,7 @@
 12. [Seek（随机访问）功能](#12-seek随机访问功能)
 13. [av_log 与 AVClass 使用问题](#13-av_log-与-avclass-使用问题)
 14. [进度回调与取消机制](#14-进度回调与取消机制)
+15. [参考资料与通用排查工具](#15-参考资料与通用排查工具)
 
 ---
 
@@ -201,6 +202,62 @@ target_link_libraries (${TARGET_NAME}
 - `cmake/Build.options.cmake`
 - `test/CMakeLists.txt`
 
+### 1.4 编译问题排查方法
+
+#### 1.4.1 链接错误排查
+
+**现象**：`undefined reference to 'xxx'`
+
+**排查步骤**：
+
+```bash
+# 1. 检查符号是否存在于库中
+nm -C /path/to/lib.a | grep "symbol_name"
+
+# 2. 检查是否链接了正确的库
+ldd ./output/bin/kingfisher_base_test | grep ffmpeg
+
+# 3. 检查库的搜索路径
+echo $LD_LIBRARY_PATH
+
+# 4. 查看链接顺序（CMake verbose 模式）
+make VERBOSE=1
+
+# 5. 检查 C++ ABI 兼容性
+nm -C lib.a | grep "__cxx11"  # 检查是否使用 C++11 ABI
+```
+
+**FFmpeg 相关链接错误常见原因**：
+
+| 错误信息 | 原因 | 解决方案 |
+|---------|------|---------|
+| `undefined reference to 'avcodec_*'` | 未链接 libavcodec | 添加 `-lavcodec` |
+| `error: 'AVRational' was not declared` | 缺少头文件 | 添加 `#include "libavutil/rational.h"` |
+| `symbol not found` + mangled name | C++ name mangling | 用 `extern "C"` 包裹头文件 |
+
+#### 1.4.2 ABI 兼容性问题诊断
+
+**现象**：链接时报 `undefined reference` 但符号明明存在。
+
+**诊断方法**：
+
+```bash
+# 检查库是否使用了不同的 ABI
+nm -C libprotobuf.a | grep "std::__cxx11::basic_string"  # C++11 ABI
+nm -C libprotobuf.a | grep "std::string"                  # 旧 ABI
+
+# 检查编译标志
+grep "_GLIBCXX_USE_CXX11_ABI" CMakeLists.txt
+```
+
+**解决方案**：统一 ABI 标志
+
+```cmake
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
+```
+
+**参考来源**：GCC 官方文档关于 `_GLIBCXX_USE_CXX11_ABI` 的说明。
+
 ---
 
 ## 2. Core Dump 问题
@@ -357,6 +414,91 @@ ret = avformat_find_stream_info(ifmt_ctx_.get(), opts);
 **相关文件**：
 - `pkg/cv/video/output_file.cc`
 
+### 2.6 Core Dump 问题排查方法
+
+#### 2.6.1 获取完整堆栈
+
+**现象**：程序崩溃，出现 `Segmentation fault` 或 `SIGABRT`。
+
+**排查步骤**：
+
+```bash
+# 1. 确保生成 core 文件
+ulimit -c unlimited
+
+# 2. 设置 core 文件路径（可选）
+echo "/tmp/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern
+
+# 3. 编译时添加调试符号
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j8
+
+# 4. 运行程序，等待崩溃生成 core 文件
+./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 5. 使用 GDB 分析 core 文件
+gdb ./output/bin/kingfisher_base_test /tmp/core.kingfisher_base_test.12345
+
+# 6. 在 GDB 中查看堆栈
+(gdb) bt           # 查看完整调用栈
+(gdb) bt full      # 查看调用栈及局部变量
+(gdb) frame 3      # 切换到第 3 帧
+(gdb) info locals  # 查看当前帧的局部变量
+(gdb) print var    # 打印变量值
+```
+
+**示例堆栈分析**：
+
+```
+#0  format_line (...) at libavutil/log.c:306
+#1  av_log_default_callback (...) at libavutil/log.c:368
+#2  av_log (...) at libavutil/log.c:413
+#3  kingfisher::cv::InputStream::init_input_stream (this=0x13872a0)
+    at input_stream.cc:44
+```
+
+**分析方法**：
+- 从 `#0` 开始看崩溃位置（FFmpeg 内部）
+- 往上找到项目代码（`#3` 是 `input_stream.cc:44`）
+- 检查该行代码调用的 `av_log(this, ...)` 参数
+
+#### 2.6.2 常见 Core Dump 原因检查清单
+
+| 检查项 | 命令/方法 | 说明 |
+|--------|----------|------|
+| 空指针访问 | `(gdb) print ptr` | 检查指针是否为 0x0 |
+| 野指针 | `(gdb) print *ptr` | 检查访问是否有效 |
+| 内存布局问题 | `(gdb) print sizeof(ClassName)` | 检查类大小是否符合预期 |
+| 虚表指针 | `(gdb) print *(void**)this` | 检查 this 开头是否是 vptr |
+| FFmpeg 上下文 | `(gdb) print ifmt_ctx_` | 检查 FFmpeg 上下文是否有效 |
+
+#### 2.6.3 内存问题排查
+
+**使用 Valgrind**：
+
+```bash
+# 检测内存泄漏
+valgrind --leak-check=full --show-leak-kinds=all \
+    ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+
+# 检测内存越界
+valgrind --tool=memcheck \
+    ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+```
+
+**使用 AddressSanitizer**：
+
+```cmake
+# CMakeLists.txt 添加
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
+```
+
+```bash
+# 运行
+ASAN_OPTIONS=detect_leaks=1 ./output/bin/kingfisher_base_test --gtest_filter=test_Video.*
+```
+
 ---
 
 ## 3. moov atom not found 问题
@@ -463,6 +605,32 @@ OutputFile::~OutputFile() {
 - `pkg/cv/video/output_file.cc`
 - `pkg/cv/video/output_file.h`
 
+### 3.4 问题排查方法
+
+**使用 FFprobe 检查 moov atom 位置**：
+
+```bash
+# 检查文件结构
+ffprobe -v trace output.mp4 2>&1 | grep -E "(moov|mdat)"
+
+# 正常输出应该显示：
+# [mov,mp4] moov at position 0x28
+# [mov,mp4] mdat at position 0x1234
+
+# 异常输出（moov 在末尾或不存在）：
+# [mov,mp4] mdat at position 0x28
+# [mov,mp4] moov at position 0x12345678  # 很大的位置 = 在末尾
+```
+
+**检查视频基本信息**：
+
+```bash
+# 如果 duration 显示 N/A，说明 moov atom 有问题
+ffprobe -v error -show_format -show_streams output.mp4 | grep duration
+```
+
+**参考来源**：FFmpeg Formats 文档中关于 `movflags` 选项的说明。
+
 ---
 
 ## 4. PTS（时间戳）问题
@@ -563,6 +731,34 @@ if (enc_ctx && frame) {
 - `pkg/cv/video/input_file.cc`
 - `pkg/cv/video/output_file.cc`
 - `pkg/cv/video/output_filter.cc`
+
+### 4.5 PTS 问题排查方法
+
+**使用 FFprobe 对比输入输出的 PTS**：
+
+```bash
+# 1. 检查输入视频帧率和时间基
+ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate,time_base input.mp4
+
+# 2. 检查输出视频
+ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate,time_base output.mp4
+
+# 3. 对比 PTS 增量（应该均匀递增）
+ffprobe -v error -show_packets -select_streams v:0 input.mp4 | grep pts_time | head -20
+ffprobe -v error -show_packets -select_streams v:0 output.mp4 | grep pts_time | head -20
+```
+
+**检查音视频同步问题**：
+
+```bash
+# 检查音视频的起始 PTS
+ffprobe -v error -show_entries stream=start_time,start_pts -of json input.mp4
+
+# 检查 DTS 是否单调递增
+ffprobe -v error -show_packets -select_streams v:0 output.mp4 | grep dts | awk -F= '{print $2}' | awk 'NR>1 && $1<prev {print "DTS回退: 行"NR, prev, "->", $1} {prev=$1}'
+```
+
+**参考来源**：FFmpeg 6.x 变更日志 + `fftools/ffmpeg.c` 源码中关于 time_base 处理的逻辑。
 
 ---
 
@@ -1474,6 +1670,57 @@ Successfully switched to software encoder [libx264] for stream #0:0
 - `pkg/cv/video/output_file.h/cc` - NVENC 编码器选择
 - `test/pkg/test_cv_video.cc` - GPU_ID 环境变量支持
 
+### 11.8 CUDA 问题排查方法
+
+#### 11.8.1 环境检查命令
+
+```bash
+# 1. 检查 GPU 设备
+nvidia-smi -L
+
+# 2. 检查驱动版本
+nvidia-smi --query-gpu=driver_version --format=csv,noheader
+
+# 3. 检查 CUDA 版本
+nvcc --version
+
+# 4. 检查设备节点
+ls -la /dev/nvidia*
+
+# 5. 检查内核模块
+lsmod | grep nvidia
+
+# 6. 检查 FFmpeg CUDA 支持
+ffmpeg -hwaccels 2>&1 | grep cuda
+ffmpeg -encoders 2>&1 | grep nvenc
+ffmpeg -decoders 2>&1 | grep cuvid
+
+# 7. 测试 CUDA 解码
+ffmpeg -y -hwaccel cuda -i input.mp4 -c:v h264_nvenc -frames:v 10 test.mp4
+```
+
+#### 11.8.2 常见错误诊断
+
+| 错误信息 | 诊断命令 | 解决方案 |
+|---------|---------|---------|
+| `CUDA_ERROR_OUT_OF_MEMORY` | `nvidia-smi` 查看显存使用 | 可能是未设置 `gpu` 选项，而非真的显存不足 |
+| `CUDA_ERROR_NOT_PERMITTED` | `ls /dev/nvidia*` | vQGPU 环境功能受限，联系管理员或使用软件编码 |
+| `No NVENC capable devices` | `ffmpeg -encoders \| grep nvenc` | 检查驱动版本，确保 NVENC 支持 |
+| `CUDA_ERROR_INVALID_VALUE` | 检查 GPU ID 是否正确 | 使用 `nvidia-smi -L` 确认 GPU ID |
+
+#### 11.8.3 日志级别调整
+
+```cpp
+// 在代码中增加 FFmpeg 日志级别
+av_log_set_level(AV_LOG_DEBUG);  // 或 AV_LOG_TRACE
+
+// 或通过环境变量
+export AV_LOG_FORCE_COLOR=1
+export FFREPORT=file=ffmpeg.log:level=48  # 48 = AV_LOG_DEBUG
+```
+
+**参考来源**：NVIDIA Video Codec SDK 文档（https://developer.nvidia.com/video-codec-sdk）。
+
 ---
 
 ## 12. Seek（随机访问）功能
@@ -2073,8 +2320,90 @@ if (ret == AVERROR_EXIT) {
 3. **总帧数估算**：`total_frames` 是估算值，某些视频格式可能不准确
 4. **取消延迟**：取消操作会在下一批帧处理时生效，不是立即中断
 
-### 14.8 相关文件
+### 14.8 实时流的进度数据
+
+对于实时流（RTSP/RTMP/HLS 等），进度回调的数据会有以下特点：
+
+| 字段 | 实时流的值 | 原因 |
+|------|----------|------|
+| `total_frames` | **0** | 实时流没有已知的总帧数 |
+| `total_seconds` | **0.0** | `ifmt_ctx_->duration == AV_NOPTS_VALUE`，无法获取时长 |
+| `progress` | **0.0** | 由于总量未知，无法计算百分比 |
+| `current_frame` | **有效递增值** | 记录当前已处理的帧号 |
+| `current_seconds` | **有效递增值** | 基于帧 PTS 计算，反映已处理的时长 |
+
+**结论**：实时流可用 `current_frame` 和 `current_seconds` 进行统计，`progress` 无意义。
+
+### 14.9 相关文件
 
 - `pkg/cv/video/ffmpeg_types.h` - 类型定义（ProgressInfo, ProgressCallback, CancelCallback）
 - `pkg/cv/video/input_file.h/cc` - InputFile 进度回调和取消实现
 - `pkg/cv/video/output_file.h/cc` - OutputFile 进度回调和取消实现
+
+---
+
+## 15. 参考资料与通用排查工具
+
+本章节汇总常用的参考资料和通用排查工具（各问题的具体排查方法已在对应章节中说明）。
+
+### 15.1 官方文档
+
+| 资源 | 链接 | 说明 |
+|------|------|------|
+| FFmpeg 官方文档 | https://ffmpeg.org/documentation.html | API 参考、格式说明 |
+| FFmpeg Wiki | https://trac.ffmpeg.org/wiki | 常见问题、使用技巧 |
+| NVIDIA Video Codec SDK | https://developer.nvidia.com/video-codec-sdk | NVENC/NVDEC 文档 |
+| FFmpeg 源码 | https://github.com/FFmpeg/FFmpeg | `fftools/ffmpeg.c` 是重要参考 |
+
+### 15.2 问题解决思路来源
+
+| 问题类型 | 参考来源 |
+|---------|---------|
+| `av_log` 与 `AVClass` | FFmpeg 源码 `libavutil/log.c`，分析 `av_log` 如何读取 `AVClass*` |
+| 虚函数与内存布局 | C++ 标准：虚函数会在对象开头插入 vptr |
+| `avformat_open_input` 指针问题 | FFmpeg 文档：该函数可能修改传入的指针 |
+| moov atom 问题 | FFmpeg Formats 文档：`movflags` 选项说明 |
+| PTS/time_base 问题 | FFmpeg 6.x 变更日志 + `fftools/ffmpeg.c` 源码 |
+
+### 15.3 常用搜索关键词
+
+```
+# FFmpeg 问题
+"ffmpeg" + 错误信息
+"avcodec_open2 failed" + 错误码
+
+# CUDA 问题
+"CUDA_ERROR_xxx" + "ffmpeg"
+"nvenc" + 错误信息
+
+# 内存问题
+"av_log segfault"
+"AVClass first member"
+```
+
+### 15.4 通用 FFprobe 命令速查
+
+```bash
+# 基本信息
+ffprobe -v error -show_format -show_streams input.mp4
+
+# 查看帧信息
+ffprobe -v error -show_frames -select_streams v:0 input.mp4 | head -100
+
+# 查看 packet 信息（PTS/DTS）
+ffprobe -v error -show_packets -select_streams v:0 input.mp4 | head -100
+
+# 检查关键帧分布
+ffprobe -v error -select_streams v:0 -show_entries frame=pict_type,pts_time -of csv input.mp4 | grep I
+```
+
+### 15.5 问题排查总结表
+
+| 问题类型 | 首选工具 | 关键命令/方法 | 详见章节 |
+|---------|---------|--------------|---------|
+| 编译/链接错误 | nm, ldd | `nm -C lib.a \| grep symbol` | 1.4 |
+| Core Dump | GDB | `bt`, `print`, `info locals` | 2.6 |
+| moov atom 问题 | FFprobe | `ffprobe -v trace` | 3.4 |
+| PTS/播放速度问题 | FFprobe | 对比输入输出的 `pts_time` | 4.5 |
+| CUDA 问题 | nvidia-smi, FFmpeg | `nvidia-smi -L`, `ffmpeg -hwaccels` | 11.8 |
+| 内存泄漏 | Valgrind, ASan | `valgrind --leak-check=full` | 2.6.3 |
