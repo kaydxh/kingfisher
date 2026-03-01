@@ -245,7 +245,23 @@ int Image::RotateImage(const ::cv::Mat &matInput, double angle,
     return 0;
   }
 
-  return -1;
+  // 任意角度旋转：使用 getRotationMatrix2D + warpAffine
+  cv::Point2f center(matInput.cols / 2.0f, matInput.rows / 2.0f);
+  // OpenCV 的 getRotationMatrix2D 使用逆时针为正方向，
+  // 而外部传入的 angle 为顺时针角度，因此取负值
+  cv::Mat rot = cv::getRotationMatrix2D(center, -angle, 1.0);
+
+  // 计算旋转后的包围框大小，确保图像内容不被裁剪
+  cv::Rect bbox = cv::RotatedRect(cv::Point2f(), matInput.size(), static_cast<float>(angle)).boundingRect();
+
+  // 调整旋转矩阵的平移分量，使旋转后的图像居中在新画布上
+  rot.at<double>(0, 2) += bbox.width / 2.0 - matInput.cols / 2.0;
+  rot.at<double>(1, 2) += bbox.height / 2.0 - matInput.rows / 2.0;
+
+  cv::warpAffine(matInput, matOutput, rot, bbox.size());
+  LOG(INFO) << "rotate origin image by arbitrary angle=" << angle
+            << ", output size=" << matOutput.cols << "x" << matOutput.rows;
+  return 0;
 }
 
 // https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp
