@@ -3,7 +3,9 @@
 #include <Magick++.h>
 #include <magick/api.h>
 
+#include <algorithm>
 #include <fstream>
+#include <vector>
 
 #include "cv/image/image.pb.h"
 #include "cv/types/types.h"
@@ -24,6 +26,16 @@ namespace kcv {
 #define COLOR_GRAY2BGRA CV_GRAY2BGRA
 #define COLOR_GRAY2BGR CV_GRAY2BGR
 #define COLOR_BGR2GRAY CV_BGR2GRAY
+#define COLOR_RGB2BGR CV_RGB2BGR
+#define COLOR_BGR2RGB CV_BGR2RGB
+#define COLOR_RGBA2BGRA CV_RGBA2BGRA
+#define COLOR_BGRA2RGBA CV_BGRA2RGBA
+#define COLOR_GRAY2RGB CV_GRAY2RGB
+#define COLOR_RGB2GRAY CV_RGB2GRAY
+#define COLOR_RGBA2BGR CV_RGBA2BGR
+#define COLOR_BGR2RGBA CV_BGR2RGBA
+#define COLOR_RGB2BGRA CV_RGB2BGRA
+#define COLOR_BGRA2RGB CV_BGRA2RGB
 
 // 其他需要兼容的宏...
 #endif
@@ -264,6 +276,171 @@ int Image::RotateImage(const ::cv::Mat &matInput, double angle,
   return 0;
 }
 
+// ==================== 3.1 图像编码/导出到内存 ====================
+
+int Image::EncodeImage(const cv::Mat &mat, const std::string &format,
+                       int quality, std::string &output) {
+  if (mat.empty()) {
+    LOG(ERROR) << "EncodeImage: input mat is empty";
+    return -1;
+  }
+
+  std::vector<uchar> buf;
+  std::vector<int> params;
+
+  // 根据格式设置编码参数
+  std::string fmt = format;
+  // 确保格式以 '.' 开头
+  if (!fmt.empty() && fmt[0] != '.') {
+    fmt = "." + fmt;
+  }
+
+  // 统一转为小写
+  std::transform(fmt.begin(), fmt.end(), fmt.begin(), ::tolower);
+
+  if (fmt == ".jpg" || fmt == ".jpeg") {
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(std::max(0, std::min(100, quality)));
+  } else if (fmt == ".png") {
+    params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+    // PNG compression level: 0-9，quality 参数映射为压缩级别
+    int compression = quality > 0 ? std::max(0, std::min(9, quality / 11)) : 3;
+    params.push_back(compression);
+#ifdef IMWRITE_WEBP_QUALITY
+  } else if (fmt == ".webp") {
+    params.push_back(cv::IMWRITE_WEBP_QUALITY);
+    params.push_back(std::max(1, std::min(100, quality)));
+#endif
+  }
+  // .bmp 等格式无需额外参数
+
+  auto ret = WrapOpencvFuncT([&]() {
+    if (!cv::imencode(fmt, mat, buf, params)) {
+      throw cv::Exception(0, "imencode failed for format: " + fmt,
+                          "EncodeImage", __FILE__, __LINE__);
+    }
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "EncodeImage: failed to encode image to format: " << fmt;
+    return -1;
+  }
+
+  output.assign(reinterpret_cast<const char *>(buf.data()), buf.size());
+  LOG(INFO) << "EncodeImage: encoded image to format=" << fmt
+            << ", size=" << output.size() << " bytes";
+  return 0;
+}
+
+int Image::EncodeImage(const cv::Mat &mat, const EncodeOptions &opts,
+                       std::string &output) {
+  std::string format = opts.format();
+  int quality = opts.quality();
+
+  // 如果是 PNG 且指定了 compression，优先使用 compression
+  if (!format.empty()) {
+    std::string fmt = format;
+    std::transform(fmt.begin(), fmt.end(), fmt.begin(), ::tolower);
+    if ((fmt == "png" || fmt == ".png") && opts.compression() > 0) {
+      // 对于 PNG，将 compression 参数传递给 quality
+      quality = opts.compression() * 11;  // 映射回 0-99 范围
+    }
+  }
+
+  return EncodeImage(mat, format, quality, output);
+}
+
+// ==================== 3.2 格式转换 ====================
+
+int Image::ConvertFormat(const std::string &inputData,
+                         const std::string &targetFormat, int quality,
+                         std::string &output) {
+  if (inputData.empty()) {
+    LOG(ERROR) << "ConvertFormat: input data is empty";
+    return -1;
+  }
+
+  // 先解码
+  cv::Mat mat;
+  DecodeOptions opts;
+  opts.set_targetcolorspace(BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = DecodeImage(inputData, opts, mat);
+  if (ret != 0) {
+    LOG(ERROR) << "ConvertFormat: failed to decode input image";
+    return ret;
+  }
+
+  // 再编码为目标格式
+  return EncodeImage(mat, targetFormat, quality, output);
+}
+
+// ==================== 3.3 颜色空间转换 ====================
+
+/**
+ * @brief 获取 OpenCV 颜色转换码
+ * @return 转换码，-1 表示不支持
+ */
+static int GetCvtColorCode(ColorSpace from, ColorSpace to) {
+  // BGR -> 其他
+  if (from == BGRColorSpace && to == GRAYColorSpace) return cv::COLOR_BGR2GRAY;
+  if (from == BGRColorSpace && to == BGRAColorSpace) return cv::COLOR_BGR2BGRA;
+  if (from == BGRColorSpace && to == RGBColorSpace) return cv::COLOR_BGR2RGB;
+  if (from == BGRColorSpace && to == RGBAColorSpace) return cv::COLOR_BGR2RGBA;
+
+  // BGRA -> 其他
+  if (from == BGRAColorSpace && to == BGRColorSpace) return cv::COLOR_BGRA2BGR;
+  if (from == BGRAColorSpace && to == GRAYColorSpace) return cv::COLOR_BGRA2GRAY;
+  if (from == BGRAColorSpace && to == RGBColorSpace) return cv::COLOR_BGRA2RGB;
+  if (from == BGRAColorSpace && to == RGBAColorSpace) return cv::COLOR_BGRA2RGBA;
+
+  // GRAY -> 其他
+  if (from == GRAYColorSpace && to == BGRColorSpace) return cv::COLOR_GRAY2BGR;
+  if (from == GRAYColorSpace && to == BGRAColorSpace) return cv::COLOR_GRAY2BGRA;
+  if (from == GRAYColorSpace && to == RGBColorSpace) return cv::COLOR_GRAY2RGB;
+
+  // RGB -> 其他
+  if (from == RGBColorSpace && to == BGRColorSpace) return cv::COLOR_RGB2BGR;
+  if (from == RGBColorSpace && to == GRAYColorSpace) return cv::COLOR_RGB2GRAY;
+  if (from == RGBColorSpace && to == BGRAColorSpace) return cv::COLOR_RGB2BGRA;
+
+  // RGBA -> 其他
+  if (from == RGBAColorSpace && to == BGRColorSpace) return cv::COLOR_RGBA2BGR;
+  if (from == RGBAColorSpace && to == BGRAColorSpace) return cv::COLOR_RGBA2BGRA;
+
+  return -1;  // 不支持的转换
+}
+
+int Image::ConvertColorSpace(const cv::Mat &input, ColorSpace from,
+                             ColorSpace to, cv::Mat &output) {
+  if (input.empty()) {
+    LOG(ERROR) << "ConvertColorSpace: input mat is empty";
+    return -1;
+  }
+
+  if (from == to) {
+    output = input.clone();
+    return 0;
+  }
+
+  int code = GetCvtColorCode(from, to);
+  if (code < 0) {
+    LOG(ERROR) << "ConvertColorSpace: unsupported conversion from "
+               << from << " to " << to;
+    return -1;
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::cvtColor(input, output, code);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "ConvertColorSpace: cv::cvtColor failed";
+    return -1;
+  }
+
+  LOG(INFO) << "ConvertColorSpace: converted from " << from << " to " << to;
+  return 0;
+}
+
 // https://github.com/RyanFu/old_rr_code/blob/a6d3dddb50422f987a97efaba215950d404b0d36/topcc/upload_cwf/imagehelper.cpp
 int Image::ResizeImage(const std::string &imageData, int width, int height,
                        bool keepRatio, ::cv::Mat &matOutput) {
@@ -299,6 +476,44 @@ int Image::ResizeImage(const std::string &imageData, int width, int height,
   // return 0;
 }
 
+// ==================== 3.7 ResizeImage (Mat 版本) ====================
+
+int Image::ResizeImage(const cv::Mat &matInput, int width, int height,
+                       bool keepRatio, cv::Mat &matOutput) {
+  if (matInput.empty()) {
+    LOG(ERROR) << "ResizeImage(Mat): input mat is empty";
+    return -1;
+  }
+  if (width <= 0 || height <= 0) {
+    LOG(ERROR) << "ResizeImage(Mat): invalid target size: "
+               << width << "x" << height;
+    return -1;
+  }
+
+  int w0 = matInput.cols;
+  int h0 = matInput.rows;
+
+  if (keepRatio) {
+    if (width > height) {
+      height = static_cast<int>(static_cast<double>(h0 * width) / w0);
+    } else {
+      width = static_cast<int>(static_cast<double>(w0 * height) / h0);
+    }
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::resize(matInput, matOutput, cv::Size(width, height));
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "ResizeImage(Mat): cv::resize failed";
+    return -1;
+  }
+
+  LOG(INFO) << "ResizeImage(Mat): resized from " << w0 << "x" << h0
+            << " to " << width << "x" << height;
+  return 0;
+}
+
 int Image::CropImage(const std::string &imageData, const Rect &rect,
                      ::cv::Mat &matOutput) {
   Magick::Image image;
@@ -317,8 +532,371 @@ int Image::CropImage(const std::string &imageData, const Rect &rect,
   return ImageToMat(image, matOutput);
 }
 
+// ==================== 3.7 CropImage (Mat 版本) ====================
+
+int Image::CropImage(const cv::Mat &matInput, const Rect &rect,
+                     cv::Mat &matOutput) {
+  if (matInput.empty()) {
+    LOG(ERROR) << "CropImage(Mat): input mat is empty";
+    return -1;
+  }
+
+  auto rect0 = cv::Rect(0, 0, matInput.cols, matInput.rows);
+  auto cropRect =
+      rect0 & cv::Rect(rect.x(), rect.y(), rect.width(), rect.height());
+
+  if (cropRect.width <= 0 || cropRect.height <= 0) {
+    LOG(ERROR) << "CropImage(Mat): invalid crop region, intersection is empty";
+    return -1;
+  }
+
+  matOutput = matInput(cropRect).clone();
+  LOG(INFO) << "CropImage(Mat): cropped region (" << cropRect.x << ", "
+            << cropRect.y << ", " << cropRect.width << ", " << cropRect.height
+            << ")";
+  return 0;
+}
+
+// ==================== 3.7 CenterCropImage ====================
+
+int Image::CenterCropImage(const cv::Mat &matInput, int width, int height,
+                            cv::Mat &matOutput) {
+  if (matInput.empty()) {
+    LOG(ERROR) << "CenterCropImage: input mat is empty";
+    return -1;
+  }
+  if (width <= 0 || height <= 0) {
+    LOG(ERROR) << "CenterCropImage: invalid crop size: "
+               << width << "x" << height;
+    return -1;
+  }
+
+  // 限制裁剪尺寸不超过图像尺寸
+  int cropW = std::min(width, matInput.cols);
+  int cropH = std::min(height, matInput.rows);
+
+  // 计算中心裁剪区域
+  int x = (matInput.cols - cropW) / 2;
+  int y = (matInput.rows - cropH) / 2;
+
+  cv::Rect cropRect(x, y, cropW, cropH);
+  matOutput = matInput(cropRect).clone();
+
+  LOG(INFO) << "CenterCropImage: center cropped to " << cropW << "x" << cropH;
+  return 0;
+}
+
+// ==================== 3.5 FlipImage ====================
+
+int Image::FlipImage(const cv::Mat &input, FlipMode mode, cv::Mat &output) {
+  if (input.empty()) {
+    LOG(ERROR) << "FlipImage: input mat is empty";
+    return -1;
+  }
+
+  // OpenCV flip 代码:
+  // flipCode > 0: 水平翻转（沿Y轴）
+  // flipCode == 0: 垂直翻转（沿X轴）
+  // flipCode < 0: 同时翻转
+  int flipCode;
+  switch (mode) {
+    case FLIP_HORIZONTAL:
+      flipCode = 1;
+      break;
+    case FLIP_VERTICAL:
+      flipCode = 0;
+      break;
+    case FLIP_BOTH:
+      flipCode = -1;
+      break;
+    default:
+      LOG(ERROR) << "FlipImage: unsupported flip mode: " << mode;
+      return -1;
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::flip(input, output, flipCode);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "FlipImage: cv::flip failed";
+    return -1;
+  }
+
+  LOG(INFO) << "FlipImage: flipped with mode=" << mode;
+  return 0;
+}
+
+int Image::FlipImage(const std::string &imageData, FlipMode mode,
+                     cv::Mat &output) {
+  cv::Mat mat;
+  DecodeOptions opts;
+  opts.set_targetcolorspace(BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = DecodeImage(imageData, opts, mat);
+  if (ret != 0) {
+    LOG(ERROR) << "FlipImage(string): failed to decode image";
+    return ret;
+  }
+  return FlipImage(mat, mode, output);
+}
+
+// ==================== 3.4 图像拼接/合成 ====================
+
+int Image::HConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
+  if (images.empty()) {
+    LOG(ERROR) << "HConcat: input images list is empty";
+    return -1;
+  }
+  if (images.size() == 1) {
+    output = images[0].clone();
+    return 0;
+  }
+
+  // 检查所有图像的类型和通道数是否一致
+  int type = images[0].type();
+  for (size_t i = 1; i < images.size(); ++i) {
+    if (images[i].empty()) {
+      LOG(ERROR) << "HConcat: image at index " << i << " is empty";
+      return -1;
+    }
+    if (images[i].type() != type) {
+      LOG(ERROR) << "HConcat: image type mismatch at index " << i;
+      return -1;
+    }
+  }
+
+  // 找到最大高度，将所有图像缩放到相同高度
+  int maxHeight = 0;
+  for (const auto &img : images) {
+    maxHeight = std::max(maxHeight, img.rows);
+  }
+
+  std::vector<cv::Mat> resized;
+  for (const auto &img : images) {
+    if (img.rows == maxHeight) {
+      resized.push_back(img);
+    } else {
+      cv::Mat tmp;
+      double ratio = static_cast<double>(maxHeight) / img.rows;
+      cv::resize(img, tmp, cv::Size(static_cast<int>(img.cols * ratio), maxHeight));
+      resized.push_back(tmp);
+    }
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::hconcat(resized, output);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "HConcat: cv::hconcat failed";
+    return -1;
+  }
+
+  LOG(INFO) << "HConcat: concatenated " << images.size()
+            << " images horizontally, output size=" << output.cols
+            << "x" << output.rows;
+  return 0;
+}
+
+int Image::VConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
+  if (images.empty()) {
+    LOG(ERROR) << "VConcat: input images list is empty";
+    return -1;
+  }
+  if (images.size() == 1) {
+    output = images[0].clone();
+    return 0;
+  }
+
+  // 检查所有图像的类型和通道数是否一致
+  int type = images[0].type();
+  for (size_t i = 1; i < images.size(); ++i) {
+    if (images[i].empty()) {
+      LOG(ERROR) << "VConcat: image at index " << i << " is empty";
+      return -1;
+    }
+    if (images[i].type() != type) {
+      LOG(ERROR) << "VConcat: image type mismatch at index " << i;
+      return -1;
+    }
+  }
+
+  // 找到最大宽度，将所有图像缩放到相同宽度
+  int maxWidth = 0;
+  for (const auto &img : images) {
+    maxWidth = std::max(maxWidth, img.cols);
+  }
+
+  std::vector<cv::Mat> resized;
+  for (const auto &img : images) {
+    if (img.cols == maxWidth) {
+      resized.push_back(img);
+    } else {
+      cv::Mat tmp;
+      double ratio = static_cast<double>(maxWidth) / img.cols;
+      cv::resize(img, tmp, cv::Size(maxWidth, static_cast<int>(img.rows * ratio)));
+      resized.push_back(tmp);
+    }
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::vconcat(resized, output);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "VConcat: cv::vconcat failed";
+    return -1;
+  }
+
+  LOG(INFO) << "VConcat: concatenated " << images.size()
+            << " images vertically, output size=" << output.cols
+            << "x" << output.rows;
+  return 0;
+}
+
+int Image::Overlay(cv::Mat &dest, const cv::Mat &src, int x, int y,
+                   double alpha) {
+  if (dest.empty() || src.empty()) {
+    LOG(ERROR) << "Overlay: dest or src mat is empty";
+    return -1;
+  }
+  if (alpha < 0.0 || alpha > 1.0) {
+    LOG(ERROR) << "Overlay: alpha value out of range [0, 1]: " << alpha;
+    return -1;
+  }
+
+  // 计算实际叠加区域（处理越界）
+  int srcX = 0, srcY = 0;
+  int dstX = x, dstY = y;
+  int overlapW = src.cols, overlapH = src.rows;
+
+  // 处理负坐标
+  if (dstX < 0) {
+    srcX = -dstX;
+    overlapW += dstX;
+    dstX = 0;
+  }
+  if (dstY < 0) {
+    srcY = -dstY;
+    overlapH += dstY;
+    dstY = 0;
+  }
+
+  // 处理超出右边界
+  if (dstX + overlapW > dest.cols) {
+    overlapW = dest.cols - dstX;
+  }
+  // 处理超出下边界
+  if (dstY + overlapH > dest.rows) {
+    overlapH = dest.rows - dstY;
+  }
+
+  if (overlapW <= 0 || overlapH <= 0) {
+    LOG(WARNING) << "Overlay: no overlap region, skipping";
+    return 0;
+  }
+
+  cv::Rect srcROI(srcX, srcY, overlapW, overlapH);
+  cv::Rect dstROI(dstX, dstY, overlapW, overlapH);
+
+  cv::Mat srcRegion = src(srcROI);
+  cv::Mat destRegion = dest(dstROI);
+
+  // 通道对齐
+  cv::Mat srcAligned;
+  if (srcRegion.channels() != destRegion.channels()) {
+    if (destRegion.channels() == 4 && srcRegion.channels() == 3) {
+      cv::cvtColor(srcRegion, srcAligned, cv::COLOR_BGR2BGRA);
+    } else if (destRegion.channels() == 3 && srcRegion.channels() == 4) {
+      cv::cvtColor(srcRegion, srcAligned, cv::COLOR_BGRA2BGR);
+    } else if (destRegion.channels() == 3 && srcRegion.channels() == 1) {
+      cv::cvtColor(srcRegion, srcAligned, cv::COLOR_GRAY2BGR);
+    } else {
+      srcAligned = srcRegion;
+    }
+  } else {
+    srcAligned = srcRegion;
+  }
+
+  // Alpha 混合
+  cv::Mat blended;
+  cv::addWeighted(destRegion, 1.0 - alpha, srcAligned, alpha, 0.0, blended);
+  blended.copyTo(destRegion);
+
+  LOG(INFO) << "Overlay: overlaid at (" << x << ", " << y
+            << "), overlap=" << overlapW << "x" << overlapH
+            << ", alpha=" << alpha;
+  return 0;
+}
+
+// ==================== 3.6 文字标注 ====================
+
+int Image::AnnotateImage(cv::Mat &image, const std::string &text,
+                         const cv::Point &position,
+                         const AnnotateOptions &opts) {
+  if (image.empty()) {
+    LOG(ERROR) << "AnnotateImage: input image is empty";
+    return -1;
+  }
+  if (text.empty()) {
+    LOG(WARNING) << "AnnotateImage: text is empty, nothing to draw";
+    return 0;
+  }
+
+  // 构建颜色（BGR格式）
+  cv::Scalar color(opts.color_b(), opts.color_g(), opts.color_r());
+
+  // 字体设置
+  double fontSize = opts.font_size() > 0 ? opts.font_size() : 1.0;
+  int thickness = opts.thickness() > 0 ? opts.thickness() : 1;
+  int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+  if (opts.anti_alias()) {
+    fontFace |= cv::FONT_ITALIC;  // OpenCV 中抗锯齿通过 LINE_AA 控制
+  }
+#if CV_MAJOR_VERSION >= 4
+  int lineType = opts.anti_alias() ? cv::LINE_AA : cv::LINE_8;
+#else
+  int lineType = opts.anti_alias() ? CV_AA : 8;
+#endif
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::putText(image, text, position, fontFace, fontSize, color,
+                thickness, lineType);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "AnnotateImage: cv::putText failed";
+    return -1;
+  }
+
+  LOG(INFO) << "AnnotateImage: drew text \"" << text << "\" at ("
+            << position.x << ", " << position.y << ")";
+  return 0;
+}
+
+int Image::AnnotateImage(const std::string &imageData,
+                         const std::string &text, const cv::Point &position,
+                         const AnnotateOptions &opts, cv::Mat &matOutput) {
+  DecodeOptions decOpts;
+  decOpts.set_targetcolorspace(BGRColorSpace);
+  decOpts.set_auto_orient(true);
+  int ret = DecodeImage(imageData, decOpts, matOutput);
+  if (ret != 0) {
+    LOG(ERROR) << "AnnotateImage(string): failed to decode image";
+    return ret;
+  }
+  return AnnotateImage(matOutput, text, position, opts);
+}
+
 int Image::WriteImage(const cv::Mat &mat, const std::string &path) {
   auto ret = WrapOpencvFuncT([&]() { cv::imwrite(path, mat); });
+  if (ret != 0) {
+    return ret;
+  }
+
+  return 0;
+}
+
+int Image::WriteImage(const cv::Mat &mat, const std::string &path,
+                      const std::vector<int> &params) {
+  auto ret = WrapOpencvFuncT([&]() { cv::imwrite(path, mat, params); });
   if (ret != 0) {
     return ret;
   }
@@ -353,50 +931,8 @@ int Image::DumpImageToBytes(const cv::Mat &mat, const std::string &path) {
   return 0;
 }
 
-#if 0
-// https://github.com/AndreMouche/GraphicsStudy/blob/master/GraphicsMagicUsage/water_mark_txt.cpp
-int Image::AnnotateImage(const std::string &imageData, const std::string &text,
-                         const Point &point, ::cv::Mat &matOutput) {
-  Magick::Image image;
-  auto ret = imageRead(imageData, image);
-  if (ret != 0) {
-    return ret;
-  }
-
-  // DrawContext drawContext;
-  ret = WrapFuncT([&]() {
-  /*DrawContext*/
-
-#if 0
-    // drawContext = DrawAllocateContext((DrawInfo *)nullptr, &image);
-    drawContext = DrawAllocateContext((DrawInfo *)nullptr, image.image());
-    DrawSetFillColorString(drawContext, "red");
-    DrawAnnotation(drawContext, point.x, point.y,
-                   (const unsigned char *)text.c_str());
-
-    DrawSetTextAntialias(drawContext, 1);
-    // DrawSetFont(drawContext, FONT_DEFAULT);
-    // DrawSetFontSize(drawContext, font_pointsize);
-    DrawSetGravity(drawContext, CenterGravity);
-    DrawSetTextEncoding(drawContext, "UTF-8");
-
-    DrawRender(drawContext);
-    // image.write("./11111.jpg");
-    // DrawDestroyContext(drawContext);
-#endif
-    // image.annotate(text, Magick::Geometry(100, 100, point.x, point.y));
-    // image.fillColor("blue");
-    // image.font("Helvetica");
-    // image.fontPointsize(14);
-    image.annotate("Goodbye cruel world!", "+150+20");
-    // Magick::Geometry(rect.width, rect.height, rect.x, rect.y));
-  });
-  if (ret != 0) {
-    return ret;
-  }
-  return ImageToMat(image, matOutput);
-}
-#endif
+// 旧版 AnnotateImage 实现（已被新的 OpenCV 实现替代）
+// 新实现见上方 Image::AnnotateImage(cv::Mat &, ...)
 
 /**
  * @brief 计算有效区域（处理负坐标和越界）

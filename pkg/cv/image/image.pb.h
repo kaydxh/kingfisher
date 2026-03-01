@@ -39,7 +39,7 @@ namespace protobuf_image_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[3];
+  static const ::google::protobuf::internal::ParseTable schema[7];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -48,22 +48,38 @@ void AddDescriptors();
 }  // namespace protobuf_image_2eproto
 namespace kingfisher {
 namespace kcv {
+class AnnotateOptions;
+class AnnotateOptionsDefaultTypeInternal;
+extern AnnotateOptionsDefaultTypeInternal _AnnotateOptions_default_instance_;
 class DecodeOptions;
 class DecodeOptionsDefaultTypeInternal;
 extern DecodeOptionsDefaultTypeInternal _DecodeOptions_default_instance_;
+class EncodeOptions;
+class EncodeOptionsDefaultTypeInternal;
+extern EncodeOptionsDefaultTypeInternal _EncodeOptions_default_instance_;
 class ImageInfo;
 class ImageInfoDefaultTypeInternal;
 extern ImageInfoDefaultTypeInternal _ImageInfo_default_instance_;
+class Point;
+class PointDefaultTypeInternal;
+extern PointDefaultTypeInternal _Point_default_instance_;
 class Rect;
 class RectDefaultTypeInternal;
 extern RectDefaultTypeInternal _Rect_default_instance_;
+class Size;
+class SizeDefaultTypeInternal;
+extern SizeDefaultTypeInternal _Size_default_instance_;
 }  // namespace kcv
 }  // namespace kingfisher
 namespace google {
 namespace protobuf {
+template<> ::kingfisher::kcv::AnnotateOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::AnnotateOptions>(Arena*);
 template<> ::kingfisher::kcv::DecodeOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::DecodeOptions>(Arena*);
+template<> ::kingfisher::kcv::EncodeOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::EncodeOptions>(Arena*);
 template<> ::kingfisher::kcv::ImageInfo* Arena::CreateMaybeMessage<::kingfisher::kcv::ImageInfo>(Arena*);
+template<> ::kingfisher::kcv::Point* Arena::CreateMaybeMessage<::kingfisher::kcv::Point>(Arena*);
 template<> ::kingfisher::kcv::Rect* Arena::CreateMaybeMessage<::kingfisher::kcv::Rect>(Arena*);
+template<> ::kingfisher::kcv::Size* Arena::CreateMaybeMessage<::kingfisher::kcv::Size>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 namespace kingfisher {
@@ -75,12 +91,14 @@ enum ColorSpace {
   BGRAColorSpace = 2,
   GRAYColorSpace = 3,
   GRAYAColorSpace = 4,
+  RGBColorSpace = 5,
+  RGBAColorSpace = 6,
   ColorSpace_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   ColorSpace_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
 bool ColorSpace_IsValid(int value);
 const ColorSpace ColorSpace_MIN = UnknownColorSpace;
-const ColorSpace ColorSpace_MAX = GRAYAColorSpace;
+const ColorSpace ColorSpace_MAX = RGBAColorSpace;
 const int ColorSpace_ARRAYSIZE = ColorSpace_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* ColorSpace_descriptor();
@@ -92,6 +110,28 @@ inline bool ColorSpace_Parse(
     const ::std::string& name, ColorSpace* value) {
   return ::google::protobuf::internal::ParseNamedEnum<ColorSpace>(
     ColorSpace_descriptor(), name, value);
+}
+enum FlipMode {
+  FLIP_VERTICAL = 0,
+  FLIP_HORIZONTAL = 1,
+  FLIP_BOTH = 2,
+  FlipMode_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  FlipMode_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool FlipMode_IsValid(int value);
+const FlipMode FlipMode_MIN = FLIP_VERTICAL;
+const FlipMode FlipMode_MAX = FLIP_BOTH;
+const int FlipMode_ARRAYSIZE = FlipMode_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* FlipMode_descriptor();
+inline const ::std::string& FlipMode_Name(FlipMode value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    FlipMode_descriptor(), value);
+}
+inline bool FlipMode_Parse(
+    const ::std::string& name, FlipMode* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FlipMode>(
+    FlipMode_descriptor(), name, value);
 }
 enum OrientationType {
   UndefinedOrientation = 0,
@@ -262,6 +302,504 @@ class DecodeOptions : public ::google::protobuf::Message /* @@protoc_insertion_p
 };
 // -------------------------------------------------------------------
 
+class EncodeOptions : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.EncodeOptions) */ {
+ public:
+  EncodeOptions();
+  virtual ~EncodeOptions();
+
+  EncodeOptions(const EncodeOptions& from);
+
+  inline EncodeOptions& operator=(const EncodeOptions& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  EncodeOptions(EncodeOptions&& from) noexcept
+    : EncodeOptions() {
+    *this = ::std::move(from);
+  }
+
+  inline EncodeOptions& operator=(EncodeOptions&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const EncodeOptions& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const EncodeOptions* internal_default_instance() {
+    return reinterpret_cast<const EncodeOptions*>(
+               &_EncodeOptions_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  void Swap(EncodeOptions* other);
+  friend void swap(EncodeOptions& a, EncodeOptions& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline EncodeOptions* New() const final {
+    return CreateMaybeMessage<EncodeOptions>(NULL);
+  }
+
+  EncodeOptions* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<EncodeOptions>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const EncodeOptions& from);
+  void MergeFrom(const EncodeOptions& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(EncodeOptions* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string format = 1;
+  void clear_format();
+  static const int kFormatFieldNumber = 1;
+  const ::std::string& format() const;
+  void set_format(const ::std::string& value);
+  #if LANG_CXX11
+  void set_format(::std::string&& value);
+  #endif
+  void set_format(const char* value);
+  void set_format(const char* value, size_t size);
+  ::std::string* mutable_format();
+  ::std::string* release_format();
+  void set_allocated_format(::std::string* format);
+
+  // int32 quality = 2;
+  void clear_quality();
+  static const int kQualityFieldNumber = 2;
+  ::google::protobuf::int32 quality() const;
+  void set_quality(::google::protobuf::int32 value);
+
+  // int32 compression = 3;
+  void clear_compression();
+  static const int kCompressionFieldNumber = 3;
+  ::google::protobuf::int32 compression() const;
+  void set_compression(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.EncodeOptions)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr format_;
+  ::google::protobuf::int32 quality_;
+  ::google::protobuf::int32 compression_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class Point : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.Point) */ {
+ public:
+  Point();
+  virtual ~Point();
+
+  Point(const Point& from);
+
+  inline Point& operator=(const Point& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  Point(Point&& from) noexcept
+    : Point() {
+    *this = ::std::move(from);
+  }
+
+  inline Point& operator=(Point&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Point& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Point* internal_default_instance() {
+    return reinterpret_cast<const Point*>(
+               &_Point_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  void Swap(Point* other);
+  friend void swap(Point& a, Point& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Point* New() const final {
+    return CreateMaybeMessage<Point>(NULL);
+  }
+
+  Point* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<Point>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const Point& from);
+  void MergeFrom(const Point& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Point* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 x = 1;
+  void clear_x();
+  static const int kXFieldNumber = 1;
+  ::google::protobuf::int32 x() const;
+  void set_x(::google::protobuf::int32 value);
+
+  // int32 y = 2;
+  void clear_y();
+  static const int kYFieldNumber = 2;
+  ::google::protobuf::int32 y() const;
+  void set_y(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.Point)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 x_;
+  ::google::protobuf::int32 y_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class Size : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.Size) */ {
+ public:
+  Size();
+  virtual ~Size();
+
+  Size(const Size& from);
+
+  inline Size& operator=(const Size& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  Size(Size&& from) noexcept
+    : Size() {
+    *this = ::std::move(from);
+  }
+
+  inline Size& operator=(Size&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Size& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Size* internal_default_instance() {
+    return reinterpret_cast<const Size*>(
+               &_Size_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  void Swap(Size* other);
+  friend void swap(Size& a, Size& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Size* New() const final {
+    return CreateMaybeMessage<Size>(NULL);
+  }
+
+  Size* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<Size>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const Size& from);
+  void MergeFrom(const Size& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Size* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 width = 1;
+  void clear_width();
+  static const int kWidthFieldNumber = 1;
+  ::google::protobuf::int32 width() const;
+  void set_width(::google::protobuf::int32 value);
+
+  // int32 height = 2;
+  void clear_height();
+  static const int kHeightFieldNumber = 2;
+  ::google::protobuf::int32 height() const;
+  void set_height(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.Size)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 width_;
+  ::google::protobuf::int32 height_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class AnnotateOptions : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.AnnotateOptions) */ {
+ public:
+  AnnotateOptions();
+  virtual ~AnnotateOptions();
+
+  AnnotateOptions(const AnnotateOptions& from);
+
+  inline AnnotateOptions& operator=(const AnnotateOptions& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  AnnotateOptions(AnnotateOptions&& from) noexcept
+    : AnnotateOptions() {
+    *this = ::std::move(from);
+  }
+
+  inline AnnotateOptions& operator=(AnnotateOptions&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const AnnotateOptions& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const AnnotateOptions* internal_default_instance() {
+    return reinterpret_cast<const AnnotateOptions*>(
+               &_AnnotateOptions_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  void Swap(AnnotateOptions* other);
+  friend void swap(AnnotateOptions& a, AnnotateOptions& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline AnnotateOptions* New() const final {
+    return CreateMaybeMessage<AnnotateOptions>(NULL);
+  }
+
+  AnnotateOptions* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<AnnotateOptions>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const AnnotateOptions& from);
+  void MergeFrom(const AnnotateOptions& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(AnnotateOptions* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string font = 1;
+  void clear_font();
+  static const int kFontFieldNumber = 1;
+  const ::std::string& font() const;
+  void set_font(const ::std::string& value);
+  #if LANG_CXX11
+  void set_font(::std::string&& value);
+  #endif
+  void set_font(const char* value);
+  void set_font(const char* value, size_t size);
+  ::std::string* mutable_font();
+  ::std::string* release_font();
+  void set_allocated_font(::std::string* font);
+
+  // double font_size = 2;
+  void clear_font_size();
+  static const int kFontSizeFieldNumber = 2;
+  double font_size() const;
+  void set_font_size(double value);
+
+  // int32 color_r = 3;
+  void clear_color_r();
+  static const int kColorRFieldNumber = 3;
+  ::google::protobuf::int32 color_r() const;
+  void set_color_r(::google::protobuf::int32 value);
+
+  // int32 color_g = 4;
+  void clear_color_g();
+  static const int kColorGFieldNumber = 4;
+  ::google::protobuf::int32 color_g() const;
+  void set_color_g(::google::protobuf::int32 value);
+
+  // int32 color_b = 5;
+  void clear_color_b();
+  static const int kColorBFieldNumber = 5;
+  ::google::protobuf::int32 color_b() const;
+  void set_color_b(::google::protobuf::int32 value);
+
+  // int32 thickness = 6;
+  void clear_thickness();
+  static const int kThicknessFieldNumber = 6;
+  ::google::protobuf::int32 thickness() const;
+  void set_thickness(::google::protobuf::int32 value);
+
+  // bool anti_alias = 7;
+  void clear_anti_alias();
+  static const int kAntiAliasFieldNumber = 7;
+  bool anti_alias() const;
+  void set_anti_alias(bool value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.AnnotateOptions)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr font_;
+  double font_size_;
+  ::google::protobuf::int32 color_r_;
+  ::google::protobuf::int32 color_g_;
+  ::google::protobuf::int32 color_b_;
+  ::google::protobuf::int32 thickness_;
+  bool anti_alias_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.Rect) */ {
  public:
   Rect();
@@ -297,7 +835,7 @@ class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_Rect_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    5;
 
   void Swap(Rect* other);
   friend void swap(Rect& a, Rect& b) {
@@ -361,17 +899,17 @@ class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::int32 y() const;
   void set_y(::google::protobuf::int32 value);
 
-  // int32 height = 3;
-  void clear_height();
-  static const int kHeightFieldNumber = 3;
-  ::google::protobuf::int32 height() const;
-  void set_height(::google::protobuf::int32 value);
-
-  // int32 width = 4;
+  // int32 width = 3;
   void clear_width();
-  static const int kWidthFieldNumber = 4;
+  static const int kWidthFieldNumber = 3;
   ::google::protobuf::int32 width() const;
   void set_width(::google::protobuf::int32 value);
+
+  // int32 height = 4;
+  void clear_height();
+  static const int kHeightFieldNumber = 4;
+  ::google::protobuf::int32 height() const;
+  void set_height(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:kingfisher.kcv.Rect)
  private:
@@ -379,8 +917,8 @@ class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::int32 x_;
   ::google::protobuf::int32 y_;
-  ::google::protobuf::int32 height_;
   ::google::protobuf::int32 width_;
+  ::google::protobuf::int32 height_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_image_2eproto::TableStruct;
 };
@@ -421,7 +959,7 @@ class ImageInfo : public ::google::protobuf::Message /* @@protoc_insertion_point
                &_ImageInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    6;
 
   void Swap(ImageInfo* other);
   friend void swap(ImageInfo& a, ImageInfo& b) {
@@ -717,6 +1255,296 @@ inline void DecodeOptions::set_auto_orient(bool value) {
 
 // -------------------------------------------------------------------
 
+// EncodeOptions
+
+// string format = 1;
+inline void EncodeOptions::clear_format() {
+  format_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& EncodeOptions::format() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.EncodeOptions.format)
+  return format_.GetNoArena();
+}
+inline void EncodeOptions::set_format(const ::std::string& value) {
+  
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.EncodeOptions.format)
+}
+#if LANG_CXX11
+inline void EncodeOptions::set_format(::std::string&& value) {
+  
+  format_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.EncodeOptions.format)
+}
+#endif
+inline void EncodeOptions::set_format(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.EncodeOptions.format)
+}
+inline void EncodeOptions::set_format(const char* value, size_t size) {
+  
+  format_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.EncodeOptions.format)
+}
+inline ::std::string* EncodeOptions::mutable_format() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.EncodeOptions.format)
+  return format_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* EncodeOptions::release_format() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.EncodeOptions.format)
+  
+  return format_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void EncodeOptions::set_allocated_format(::std::string* format) {
+  if (format != NULL) {
+    
+  } else {
+    
+  }
+  format_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), format);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.EncodeOptions.format)
+}
+
+// int32 quality = 2;
+inline void EncodeOptions::clear_quality() {
+  quality_ = 0;
+}
+inline ::google::protobuf::int32 EncodeOptions::quality() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.EncodeOptions.quality)
+  return quality_;
+}
+inline void EncodeOptions::set_quality(::google::protobuf::int32 value) {
+  
+  quality_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.EncodeOptions.quality)
+}
+
+// int32 compression = 3;
+inline void EncodeOptions::clear_compression() {
+  compression_ = 0;
+}
+inline ::google::protobuf::int32 EncodeOptions::compression() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.EncodeOptions.compression)
+  return compression_;
+}
+inline void EncodeOptions::set_compression(::google::protobuf::int32 value) {
+  
+  compression_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.EncodeOptions.compression)
+}
+
+// -------------------------------------------------------------------
+
+// Point
+
+// int32 x = 1;
+inline void Point::clear_x() {
+  x_ = 0;
+}
+inline ::google::protobuf::int32 Point::x() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.Point.x)
+  return x_;
+}
+inline void Point::set_x(::google::protobuf::int32 value) {
+  
+  x_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.Point.x)
+}
+
+// int32 y = 2;
+inline void Point::clear_y() {
+  y_ = 0;
+}
+inline ::google::protobuf::int32 Point::y() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.Point.y)
+  return y_;
+}
+inline void Point::set_y(::google::protobuf::int32 value) {
+  
+  y_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.Point.y)
+}
+
+// -------------------------------------------------------------------
+
+// Size
+
+// int32 width = 1;
+inline void Size::clear_width() {
+  width_ = 0;
+}
+inline ::google::protobuf::int32 Size::width() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.Size.width)
+  return width_;
+}
+inline void Size::set_width(::google::protobuf::int32 value) {
+  
+  width_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.Size.width)
+}
+
+// int32 height = 2;
+inline void Size::clear_height() {
+  height_ = 0;
+}
+inline ::google::protobuf::int32 Size::height() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.Size.height)
+  return height_;
+}
+inline void Size::set_height(::google::protobuf::int32 value) {
+  
+  height_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.Size.height)
+}
+
+// -------------------------------------------------------------------
+
+// AnnotateOptions
+
+// string font = 1;
+inline void AnnotateOptions::clear_font() {
+  font_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& AnnotateOptions::font() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.font)
+  return font_.GetNoArena();
+}
+inline void AnnotateOptions::set_font(const ::std::string& value) {
+  
+  font_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.font)
+}
+#if LANG_CXX11
+inline void AnnotateOptions::set_font(::std::string&& value) {
+  
+  font_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.AnnotateOptions.font)
+}
+#endif
+inline void AnnotateOptions::set_font(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  font_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.AnnotateOptions.font)
+}
+inline void AnnotateOptions::set_font(const char* value, size_t size) {
+  
+  font_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.AnnotateOptions.font)
+}
+inline ::std::string* AnnotateOptions::mutable_font() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.AnnotateOptions.font)
+  return font_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* AnnotateOptions::release_font() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.AnnotateOptions.font)
+  
+  return font_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void AnnotateOptions::set_allocated_font(::std::string* font) {
+  if (font != NULL) {
+    
+  } else {
+    
+  }
+  font_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), font);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.AnnotateOptions.font)
+}
+
+// double font_size = 2;
+inline void AnnotateOptions::clear_font_size() {
+  font_size_ = 0;
+}
+inline double AnnotateOptions::font_size() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.font_size)
+  return font_size_;
+}
+inline void AnnotateOptions::set_font_size(double value) {
+  
+  font_size_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.font_size)
+}
+
+// int32 color_r = 3;
+inline void AnnotateOptions::clear_color_r() {
+  color_r_ = 0;
+}
+inline ::google::protobuf::int32 AnnotateOptions::color_r() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.color_r)
+  return color_r_;
+}
+inline void AnnotateOptions::set_color_r(::google::protobuf::int32 value) {
+  
+  color_r_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.color_r)
+}
+
+// int32 color_g = 4;
+inline void AnnotateOptions::clear_color_g() {
+  color_g_ = 0;
+}
+inline ::google::protobuf::int32 AnnotateOptions::color_g() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.color_g)
+  return color_g_;
+}
+inline void AnnotateOptions::set_color_g(::google::protobuf::int32 value) {
+  
+  color_g_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.color_g)
+}
+
+// int32 color_b = 5;
+inline void AnnotateOptions::clear_color_b() {
+  color_b_ = 0;
+}
+inline ::google::protobuf::int32 AnnotateOptions::color_b() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.color_b)
+  return color_b_;
+}
+inline void AnnotateOptions::set_color_b(::google::protobuf::int32 value) {
+  
+  color_b_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.color_b)
+}
+
+// int32 thickness = 6;
+inline void AnnotateOptions::clear_thickness() {
+  thickness_ = 0;
+}
+inline ::google::protobuf::int32 AnnotateOptions::thickness() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.thickness)
+  return thickness_;
+}
+inline void AnnotateOptions::set_thickness(::google::protobuf::int32 value) {
+  
+  thickness_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.thickness)
+}
+
+// bool anti_alias = 7;
+inline void AnnotateOptions::clear_anti_alias() {
+  anti_alias_ = false;
+}
+inline bool AnnotateOptions::anti_alias() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.AnnotateOptions.anti_alias)
+  return anti_alias_;
+}
+inline void AnnotateOptions::set_anti_alias(bool value) {
+  
+  anti_alias_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.anti_alias)
+}
+
+// -------------------------------------------------------------------
+
 // Rect
 
 // int32 x = 1;
@@ -747,21 +1575,7 @@ inline void Rect::set_y(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:kingfisher.kcv.Rect.y)
 }
 
-// int32 height = 3;
-inline void Rect::clear_height() {
-  height_ = 0;
-}
-inline ::google::protobuf::int32 Rect::height() const {
-  // @@protoc_insertion_point(field_get:kingfisher.kcv.Rect.height)
-  return height_;
-}
-inline void Rect::set_height(::google::protobuf::int32 value) {
-  
-  height_ = value;
-  // @@protoc_insertion_point(field_set:kingfisher.kcv.Rect.height)
-}
-
-// int32 width = 4;
+// int32 width = 3;
 inline void Rect::clear_width() {
   width_ = 0;
 }
@@ -773,6 +1587,20 @@ inline void Rect::set_width(::google::protobuf::int32 value) {
   
   width_ = value;
   // @@protoc_insertion_point(field_set:kingfisher.kcv.Rect.width)
+}
+
+// int32 height = 4;
+inline void Rect::clear_height() {
+  height_ = 0;
+}
+inline ::google::protobuf::int32 Rect::height() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.Rect.height)
+  return height_;
+}
+inline void Rect::set_height(::google::protobuf::int32 value) {
+  
+  height_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.Rect.height)
 }
 
 // -------------------------------------------------------------------
@@ -1339,6 +2167,14 @@ inline void ImageInfo::set_allocated_magick_warning(::std::string* magick_warnin
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -1352,6 +2188,11 @@ template <> struct is_proto_enum< ::kingfisher::kcv::ColorSpace> : ::std::true_t
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::ColorSpace>() {
   return ::kingfisher::kcv::ColorSpace_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::FlipMode> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::FlipMode>() {
+  return ::kingfisher::kcv::FlipMode_descriptor();
 }
 template <> struct is_proto_enum< ::kingfisher::kcv::OrientationType> : ::std::true_type {};
 template <>
