@@ -4,7 +4,9 @@
 #include <magick/api.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 #include "cv/image/image.pb.h"
@@ -36,6 +38,14 @@ namespace kcv {
 #define COLOR_BGR2RGBA CV_BGR2RGBA
 #define COLOR_RGB2BGRA CV_RGB2BGRA
 #define COLOR_BGRA2RGB CV_BGRA2RGB
+
+#ifndef COLOR_BGRA2GRAY
+#define COLOR_BGRA2GRAY CV_BGRA2GRAY
+#endif
+
+#ifndef COLOR_BGR2HSV
+#define COLOR_BGR2HSV CV_BGR2HSV
+#endif
 
 // 其他需要兼容的宏...
 #endif
@@ -883,6 +893,737 @@ int Image::AnnotateImage(const std::string &imageData,
     return ret;
   }
   return AnnotateImage(matOutput, text, position, opts);
+}
+
+// ==================== 4.2 缩略图生成 ====================
+
+int Image::Thumbnail(const std::string &imageData, int maxDimension,
+                     cv::Mat &matOutput) {
+  if (maxDimension <= 0) {
+    LOG(ERROR) << "Thumbnail: invalid maxDimension: " << maxDimension;
+    return -1;
+  }
+
+  cv::Mat mat;
+  DecodeOptions opts;
+  opts.set_targetcolorspace(BGRColorSpace);
+  opts.set_auto_orient(true);
+  int ret = DecodeImage(imageData, opts, mat);
+  if (ret != 0) {
+    LOG(ERROR) << "Thumbnail(string): failed to decode image";
+    return ret;
+  }
+  return Thumbnail(mat, maxDimension, matOutput);
+}
+
+int Image::Thumbnail(const cv::Mat &matInput, int maxDimension,
+                     cv::Mat &matOutput) {
+  if (matInput.empty()) {
+    LOG(ERROR) << "Thumbnail: input mat is empty";
+    return -1;
+  }
+  if (maxDimension <= 0) {
+    LOG(ERROR) << "Thumbnail: invalid maxDimension: " << maxDimension;
+    return -1;
+  }
+
+  int w = matInput.cols;
+  int h = matInput.rows;
+
+  // 如果图像已经小于 maxDimension，直接返回
+  if (w <= maxDimension && h <= maxDimension) {
+    matOutput = matInput.clone();
+    LOG(INFO) << "Thumbnail: image already within max dimension, no resize needed";
+    return 0;
+  }
+
+  // 计算缩放比例，以长边为准
+  double ratio;
+  if (w > h) {
+    ratio = static_cast<double>(maxDimension) / w;
+  } else {
+    ratio = static_cast<double>(maxDimension) / h;
+  }
+
+  int newW = static_cast<int>(w * ratio);
+  int newH = static_cast<int>(h * ratio);
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::resize(matInput, matOutput, cv::Size(newW, newH), 0, 0, cv::INTER_AREA);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "Thumbnail: cv::resize failed";
+    return -1;
+  }
+
+  LOG(INFO) << "Thumbnail: resized from " << w << "x" << h
+            << " to " << newW << "x" << newH
+            << " (maxDimension=" << maxDimension << ")";
+  return 0;
+}
+
+// ==================== 4.4 基础图像滤镜 ====================
+
+int Image::GaussianBlur(const cv::Mat &input, cv::Mat &output,
+                        int kernelSize, double sigma) {
+  if (input.empty()) {
+    LOG(ERROR) << "GaussianBlur: input mat is empty";
+    return -1;
+  }
+  // 确保 kernelSize 为正奇数
+  if (kernelSize <= 0) kernelSize = 5;
+  if (kernelSize % 2 == 0) kernelSize += 1;
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::GaussianBlur(input, output, cv::Size(kernelSize, kernelSize), sigma);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "GaussianBlur: cv::GaussianBlur failed";
+    return -1;
+  }
+
+  LOG(INFO) << "GaussianBlur: kernel=" << kernelSize << ", sigma=" << sigma;
+  return 0;
+}
+
+int Image::MeanBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
+  if (input.empty()) {
+    LOG(ERROR) << "MeanBlur: input mat is empty";
+    return -1;
+  }
+  if (kernelSize <= 0) kernelSize = 5;
+  if (kernelSize % 2 == 0) kernelSize += 1;
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::blur(input, output, cv::Size(kernelSize, kernelSize));
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "MeanBlur: cv::blur failed";
+    return -1;
+  }
+
+  LOG(INFO) << "MeanBlur: kernel=" << kernelSize;
+  return 0;
+}
+
+int Image::MedianBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
+  if (input.empty()) {
+    LOG(ERROR) << "MedianBlur: input mat is empty";
+    return -1;
+  }
+  if (kernelSize <= 0) kernelSize = 5;
+  if (kernelSize % 2 == 0) kernelSize += 1;
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::medianBlur(input, output, kernelSize);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "MedianBlur: cv::medianBlur failed";
+    return -1;
+  }
+
+  LOG(INFO) << "MedianBlur: kernel=" << kernelSize;
+  return 0;
+}
+
+int Image::BilateralFilter(const cv::Mat &input, cv::Mat &output,
+                           int d, double sigmaColor, double sigmaSpace) {
+  if (input.empty()) {
+    LOG(ERROR) << "BilateralFilter: input mat is empty";
+    return -1;
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::bilateralFilter(input, output, d, sigmaColor, sigmaSpace);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "BilateralFilter: cv::bilateralFilter failed";
+    return -1;
+  }
+
+  LOG(INFO) << "BilateralFilter: d=" << d
+            << ", sigmaColor=" << sigmaColor
+            << ", sigmaSpace=" << sigmaSpace;
+  return 0;
+}
+
+int Image::BlurImage(const cv::Mat &input, const FilterOptions &opts,
+                     cv::Mat &output) {
+  int kernelSize = opts.kernel_size() > 0 ? opts.kernel_size() : 5;
+
+  switch (opts.blur_type()) {
+    case BLUR_GAUSSIAN:
+      return GaussianBlur(input, output, kernelSize, opts.sigma());
+    case BLUR_MEAN:
+      return MeanBlur(input, output, kernelSize);
+    case BLUR_MEDIAN:
+      return MedianBlur(input, output, kernelSize);
+    case BLUR_BILATERAL:
+      return BilateralFilter(input, output, kernelSize,
+                             opts.sigma_color() > 0 ? opts.sigma_color() : 75,
+                             opts.sigma_space() > 0 ? opts.sigma_space() : 75);
+    default:
+      LOG(ERROR) << "BlurImage: unsupported blur type: " << opts.blur_type();
+      return -1;
+  }
+}
+
+int Image::Sharpen(const cv::Mat &input, cv::Mat &output,
+                   double amount, int kernelSize) {
+  if (input.empty()) {
+    LOG(ERROR) << "Sharpen: input mat is empty";
+    return -1;
+  }
+  if (kernelSize <= 0) kernelSize = 3;
+  if (kernelSize % 2 == 0) kernelSize += 1;
+
+  // USM 锐化：先进行高斯模糊，再用原图减去模糊图像，最后叠加到原图
+  cv::Mat blurred;
+  auto ret = WrapOpencvFuncT([&]() {
+    cv::GaussianBlur(input, blurred, cv::Size(kernelSize, kernelSize), 0);
+    // output = input + amount * (input - blurred)
+    // 即 output = input * (1 + amount) - blurred * amount
+    cv::addWeighted(input, 1.0 + amount, blurred, -amount, 0, output);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "Sharpen: USM sharpen failed";
+    return -1;
+  }
+
+  LOG(INFO) << "Sharpen: amount=" << amount << ", kernelSize=" << kernelSize;
+  return 0;
+}
+
+int Image::AdjustBrightnessContrast(const cv::Mat &input, cv::Mat &output,
+                                    double brightness, double contrast) {
+  if (input.empty()) {
+    LOG(ERROR) << "AdjustBrightnessContrast: input mat is empty";
+    return -1;
+  }
+
+  // output(x,y) = contrast * input(x,y) + brightness
+  auto ret = WrapOpencvFuncT([&]() {
+    input.convertTo(output, -1, contrast, brightness);
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "AdjustBrightnessContrast: convertTo failed";
+    return -1;
+  }
+
+  LOG(INFO) << "AdjustBrightnessContrast: brightness=" << brightness
+            << ", contrast=" << contrast;
+  return 0;
+}
+
+int Image::Grayscale(const cv::Mat &input, cv::Mat &output) {
+  if (input.empty()) {
+    LOG(ERROR) << "Grayscale: input mat is empty";
+    return -1;
+  }
+
+  if (input.channels() == 1) {
+    output = input.clone();
+    return 0;
+  }
+
+  auto ret = WrapOpencvFuncT([&]() {
+    if (input.channels() == 4) {
+      cv::cvtColor(input, output, cv::COLOR_BGRA2GRAY);
+    } else {
+      cv::cvtColor(input, output, cv::COLOR_BGR2GRAY);
+    }
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "Grayscale: cv::cvtColor failed";
+    return -1;
+  }
+
+  LOG(INFO) << "Grayscale: converted " << input.channels()
+            << "-channel image to grayscale";
+  return 0;
+}
+
+// ==================== 4.3 图像相似度计算 ====================
+
+int Image::ComputeImageHash(const cv::Mat &input, HashType hashType,
+                            uint64_t &hashValue) {
+  if (input.empty()) {
+    LOG(ERROR) << "ComputeImageHash: input mat is empty";
+    return -1;
+  }
+
+  cv::Mat gray;
+  if (input.channels() > 1) {
+    cv::cvtColor(input, gray, cv::COLOR_BGR2GRAY);
+  } else {
+    gray = input;
+  }
+
+  hashValue = 0;
+
+  switch (hashType) {
+    case HASH_AVERAGE: {
+      // 平均哈希 (aHash)：缩放到 8x8，计算像素平均值，大于平均值为 1
+      cv::Mat resized;
+      cv::resize(gray, resized, cv::Size(8, 8), 0, 0, cv::INTER_AREA);
+      resized.convertTo(resized, CV_64F);
+      double mean = cv::mean(resized)[0];
+      for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+          if (resized.at<double>(i, j) > mean) {
+            hashValue |= (1ULL << (i * 8 + j));
+          }
+        }
+      }
+      break;
+    }
+    case HASH_PERCEPTUAL: {
+      // 感知哈希 (pHash)：缩放到 32x32，DCT 变换，取左上 8x8 低频分量
+      cv::Mat resized;
+      cv::resize(gray, resized, cv::Size(32, 32), 0, 0, cv::INTER_AREA);
+      resized.convertTo(resized, CV_64F);
+
+      cv::Mat dctResult;
+      cv::dct(resized, dctResult);
+
+      // 取左上 8x8 的 DCT 系数（不包含 DC 分量）
+      cv::Mat dctBlock = dctResult(cv::Rect(0, 0, 8, 8));
+      double mean = (cv::sum(dctBlock)[0] - dctBlock.at<double>(0, 0)) / 63.0;
+
+      for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+          if (i == 0 && j == 0) continue;  // 跳过 DC 分量
+          if (dctBlock.at<double>(i, j) > mean) {
+            hashValue |= (1ULL << (i * 8 + j));
+          }
+        }
+      }
+      break;
+    }
+    case HASH_DIFFERENCE: {
+      // 差异哈希 (dHash)：缩放到 9x8，比较相邻像素
+      cv::Mat resized;
+      cv::resize(gray, resized, cv::Size(9, 8), 0, 0, cv::INTER_AREA);
+      resized.convertTo(resized, CV_64F);
+
+      for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+          if (resized.at<double>(i, j) < resized.at<double>(i, j + 1)) {
+            hashValue |= (1ULL << (i * 8 + j));
+          }
+        }
+      }
+      break;
+    }
+    default:
+      LOG(ERROR) << "ComputeImageHash: unsupported hash type: " << hashType;
+      return -1;
+  }
+
+  LOG(INFO) << "ComputeImageHash: computed hash type=" << hashType
+            << ", value=0x" << std::hex << hashValue << std::dec;
+  return 0;
+}
+
+int Image::HammingDistance(uint64_t hash1, uint64_t hash2) {
+  uint64_t diff = hash1 ^ hash2;
+  int distance = 0;
+  while (diff) {
+    distance += diff & 1;
+    diff >>= 1;
+  }
+  return distance;
+}
+
+double Image::ComputeSSIM(const cv::Mat &img1, const cv::Mat &img2) {
+  if (img1.empty() || img2.empty()) {
+    LOG(ERROR) << "ComputeSSIM: input image is empty";
+    return -1.0;
+  }
+  if (img1.size() != img2.size() || img1.type() != img2.type()) {
+    LOG(ERROR) << "ComputeSSIM: images must have same size and type";
+    return -1.0;
+  }
+
+  // 转换为灰度图
+  cv::Mat gray1, gray2;
+  if (img1.channels() > 1) {
+    cv::cvtColor(img1, gray1, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(img2, gray2, cv::COLOR_BGR2GRAY);
+  } else {
+    gray1 = img1;
+    gray2 = img2;
+  }
+
+  gray1.convertTo(gray1, CV_64F);
+  gray2.convertTo(gray2, CV_64F);
+
+  // SSIM 常量
+  double C1 = 6.5025;    // (0.01 * 255)^2
+  double C2 = 58.5225;   // (0.03 * 255)^2
+
+  cv::Mat mu1, mu2;
+  cv::GaussianBlur(gray1, mu1, cv::Size(11, 11), 1.5);
+  cv::GaussianBlur(gray2, mu2, cv::Size(11, 11), 1.5);
+
+  cv::Mat mu1_sq = mu1.mul(mu1);
+  cv::Mat mu2_sq = mu2.mul(mu2);
+  cv::Mat mu1_mu2 = mu1.mul(mu2);
+
+  cv::Mat sigma1_sq, sigma2_sq, sigma12;
+  cv::GaussianBlur(gray1.mul(gray1), sigma1_sq, cv::Size(11, 11), 1.5);
+  sigma1_sq -= mu1_sq;
+
+  cv::GaussianBlur(gray2.mul(gray2), sigma2_sq, cv::Size(11, 11), 1.5);
+  sigma2_sq -= mu2_sq;
+
+  cv::GaussianBlur(gray1.mul(gray2), sigma12, cv::Size(11, 11), 1.5);
+  sigma12 -= mu1_mu2;
+
+  // SSIM 公式
+  cv::Mat numerator, denominator;
+  numerator = (2 * mu1_mu2 + C1).mul(2 * sigma12 + C2);
+  denominator = (mu1_sq + mu2_sq + C1).mul(sigma1_sq + sigma2_sq + C2);
+
+  cv::Mat ssim_map;
+  cv::divide(numerator, denominator, ssim_map);
+
+  double ssim = cv::mean(ssim_map)[0];
+  LOG(INFO) << "ComputeSSIM: SSIM=" << ssim;
+  return ssim;
+}
+
+double Image::CompareHistogram(const cv::Mat &img1, const cv::Mat &img2,
+                               CompareMethod method) {
+  if (img1.empty() || img2.empty()) {
+    LOG(ERROR) << "CompareHistogram: input image is empty";
+    return -1.0;
+  }
+
+  // 转换到 HSV 色彩空间
+  cv::Mat hsv1, hsv2;
+  if (img1.channels() > 1) {
+    cv::cvtColor(img1, hsv1, cv::COLOR_BGR2HSV);
+  } else {
+    hsv1 = img1;
+  }
+  if (img2.channels() > 1) {
+    cv::cvtColor(img2, hsv2, cv::COLOR_BGR2HSV);
+  } else {
+    hsv2 = img2;
+  }
+
+  // 计算直方图
+  int hBins = 50, sBins = 60;
+  int histSize[] = {hBins, sBins};
+  float hRanges[] = {0, 180};
+  float sRanges[] = {0, 256};
+  const float *ranges[] = {hRanges, sRanges};
+  int channels[] = {0, 1};
+
+  cv::Mat hist1, hist2;
+  if (hsv1.channels() >= 2) {
+    cv::calcHist(&hsv1, 1, channels, cv::Mat(), hist1, 2, histSize, ranges, true, false);
+    cv::normalize(hist1, hist1, 0, 1, cv::NORM_MINMAX);
+
+    cv::calcHist(&hsv2, 1, channels, cv::Mat(), hist2, 2, histSize, ranges, true, false);
+    cv::normalize(hist2, hist2, 0, 1, cv::NORM_MINMAX);
+  } else {
+    // 单通道直方图
+    int histSizeSingle[] = {256};
+    float range[] = {0, 256};
+    const float *rangesSingle[] = {range};
+    int channel[] = {0};
+    cv::calcHist(&hsv1, 1, channel, cv::Mat(), hist1, 1, histSizeSingle, rangesSingle, true, false);
+    cv::normalize(hist1, hist1, 0, 1, cv::NORM_MINMAX);
+    cv::calcHist(&hsv2, 1, channel, cv::Mat(), hist2, 1, histSizeSingle, rangesSingle, true, false);
+    cv::normalize(hist2, hist2, 0, 1, cv::NORM_MINMAX);
+  }
+
+  // 映射 CompareMethod 到 OpenCV 比较方法
+  int cvMethod;
+  switch (method) {
+    case COMPARE_CORRELATION:
+#if CV_MAJOR_VERSION >= 4
+      cvMethod = cv::HISTCMP_CORREL;
+#else
+      cvMethod = CV_COMP_CORREL;
+#endif
+      break;
+    case COMPARE_CHI_SQUARE:
+#if CV_MAJOR_VERSION >= 4
+      cvMethod = cv::HISTCMP_CHISQR;
+#else
+      cvMethod = CV_COMP_CHISQR;
+#endif
+      break;
+    case COMPARE_INTERSECTION:
+#if CV_MAJOR_VERSION >= 4
+      cvMethod = cv::HISTCMP_INTERSECT;
+#else
+      cvMethod = CV_COMP_INTERSECT;
+#endif
+      break;
+    case COMPARE_BHATTACHARYYA:
+#if CV_MAJOR_VERSION >= 4
+      cvMethod = cv::HISTCMP_BHATTACHARYYA;
+#else
+      cvMethod = CV_COMP_BHATTACHARYYA;
+#endif
+      break;
+    default:
+#if CV_MAJOR_VERSION >= 4
+      cvMethod = cv::HISTCMP_CORREL;
+#else
+      cvMethod = CV_COMP_CORREL;
+#endif
+      break;
+  }
+
+  double result = cv::compareHist(hist1, hist2, cvMethod);
+  LOG(INFO) << "CompareHistogram: method=" << method << ", result=" << result;
+  return result;
+}
+
+// ==================== 4.5 EXIF 信息读取 ====================
+
+int Image::ReadExifInfo(const std::string &imageData, ExifInfo &exifInfo) {
+  if (imageData.empty()) {
+    LOG(ERROR) << "ReadExifInfo: input data is empty";
+    return -1;
+  }
+
+  Magick::Image image;
+  auto ret = imageRead(imageData, image);
+  if (ret != 0) {
+    LOG(ERROR) << "ReadExifInfo: failed to read image";
+    return ret;
+  }
+
+  // 基本尺寸信息
+  exifInfo.set_image_width(image.columns());
+  exifInfo.set_image_height(image.rows());
+  exifInfo.set_orientation(
+      static_cast<kcv::OrientationType>(image.orientation()));
+
+  // 通过 GraphicsMagick 的 attribute 接口读取 EXIF 信息
+  auto readAttr = [&](const std::string &key) -> std::string {
+    std::string value;
+    WrapMagickFuncT([&]() {
+      value = image.attribute(key);
+    });
+    return value;
+  };
+
+  // 相机信息
+  std::string make = readAttr("EXIF:Make");
+  if (!make.empty()) exifInfo.set_camera_make(make);
+
+  std::string model = readAttr("EXIF:Model");
+  if (!model.empty()) exifInfo.set_camera_model(model);
+
+  // 拍摄时间
+  std::string datetime = readAttr("EXIF:DateTime");
+  if (datetime.empty()) datetime = readAttr("EXIF:DateTimeOriginal");
+  if (!datetime.empty()) exifInfo.set_datetime(datetime);
+
+  // 曝光时间
+  std::string exposureTime = readAttr("EXIF:ExposureTime");
+  if (!exposureTime.empty()) {
+    // 曝光时间可能是分数形式如 "1/100"
+    size_t slashPos = exposureTime.find('/');
+    if (slashPos != std::string::npos) {
+      double num = std::stod(exposureTime.substr(0, slashPos));
+      double den = std::stod(exposureTime.substr(slashPos + 1));
+      if (den > 0) exifInfo.set_exposure_time(num / den);
+    } else {
+      try { exifInfo.set_exposure_time(std::stod(exposureTime)); }
+      catch (...) {}
+    }
+  }
+
+  // 光圈值
+  std::string fNumber = readAttr("EXIF:FNumber");
+  if (!fNumber.empty()) {
+    size_t slashPos = fNumber.find('/');
+    if (slashPos != std::string::npos) {
+      double num = std::stod(fNumber.substr(0, slashPos));
+      double den = std::stod(fNumber.substr(slashPos + 1));
+      if (den > 0) exifInfo.set_f_number(num / den);
+    } else {
+      try { exifInfo.set_f_number(std::stod(fNumber)); }
+      catch (...) {}
+    }
+  }
+
+  // ISO
+  std::string iso = readAttr("EXIF:ISOSpeedRatings");
+  if (!iso.empty()) {
+    try { exifInfo.set_iso_speed(std::stoi(iso)); }
+    catch (...) {}
+  }
+
+  // 焦距
+  std::string focalLength = readAttr("EXIF:FocalLength");
+  if (!focalLength.empty()) {
+    size_t slashPos = focalLength.find('/');
+    if (slashPos != std::string::npos) {
+      double num = std::stod(focalLength.substr(0, slashPos));
+      double den = std::stod(focalLength.substr(slashPos + 1));
+      if (den > 0) exifInfo.set_focal_length(num / den);
+    } else {
+      try { exifInfo.set_focal_length(std::stod(focalLength)); }
+      catch (...) {}
+    }
+  }
+
+  // GPS 信息
+  std::string gpsLat = readAttr("EXIF:GPSLatitude");
+  std::string gpsLon = readAttr("EXIF:GPSLongitude");
+  std::string gpsAlt = readAttr("EXIF:GPSAltitude");
+  if (!gpsLat.empty()) {
+    try { exifInfo.set_gps_latitude(std::stod(gpsLat)); }
+    catch (...) {}
+  }
+  if (!gpsLon.empty()) {
+    try { exifInfo.set_gps_longitude(std::stod(gpsLon)); }
+    catch (...) {}
+  }
+  if (!gpsAlt.empty()) {
+    size_t slashPos = gpsAlt.find('/');
+    if (slashPos != std::string::npos) {
+      double num = std::stod(gpsAlt.substr(0, slashPos));
+      double den = std::stod(gpsAlt.substr(slashPos + 1));
+      if (den > 0) exifInfo.set_gps_altitude(num / den);
+    } else {
+      try { exifInfo.set_gps_altitude(std::stod(gpsAlt)); }
+      catch (...) {}
+    }
+  }
+
+  // 软件信息
+  std::string software = readAttr("EXIF:Software");
+  if (!software.empty()) exifInfo.set_software(software);
+
+  // 描述
+  std::string description = readAttr("EXIF:ImageDescription");
+  if (!description.empty()) exifInfo.set_description(description);
+
+  // 版权
+  std::string copyright = readAttr("EXIF:Copyright");
+  if (!copyright.empty()) exifInfo.set_copyright(copyright);
+
+  LOG(INFO) << "ReadExifInfo: read EXIF info from image, size="
+            << exifInfo.image_width() << "x" << exifInfo.image_height();
+  return 0;
+}
+
+// ==================== 4.6 批量处理 ====================
+
+int Image::BatchDecodeImages(
+    const std::vector<std::string> &imageDatas, const DecodeOptions &opts,
+    std::vector<cv::Mat> &matOutputs) {
+  if (imageDatas.empty()) {
+    LOG(ERROR) << "BatchDecodeImages: input list is empty";
+    return -1;
+  }
+
+  matOutputs.resize(imageDatas.size());
+  int successCount = 0;
+
+  for (size_t i = 0; i < imageDatas.size(); ++i) {
+    int ret = DecodeImage(imageDatas[i], opts, matOutputs[i]);
+    if (ret == 0) {
+      ++successCount;
+    } else {
+      LOG(WARNING) << "BatchDecodeImages: failed to decode image at index " << i;
+    }
+  }
+
+  LOG(INFO) << "BatchDecodeImages: decoded " << successCount
+            << "/" << imageDatas.size() << " images";
+  return successCount > 0 ? successCount : -1;
+}
+
+int Image::BatchResizeImages(
+    const std::vector<cv::Mat> &inputs, int width, int height,
+    bool keepRatio, std::vector<cv::Mat> &outputs) {
+  if (inputs.empty()) {
+    LOG(ERROR) << "BatchResizeImages: input list is empty";
+    return -1;
+  }
+  if (width <= 0 || height <= 0) {
+    LOG(ERROR) << "BatchResizeImages: invalid target size: "
+               << width << "x" << height;
+    return -1;
+  }
+
+  outputs.resize(inputs.size());
+  int successCount = 0;
+
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    int ret = ResizeImage(inputs[i], width, height, keepRatio, outputs[i]);
+    if (ret == 0) {
+      ++successCount;
+    } else {
+      LOG(WARNING) << "BatchResizeImages: failed to resize image at index " << i;
+    }
+  }
+
+  LOG(INFO) << "BatchResizeImages: resized " << successCount
+            << "/" << inputs.size() << " images to " << width << "x" << height;
+  return successCount > 0 ? successCount : -1;
+}
+
+// ==================== 4.7 Mat → Magick::Image 反向转换 ====================
+
+int Image::MatToImage(const cv::Mat &mat, Magick::Image &imageOutput) {
+  if (mat.empty()) {
+    LOG(ERROR) << "MatToImage: input mat is empty";
+    return -1;
+  }
+
+  std::string map;
+  int channels = mat.channels();
+  switch (channels) {
+    case 1:
+      map = "I";  // 单通道灰度
+      break;
+    case 3:
+      map = "BGR";
+      break;
+    case 4:
+      map = "BGRA";
+      break;
+    default:
+      LOG(ERROR) << "MatToImage: unsupported channel count: " << channels;
+      return -1;
+  }
+
+  // 确保数据是连续的
+  cv::Mat continuous;
+  if (mat.isContinuous()) {
+    continuous = mat;
+  } else {
+    continuous = mat.clone();
+  }
+
+  auto ret = WrapMagickFuncT([&]() {
+    imageOutput.read(mat.cols, mat.rows, map, Magick::CharPixel,
+                     continuous.data);
+    // 设置透明通道
+    if (channels == 4) {
+      imageOutput.matte(true);
+    }
+  });
+  if (ret != 0) {
+    LOG(ERROR) << "MatToImage: Magick::Image::read failed";
+    return -1;
+  }
+
+  LOG(INFO) << "MatToImage: converted cv::Mat (" << mat.cols << "x" << mat.rows
+            << ", " << channels << "ch) to Magick::Image";
+  return 0;
 }
 
 int Image::WriteImage(const cv::Mat &mat, const std::string &path) {

@@ -39,7 +39,7 @@ namespace protobuf_image_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[7];
+  static const ::google::protobuf::internal::ParseTable schema[10];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -57,6 +57,12 @@ extern DecodeOptionsDefaultTypeInternal _DecodeOptions_default_instance_;
 class EncodeOptions;
 class EncodeOptionsDefaultTypeInternal;
 extern EncodeOptionsDefaultTypeInternal _EncodeOptions_default_instance_;
+class ExifInfo;
+class ExifInfoDefaultTypeInternal;
+extern ExifInfoDefaultTypeInternal _ExifInfo_default_instance_;
+class FilterOptions;
+class FilterOptionsDefaultTypeInternal;
+extern FilterOptionsDefaultTypeInternal _FilterOptions_default_instance_;
 class ImageInfo;
 class ImageInfoDefaultTypeInternal;
 extern ImageInfoDefaultTypeInternal _ImageInfo_default_instance_;
@@ -66,6 +72,9 @@ extern PointDefaultTypeInternal _Point_default_instance_;
 class Rect;
 class RectDefaultTypeInternal;
 extern RectDefaultTypeInternal _Rect_default_instance_;
+class SimilarityResult;
+class SimilarityResultDefaultTypeInternal;
+extern SimilarityResultDefaultTypeInternal _SimilarityResult_default_instance_;
 class Size;
 class SizeDefaultTypeInternal;
 extern SizeDefaultTypeInternal _Size_default_instance_;
@@ -76,9 +85,12 @@ namespace protobuf {
 template<> ::kingfisher::kcv::AnnotateOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::AnnotateOptions>(Arena*);
 template<> ::kingfisher::kcv::DecodeOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::DecodeOptions>(Arena*);
 template<> ::kingfisher::kcv::EncodeOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::EncodeOptions>(Arena*);
+template<> ::kingfisher::kcv::ExifInfo* Arena::CreateMaybeMessage<::kingfisher::kcv::ExifInfo>(Arena*);
+template<> ::kingfisher::kcv::FilterOptions* Arena::CreateMaybeMessage<::kingfisher::kcv::FilterOptions>(Arena*);
 template<> ::kingfisher::kcv::ImageInfo* Arena::CreateMaybeMessage<::kingfisher::kcv::ImageInfo>(Arena*);
 template<> ::kingfisher::kcv::Point* Arena::CreateMaybeMessage<::kingfisher::kcv::Point>(Arena*);
 template<> ::kingfisher::kcv::Rect* Arena::CreateMaybeMessage<::kingfisher::kcv::Rect>(Arena*);
+template<> ::kingfisher::kcv::SimilarityResult* Arena::CreateMaybeMessage<::kingfisher::kcv::SimilarityResult>(Arena*);
 template<> ::kingfisher::kcv::Size* Arena::CreateMaybeMessage<::kingfisher::kcv::Size>(Arena*);
 }  // namespace protobuf
 }  // namespace google
@@ -132,6 +144,74 @@ inline bool FlipMode_Parse(
     const ::std::string& name, FlipMode* value) {
   return ::google::protobuf::internal::ParseNamedEnum<FlipMode>(
     FlipMode_descriptor(), name, value);
+}
+enum BlurType {
+  BLUR_GAUSSIAN = 0,
+  BLUR_MEAN = 1,
+  BLUR_MEDIAN = 2,
+  BLUR_BILATERAL = 3,
+  BlurType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  BlurType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool BlurType_IsValid(int value);
+const BlurType BlurType_MIN = BLUR_GAUSSIAN;
+const BlurType BlurType_MAX = BLUR_BILATERAL;
+const int BlurType_ARRAYSIZE = BlurType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* BlurType_descriptor();
+inline const ::std::string& BlurType_Name(BlurType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    BlurType_descriptor(), value);
+}
+inline bool BlurType_Parse(
+    const ::std::string& name, BlurType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<BlurType>(
+    BlurType_descriptor(), name, value);
+}
+enum HashType {
+  HASH_AVERAGE = 0,
+  HASH_PERCEPTUAL = 1,
+  HASH_DIFFERENCE = 2,
+  HashType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  HashType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool HashType_IsValid(int value);
+const HashType HashType_MIN = HASH_AVERAGE;
+const HashType HashType_MAX = HASH_DIFFERENCE;
+const int HashType_ARRAYSIZE = HashType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* HashType_descriptor();
+inline const ::std::string& HashType_Name(HashType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    HashType_descriptor(), value);
+}
+inline bool HashType_Parse(
+    const ::std::string& name, HashType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<HashType>(
+    HashType_descriptor(), name, value);
+}
+enum CompareMethod {
+  COMPARE_CORRELATION = 0,
+  COMPARE_CHI_SQUARE = 1,
+  COMPARE_INTERSECTION = 2,
+  COMPARE_BHATTACHARYYA = 3,
+  CompareMethod_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  CompareMethod_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool CompareMethod_IsValid(int value);
+const CompareMethod CompareMethod_MIN = COMPARE_CORRELATION;
+const CompareMethod CompareMethod_MAX = COMPARE_BHATTACHARYYA;
+const int CompareMethod_ARRAYSIZE = CompareMethod_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* CompareMethod_descriptor();
+inline const ::std::string& CompareMethod_Name(CompareMethod value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    CompareMethod_descriptor(), value);
+}
+inline bool CompareMethod_Parse(
+    const ::std::string& name, CompareMethod* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<CompareMethod>(
+    CompareMethod_descriptor(), name, value);
 }
 enum OrientationType {
   UndefinedOrientation = 0,
@@ -800,6 +880,539 @@ class AnnotateOptions : public ::google::protobuf::Message /* @@protoc_insertion
 };
 // -------------------------------------------------------------------
 
+class FilterOptions : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.FilterOptions) */ {
+ public:
+  FilterOptions();
+  virtual ~FilterOptions();
+
+  FilterOptions(const FilterOptions& from);
+
+  inline FilterOptions& operator=(const FilterOptions& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  FilterOptions(FilterOptions&& from) noexcept
+    : FilterOptions() {
+    *this = ::std::move(from);
+  }
+
+  inline FilterOptions& operator=(FilterOptions&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const FilterOptions& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const FilterOptions* internal_default_instance() {
+    return reinterpret_cast<const FilterOptions*>(
+               &_FilterOptions_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  void Swap(FilterOptions* other);
+  friend void swap(FilterOptions& a, FilterOptions& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline FilterOptions* New() const final {
+    return CreateMaybeMessage<FilterOptions>(NULL);
+  }
+
+  FilterOptions* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<FilterOptions>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const FilterOptions& from);
+  void MergeFrom(const FilterOptions& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FilterOptions* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // .kingfisher.kcv.BlurType blur_type = 1;
+  void clear_blur_type();
+  static const int kBlurTypeFieldNumber = 1;
+  ::kingfisher::kcv::BlurType blur_type() const;
+  void set_blur_type(::kingfisher::kcv::BlurType value);
+
+  // int32 kernel_size = 2;
+  void clear_kernel_size();
+  static const int kKernelSizeFieldNumber = 2;
+  ::google::protobuf::int32 kernel_size() const;
+  void set_kernel_size(::google::protobuf::int32 value);
+
+  // double sigma = 3;
+  void clear_sigma();
+  static const int kSigmaFieldNumber = 3;
+  double sigma() const;
+  void set_sigma(double value);
+
+  // double sigma_color = 4;
+  void clear_sigma_color();
+  static const int kSigmaColorFieldNumber = 4;
+  double sigma_color() const;
+  void set_sigma_color(double value);
+
+  // double sigma_space = 5;
+  void clear_sigma_space();
+  static const int kSigmaSpaceFieldNumber = 5;
+  double sigma_space() const;
+  void set_sigma_space(double value);
+
+  // double brightness = 10;
+  void clear_brightness();
+  static const int kBrightnessFieldNumber = 10;
+  double brightness() const;
+  void set_brightness(double value);
+
+  // int32 sharpen_kernel_size = 21;
+  void clear_sharpen_kernel_size();
+  static const int kSharpenKernelSizeFieldNumber = 21;
+  ::google::protobuf::int32 sharpen_kernel_size() const;
+  void set_sharpen_kernel_size(::google::protobuf::int32 value);
+
+  // double contrast = 11;
+  void clear_contrast();
+  static const int kContrastFieldNumber = 11;
+  double contrast() const;
+  void set_contrast(double value);
+
+  // double sharpen_amount = 20;
+  void clear_sharpen_amount();
+  static const int kSharpenAmountFieldNumber = 20;
+  double sharpen_amount() const;
+  void set_sharpen_amount(double value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.FilterOptions)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  int blur_type_;
+  ::google::protobuf::int32 kernel_size_;
+  double sigma_;
+  double sigma_color_;
+  double sigma_space_;
+  double brightness_;
+  ::google::protobuf::int32 sharpen_kernel_size_;
+  double contrast_;
+  double sharpen_amount_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class SimilarityResult : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.SimilarityResult) */ {
+ public:
+  SimilarityResult();
+  virtual ~SimilarityResult();
+
+  SimilarityResult(const SimilarityResult& from);
+
+  inline SimilarityResult& operator=(const SimilarityResult& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  SimilarityResult(SimilarityResult&& from) noexcept
+    : SimilarityResult() {
+    *this = ::std::move(from);
+  }
+
+  inline SimilarityResult& operator=(SimilarityResult&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SimilarityResult& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const SimilarityResult* internal_default_instance() {
+    return reinterpret_cast<const SimilarityResult*>(
+               &_SimilarityResult_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  void Swap(SimilarityResult* other);
+  friend void swap(SimilarityResult& a, SimilarityResult& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline SimilarityResult* New() const final {
+    return CreateMaybeMessage<SimilarityResult>(NULL);
+  }
+
+  SimilarityResult* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<SimilarityResult>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const SimilarityResult& from);
+  void MergeFrom(const SimilarityResult& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SimilarityResult* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string method = 2;
+  void clear_method();
+  static const int kMethodFieldNumber = 2;
+  const ::std::string& method() const;
+  void set_method(const ::std::string& value);
+  #if LANG_CXX11
+  void set_method(::std::string&& value);
+  #endif
+  void set_method(const char* value);
+  void set_method(const char* value, size_t size);
+  ::std::string* mutable_method();
+  ::std::string* release_method();
+  void set_allocated_method(::std::string* method);
+
+  // double score = 1;
+  void clear_score();
+  static const int kScoreFieldNumber = 1;
+  double score() const;
+  void set_score(double value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.SimilarityResult)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr method_;
+  double score_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ExifInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.ExifInfo) */ {
+ public:
+  ExifInfo();
+  virtual ~ExifInfo();
+
+  ExifInfo(const ExifInfo& from);
+
+  inline ExifInfo& operator=(const ExifInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ExifInfo(ExifInfo&& from) noexcept
+    : ExifInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ExifInfo& operator=(ExifInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ExifInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ExifInfo* internal_default_instance() {
+    return reinterpret_cast<const ExifInfo*>(
+               &_ExifInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  void Swap(ExifInfo* other);
+  friend void swap(ExifInfo& a, ExifInfo& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ExifInfo* New() const final {
+    return CreateMaybeMessage<ExifInfo>(NULL);
+  }
+
+  ExifInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ExifInfo>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ExifInfo& from);
+  void MergeFrom(const ExifInfo& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ExifInfo* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string camera_make = 1;
+  void clear_camera_make();
+  static const int kCameraMakeFieldNumber = 1;
+  const ::std::string& camera_make() const;
+  void set_camera_make(const ::std::string& value);
+  #if LANG_CXX11
+  void set_camera_make(::std::string&& value);
+  #endif
+  void set_camera_make(const char* value);
+  void set_camera_make(const char* value, size_t size);
+  ::std::string* mutable_camera_make();
+  ::std::string* release_camera_make();
+  void set_allocated_camera_make(::std::string* camera_make);
+
+  // string camera_model = 2;
+  void clear_camera_model();
+  static const int kCameraModelFieldNumber = 2;
+  const ::std::string& camera_model() const;
+  void set_camera_model(const ::std::string& value);
+  #if LANG_CXX11
+  void set_camera_model(::std::string&& value);
+  #endif
+  void set_camera_model(const char* value);
+  void set_camera_model(const char* value, size_t size);
+  ::std::string* mutable_camera_model();
+  ::std::string* release_camera_model();
+  void set_allocated_camera_model(::std::string* camera_model);
+
+  // string datetime = 3;
+  void clear_datetime();
+  static const int kDatetimeFieldNumber = 3;
+  const ::std::string& datetime() const;
+  void set_datetime(const ::std::string& value);
+  #if LANG_CXX11
+  void set_datetime(::std::string&& value);
+  #endif
+  void set_datetime(const char* value);
+  void set_datetime(const char* value, size_t size);
+  ::std::string* mutable_datetime();
+  ::std::string* release_datetime();
+  void set_allocated_datetime(::std::string* datetime);
+
+  // string software = 14;
+  void clear_software();
+  static const int kSoftwareFieldNumber = 14;
+  const ::std::string& software() const;
+  void set_software(const ::std::string& value);
+  #if LANG_CXX11
+  void set_software(::std::string&& value);
+  #endif
+  void set_software(const char* value);
+  void set_software(const char* value, size_t size);
+  ::std::string* mutable_software();
+  ::std::string* release_software();
+  void set_allocated_software(::std::string* software);
+
+  // string description = 15;
+  void clear_description();
+  static const int kDescriptionFieldNumber = 15;
+  const ::std::string& description() const;
+  void set_description(const ::std::string& value);
+  #if LANG_CXX11
+  void set_description(::std::string&& value);
+  #endif
+  void set_description(const char* value);
+  void set_description(const char* value, size_t size);
+  ::std::string* mutable_description();
+  ::std::string* release_description();
+  void set_allocated_description(::std::string* description);
+
+  // string copyright = 16;
+  void clear_copyright();
+  static const int kCopyrightFieldNumber = 16;
+  const ::std::string& copyright() const;
+  void set_copyright(const ::std::string& value);
+  #if LANG_CXX11
+  void set_copyright(::std::string&& value);
+  #endif
+  void set_copyright(const char* value);
+  void set_copyright(const char* value, size_t size);
+  ::std::string* mutable_copyright();
+  ::std::string* release_copyright();
+  void set_allocated_copyright(::std::string* copyright);
+
+  // double exposure_time = 4;
+  void clear_exposure_time();
+  static const int kExposureTimeFieldNumber = 4;
+  double exposure_time() const;
+  void set_exposure_time(double value);
+
+  // double f_number = 5;
+  void clear_f_number();
+  static const int kFNumberFieldNumber = 5;
+  double f_number() const;
+  void set_f_number(double value);
+
+  // double focal_length = 7;
+  void clear_focal_length();
+  static const int kFocalLengthFieldNumber = 7;
+  double focal_length() const;
+  void set_focal_length(double value);
+
+  // double gps_latitude = 8;
+  void clear_gps_latitude();
+  static const int kGpsLatitudeFieldNumber = 8;
+  double gps_latitude() const;
+  void set_gps_latitude(double value);
+
+  // int32 iso_speed = 6;
+  void clear_iso_speed();
+  static const int kIsoSpeedFieldNumber = 6;
+  ::google::protobuf::int32 iso_speed() const;
+  void set_iso_speed(::google::protobuf::int32 value);
+
+  // int32 image_width = 11;
+  void clear_image_width();
+  static const int kImageWidthFieldNumber = 11;
+  ::google::protobuf::int32 image_width() const;
+  void set_image_width(::google::protobuf::int32 value);
+
+  // double gps_longitude = 9;
+  void clear_gps_longitude();
+  static const int kGpsLongitudeFieldNumber = 9;
+  double gps_longitude() const;
+  void set_gps_longitude(double value);
+
+  // double gps_altitude = 10;
+  void clear_gps_altitude();
+  static const int kGpsAltitudeFieldNumber = 10;
+  double gps_altitude() const;
+  void set_gps_altitude(double value);
+
+  // int32 image_height = 12;
+  void clear_image_height();
+  static const int kImageHeightFieldNumber = 12;
+  ::google::protobuf::int32 image_height() const;
+  void set_image_height(::google::protobuf::int32 value);
+
+  // .kingfisher.kcv.OrientationType orientation = 13;
+  void clear_orientation();
+  static const int kOrientationFieldNumber = 13;
+  ::kingfisher::kcv::OrientationType orientation() const;
+  void set_orientation(::kingfisher::kcv::OrientationType value);
+
+  // @@protoc_insertion_point(class_scope:kingfisher.kcv.ExifInfo)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr camera_make_;
+  ::google::protobuf::internal::ArenaStringPtr camera_model_;
+  ::google::protobuf::internal::ArenaStringPtr datetime_;
+  ::google::protobuf::internal::ArenaStringPtr software_;
+  ::google::protobuf::internal::ArenaStringPtr description_;
+  ::google::protobuf::internal::ArenaStringPtr copyright_;
+  double exposure_time_;
+  double f_number_;
+  double focal_length_;
+  double gps_latitude_;
+  ::google::protobuf::int32 iso_speed_;
+  ::google::protobuf::int32 image_width_;
+  double gps_longitude_;
+  double gps_altitude_;
+  ::google::protobuf::int32 image_height_;
+  int orientation_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_image_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:kingfisher.kcv.Rect) */ {
  public:
   Rect();
@@ -835,7 +1448,7 @@ class Rect : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_Rect_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    8;
 
   void Swap(Rect* other);
   friend void swap(Rect& a, Rect& b) {
@@ -959,7 +1572,7 @@ class ImageInfo : public ::google::protobuf::Message /* @@protoc_insertion_point
                &_ImageInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    9;
 
   void Swap(ImageInfo* other);
   friend void swap(ImageInfo& a, ImageInfo& b) {
@@ -1541,6 +2154,669 @@ inline void AnnotateOptions::set_anti_alias(bool value) {
   
   anti_alias_ = value;
   // @@protoc_insertion_point(field_set:kingfisher.kcv.AnnotateOptions.anti_alias)
+}
+
+// -------------------------------------------------------------------
+
+// FilterOptions
+
+// .kingfisher.kcv.BlurType blur_type = 1;
+inline void FilterOptions::clear_blur_type() {
+  blur_type_ = 0;
+}
+inline ::kingfisher::kcv::BlurType FilterOptions::blur_type() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.blur_type)
+  return static_cast< ::kingfisher::kcv::BlurType >(blur_type_);
+}
+inline void FilterOptions::set_blur_type(::kingfisher::kcv::BlurType value) {
+  
+  blur_type_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.blur_type)
+}
+
+// int32 kernel_size = 2;
+inline void FilterOptions::clear_kernel_size() {
+  kernel_size_ = 0;
+}
+inline ::google::protobuf::int32 FilterOptions::kernel_size() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.kernel_size)
+  return kernel_size_;
+}
+inline void FilterOptions::set_kernel_size(::google::protobuf::int32 value) {
+  
+  kernel_size_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.kernel_size)
+}
+
+// double sigma = 3;
+inline void FilterOptions::clear_sigma() {
+  sigma_ = 0;
+}
+inline double FilterOptions::sigma() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.sigma)
+  return sigma_;
+}
+inline void FilterOptions::set_sigma(double value) {
+  
+  sigma_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.sigma)
+}
+
+// double sigma_color = 4;
+inline void FilterOptions::clear_sigma_color() {
+  sigma_color_ = 0;
+}
+inline double FilterOptions::sigma_color() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.sigma_color)
+  return sigma_color_;
+}
+inline void FilterOptions::set_sigma_color(double value) {
+  
+  sigma_color_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.sigma_color)
+}
+
+// double sigma_space = 5;
+inline void FilterOptions::clear_sigma_space() {
+  sigma_space_ = 0;
+}
+inline double FilterOptions::sigma_space() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.sigma_space)
+  return sigma_space_;
+}
+inline void FilterOptions::set_sigma_space(double value) {
+  
+  sigma_space_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.sigma_space)
+}
+
+// double brightness = 10;
+inline void FilterOptions::clear_brightness() {
+  brightness_ = 0;
+}
+inline double FilterOptions::brightness() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.brightness)
+  return brightness_;
+}
+inline void FilterOptions::set_brightness(double value) {
+  
+  brightness_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.brightness)
+}
+
+// double contrast = 11;
+inline void FilterOptions::clear_contrast() {
+  contrast_ = 0;
+}
+inline double FilterOptions::contrast() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.contrast)
+  return contrast_;
+}
+inline void FilterOptions::set_contrast(double value) {
+  
+  contrast_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.contrast)
+}
+
+// double sharpen_amount = 20;
+inline void FilterOptions::clear_sharpen_amount() {
+  sharpen_amount_ = 0;
+}
+inline double FilterOptions::sharpen_amount() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.sharpen_amount)
+  return sharpen_amount_;
+}
+inline void FilterOptions::set_sharpen_amount(double value) {
+  
+  sharpen_amount_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.sharpen_amount)
+}
+
+// int32 sharpen_kernel_size = 21;
+inline void FilterOptions::clear_sharpen_kernel_size() {
+  sharpen_kernel_size_ = 0;
+}
+inline ::google::protobuf::int32 FilterOptions::sharpen_kernel_size() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.FilterOptions.sharpen_kernel_size)
+  return sharpen_kernel_size_;
+}
+inline void FilterOptions::set_sharpen_kernel_size(::google::protobuf::int32 value) {
+  
+  sharpen_kernel_size_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.FilterOptions.sharpen_kernel_size)
+}
+
+// -------------------------------------------------------------------
+
+// SimilarityResult
+
+// double score = 1;
+inline void SimilarityResult::clear_score() {
+  score_ = 0;
+}
+inline double SimilarityResult::score() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.SimilarityResult.score)
+  return score_;
+}
+inline void SimilarityResult::set_score(double value) {
+  
+  score_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.SimilarityResult.score)
+}
+
+// string method = 2;
+inline void SimilarityResult::clear_method() {
+  method_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& SimilarityResult::method() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.SimilarityResult.method)
+  return method_.GetNoArena();
+}
+inline void SimilarityResult::set_method(const ::std::string& value) {
+  
+  method_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.SimilarityResult.method)
+}
+#if LANG_CXX11
+inline void SimilarityResult::set_method(::std::string&& value) {
+  
+  method_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.SimilarityResult.method)
+}
+#endif
+inline void SimilarityResult::set_method(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  method_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.SimilarityResult.method)
+}
+inline void SimilarityResult::set_method(const char* value, size_t size) {
+  
+  method_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.SimilarityResult.method)
+}
+inline ::std::string* SimilarityResult::mutable_method() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.SimilarityResult.method)
+  return method_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* SimilarityResult::release_method() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.SimilarityResult.method)
+  
+  return method_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SimilarityResult::set_allocated_method(::std::string* method) {
+  if (method != NULL) {
+    
+  } else {
+    
+  }
+  method_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), method);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.SimilarityResult.method)
+}
+
+// -------------------------------------------------------------------
+
+// ExifInfo
+
+// string camera_make = 1;
+inline void ExifInfo::clear_camera_make() {
+  camera_make_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::camera_make() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.camera_make)
+  return camera_make_.GetNoArena();
+}
+inline void ExifInfo::set_camera_make(const ::std::string& value) {
+  
+  camera_make_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.camera_make)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_camera_make(::std::string&& value) {
+  
+  camera_make_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.camera_make)
+}
+#endif
+inline void ExifInfo::set_camera_make(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  camera_make_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.camera_make)
+}
+inline void ExifInfo::set_camera_make(const char* value, size_t size) {
+  
+  camera_make_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.camera_make)
+}
+inline ::std::string* ExifInfo::mutable_camera_make() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.camera_make)
+  return camera_make_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_camera_make() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.camera_make)
+  
+  return camera_make_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_camera_make(::std::string* camera_make) {
+  if (camera_make != NULL) {
+    
+  } else {
+    
+  }
+  camera_make_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), camera_make);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.camera_make)
+}
+
+// string camera_model = 2;
+inline void ExifInfo::clear_camera_model() {
+  camera_model_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::camera_model() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.camera_model)
+  return camera_model_.GetNoArena();
+}
+inline void ExifInfo::set_camera_model(const ::std::string& value) {
+  
+  camera_model_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.camera_model)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_camera_model(::std::string&& value) {
+  
+  camera_model_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.camera_model)
+}
+#endif
+inline void ExifInfo::set_camera_model(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  camera_model_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.camera_model)
+}
+inline void ExifInfo::set_camera_model(const char* value, size_t size) {
+  
+  camera_model_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.camera_model)
+}
+inline ::std::string* ExifInfo::mutable_camera_model() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.camera_model)
+  return camera_model_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_camera_model() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.camera_model)
+  
+  return camera_model_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_camera_model(::std::string* camera_model) {
+  if (camera_model != NULL) {
+    
+  } else {
+    
+  }
+  camera_model_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), camera_model);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.camera_model)
+}
+
+// string datetime = 3;
+inline void ExifInfo::clear_datetime() {
+  datetime_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::datetime() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.datetime)
+  return datetime_.GetNoArena();
+}
+inline void ExifInfo::set_datetime(const ::std::string& value) {
+  
+  datetime_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.datetime)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_datetime(::std::string&& value) {
+  
+  datetime_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.datetime)
+}
+#endif
+inline void ExifInfo::set_datetime(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  datetime_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.datetime)
+}
+inline void ExifInfo::set_datetime(const char* value, size_t size) {
+  
+  datetime_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.datetime)
+}
+inline ::std::string* ExifInfo::mutable_datetime() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.datetime)
+  return datetime_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_datetime() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.datetime)
+  
+  return datetime_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_datetime(::std::string* datetime) {
+  if (datetime != NULL) {
+    
+  } else {
+    
+  }
+  datetime_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), datetime);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.datetime)
+}
+
+// double exposure_time = 4;
+inline void ExifInfo::clear_exposure_time() {
+  exposure_time_ = 0;
+}
+inline double ExifInfo::exposure_time() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.exposure_time)
+  return exposure_time_;
+}
+inline void ExifInfo::set_exposure_time(double value) {
+  
+  exposure_time_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.exposure_time)
+}
+
+// double f_number = 5;
+inline void ExifInfo::clear_f_number() {
+  f_number_ = 0;
+}
+inline double ExifInfo::f_number() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.f_number)
+  return f_number_;
+}
+inline void ExifInfo::set_f_number(double value) {
+  
+  f_number_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.f_number)
+}
+
+// int32 iso_speed = 6;
+inline void ExifInfo::clear_iso_speed() {
+  iso_speed_ = 0;
+}
+inline ::google::protobuf::int32 ExifInfo::iso_speed() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.iso_speed)
+  return iso_speed_;
+}
+inline void ExifInfo::set_iso_speed(::google::protobuf::int32 value) {
+  
+  iso_speed_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.iso_speed)
+}
+
+// double focal_length = 7;
+inline void ExifInfo::clear_focal_length() {
+  focal_length_ = 0;
+}
+inline double ExifInfo::focal_length() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.focal_length)
+  return focal_length_;
+}
+inline void ExifInfo::set_focal_length(double value) {
+  
+  focal_length_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.focal_length)
+}
+
+// double gps_latitude = 8;
+inline void ExifInfo::clear_gps_latitude() {
+  gps_latitude_ = 0;
+}
+inline double ExifInfo::gps_latitude() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.gps_latitude)
+  return gps_latitude_;
+}
+inline void ExifInfo::set_gps_latitude(double value) {
+  
+  gps_latitude_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.gps_latitude)
+}
+
+// double gps_longitude = 9;
+inline void ExifInfo::clear_gps_longitude() {
+  gps_longitude_ = 0;
+}
+inline double ExifInfo::gps_longitude() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.gps_longitude)
+  return gps_longitude_;
+}
+inline void ExifInfo::set_gps_longitude(double value) {
+  
+  gps_longitude_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.gps_longitude)
+}
+
+// double gps_altitude = 10;
+inline void ExifInfo::clear_gps_altitude() {
+  gps_altitude_ = 0;
+}
+inline double ExifInfo::gps_altitude() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.gps_altitude)
+  return gps_altitude_;
+}
+inline void ExifInfo::set_gps_altitude(double value) {
+  
+  gps_altitude_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.gps_altitude)
+}
+
+// int32 image_width = 11;
+inline void ExifInfo::clear_image_width() {
+  image_width_ = 0;
+}
+inline ::google::protobuf::int32 ExifInfo::image_width() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.image_width)
+  return image_width_;
+}
+inline void ExifInfo::set_image_width(::google::protobuf::int32 value) {
+  
+  image_width_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.image_width)
+}
+
+// int32 image_height = 12;
+inline void ExifInfo::clear_image_height() {
+  image_height_ = 0;
+}
+inline ::google::protobuf::int32 ExifInfo::image_height() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.image_height)
+  return image_height_;
+}
+inline void ExifInfo::set_image_height(::google::protobuf::int32 value) {
+  
+  image_height_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.image_height)
+}
+
+// .kingfisher.kcv.OrientationType orientation = 13;
+inline void ExifInfo::clear_orientation() {
+  orientation_ = 0;
+}
+inline ::kingfisher::kcv::OrientationType ExifInfo::orientation() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.orientation)
+  return static_cast< ::kingfisher::kcv::OrientationType >(orientation_);
+}
+inline void ExifInfo::set_orientation(::kingfisher::kcv::OrientationType value) {
+  
+  orientation_ = value;
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.orientation)
+}
+
+// string software = 14;
+inline void ExifInfo::clear_software() {
+  software_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::software() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.software)
+  return software_.GetNoArena();
+}
+inline void ExifInfo::set_software(const ::std::string& value) {
+  
+  software_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.software)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_software(::std::string&& value) {
+  
+  software_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.software)
+}
+#endif
+inline void ExifInfo::set_software(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  software_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.software)
+}
+inline void ExifInfo::set_software(const char* value, size_t size) {
+  
+  software_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.software)
+}
+inline ::std::string* ExifInfo::mutable_software() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.software)
+  return software_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_software() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.software)
+  
+  return software_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_software(::std::string* software) {
+  if (software != NULL) {
+    
+  } else {
+    
+  }
+  software_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), software);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.software)
+}
+
+// string description = 15;
+inline void ExifInfo::clear_description() {
+  description_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::description() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.description)
+  return description_.GetNoArena();
+}
+inline void ExifInfo::set_description(const ::std::string& value) {
+  
+  description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.description)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_description(::std::string&& value) {
+  
+  description_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.description)
+}
+#endif
+inline void ExifInfo::set_description(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.description)
+}
+inline void ExifInfo::set_description(const char* value, size_t size) {
+  
+  description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.description)
+}
+inline ::std::string* ExifInfo::mutable_description() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.description)
+  return description_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_description() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.description)
+  
+  return description_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_description(::std::string* description) {
+  if (description != NULL) {
+    
+  } else {
+    
+  }
+  description_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), description);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.description)
+}
+
+// string copyright = 16;
+inline void ExifInfo::clear_copyright() {
+  copyright_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ExifInfo::copyright() const {
+  // @@protoc_insertion_point(field_get:kingfisher.kcv.ExifInfo.copyright)
+  return copyright_.GetNoArena();
+}
+inline void ExifInfo::set_copyright(const ::std::string& value) {
+  
+  copyright_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kingfisher.kcv.ExifInfo.copyright)
+}
+#if LANG_CXX11
+inline void ExifInfo::set_copyright(::std::string&& value) {
+  
+  copyright_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kingfisher.kcv.ExifInfo.copyright)
+}
+#endif
+inline void ExifInfo::set_copyright(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  copyright_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kingfisher.kcv.ExifInfo.copyright)
+}
+inline void ExifInfo::set_copyright(const char* value, size_t size) {
+  
+  copyright_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kingfisher.kcv.ExifInfo.copyright)
+}
+inline ::std::string* ExifInfo::mutable_copyright() {
+  
+  // @@protoc_insertion_point(field_mutable:kingfisher.kcv.ExifInfo.copyright)
+  return copyright_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ExifInfo::release_copyright() {
+  // @@protoc_insertion_point(field_release:kingfisher.kcv.ExifInfo.copyright)
+  
+  return copyright_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_copyright(::std::string* copyright) {
+  if (copyright != NULL) {
+    
+  } else {
+    
+  }
+  copyright_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), copyright);
+  // @@protoc_insertion_point(field_set_allocated:kingfisher.kcv.ExifInfo.copyright)
 }
 
 // -------------------------------------------------------------------
@@ -2175,6 +3451,12 @@ inline void ImageInfo::set_allocated_magick_warning(::std::string* magick_warnin
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -2193,6 +3475,21 @@ template <> struct is_proto_enum< ::kingfisher::kcv::FlipMode> : ::std::true_typ
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::FlipMode>() {
   return ::kingfisher::kcv::FlipMode_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::BlurType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::BlurType>() {
+  return ::kingfisher::kcv::BlurType_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::HashType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::HashType>() {
+  return ::kingfisher::kcv::HashType_descriptor();
+}
+template <> struct is_proto_enum< ::kingfisher::kcv::CompareMethod> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::kingfisher::kcv::CompareMethod>() {
+  return ::kingfisher::kcv::CompareMethod_descriptor();
 }
 template <> struct is_proto_enum< ::kingfisher::kcv::OrientationType> : ::std::true_type {};
 template <>
