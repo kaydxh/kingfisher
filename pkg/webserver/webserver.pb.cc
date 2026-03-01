@@ -30,7 +30,7 @@ extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::i
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Web_Grpc;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Web_Http;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Web_Monitor;
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::internal::SCCInfo<5> scc_info_Web;
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_webserver_2eproto ::google::protobuf::internal::SCCInfo<6> scc_info_Web;
 }  // namespace protobuf_webserver_2eproto
 namespace go {
 namespace pkg {
@@ -211,11 +211,12 @@ static void InitDefaultsWeb() {
   ::go::pkg::webserver::Web::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<5> scc_info_Web =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 5, InitDefaultsWeb}, {
+::google::protobuf::internal::SCCInfo<6> scc_info_Web =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 6, InitDefaultsWeb}, {
       &protobuf_webserver_2eproto::scc_info_Web_Net.base,
       &protobuf_webserver_2eproto::scc_info_Web_Grpc.base,
       &protobuf_webserver_2eproto::scc_info_Web_Http.base,
+      &protobuf_google_2fprotobuf_2fduration_2eproto::scc_info_Duration.base,
       &protobuf_webserver_2eproto::scc_info_Web_Debug.base,
       &protobuf_webserver_2eproto::scc_info_Web_Monitor.base,}};
 
@@ -304,6 +305,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, bind_address_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, grpc_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, http_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, shutdown_delay_duration_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, shutdown_timeout_duration_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, debug_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::go::pkg::webserver::Web, monitor_),
 };
@@ -354,38 +357,41 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\017webserver.proto\022\020go.pkg.webserver\032\036goo"
       "gle/protobuf/duration.proto\"/\n\tWebConfig"
-      "\022\"\n\003web\030\001 \001(\0132\025.go.pkg.webserver.Web\"\200\010\n"
+      "\022\"\n\003web\030\001 \001(\0132\025.go.pkg.webserver.Web\"\372\010\n"
       "\003Web\022/\n\014bind_address\030\001 \001(\0132\031.go.pkg.webs"
       "erver.Web.Net\022(\n\004grpc\030\003 \001(\0132\032.go.pkg.web"
       "server.Web.Grpc\022(\n\004http\030\004 \001(\0132\032.go.pkg.w"
-      "ebserver.Web.Http\022*\n\005debug\030\n \001(\0132\033.go.pk"
-      "g.webserver.Web.Debug\022.\n\007monitor\030\013 \001(\0132\035"
-      ".go.pkg.webserver.Web.Monitor\032!\n\003Net\022\014\n\004"
-      "host\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\032\262\001\n\004Grpc\022\035\n\025max"
-      "_concurrency_unary\030\001 \001(\005\022\036\n\026max_concurre"
-      "ncy_stream\030\002 \001(\005\022 \n\030max_receive_message_"
-      "size\030\003 \001(\005\022\035\n\025max_send_message_size\030\004 \001("
-      "\005\022*\n\007timeout\030\005 \001(\0132\031.google.protobuf.Dur"
-      "ation\032\347\001\n\004Http\022>\n\rapi_formatter\030\001 \001(\0162\'."
-      "go.pkg.webserver.Web.Http.ApiFormatter\022\027"
-      "\n\017max_concurrency\030\002 \001(\005\022*\n\007timeout\030\003 \001(\013"
-      "2\031.google.protobuf.Duration\"Z\n\014ApiFormat"
-      "ter\022\014\n\010api_noop\020\000\022\022\n\016tcloud_api_v30\020\001\022\023\n"
-      "\017trivial_api_v10\020\002\022\023\n\017trivial_api_v20\020\003\032"
-      "\265\001\n\005Debug\022\030\n\020enable_profiling\030\001 \001(\010\022&\n\036d"
-      "isable_print_inoutput_methods\030\002 \003(\t\022:\n\010t"
-      "est_map\030\003 \003(\0132(.go.pkg.webserver.Web.Deb"
-      "ug.TestMapEntry\032.\n\014TestMapEntry\022\013\n\003key\030\001"
-      " \001(\005\022\r\n\005value\030\002 \001(\005:\0028\001\032\235\001\n\007Monitor\022<\n\np"
-      "rometheus\030\001 \001(\0132(.go.pkg.webserver.Web.M"
-      "onitor.Prometheus\032T\n\nPrometheus\022!\n\031enabl"
-      "ed_metric_timer_cost\030\001 \001(\010\022#\n\033enabled_me"
-      "tric_code_message\030\002 \001(\010B2Z0github.com/ka"
-      "ydxh/golang/pkg/webserver;webserverb\006pro"
-      "to3"
+      "ebserver.Web.Http\022:\n\027shutdown_delay_dura"
+      "tion\030\005 \001(\0132\031.google.protobuf.Duration\022<\n"
+      "\031shutdown_timeout_duration\030\006 \001(\0132\031.googl"
+      "e.protobuf.Duration\022*\n\005debug\030\n \001(\0132\033.go."
+      "pkg.webserver.Web.Debug\022.\n\007monitor\030\013 \001(\013"
+      "2\035.go.pkg.webserver.Web.Monitor\032!\n\003Net\022\014"
+      "\n\004host\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\032\262\001\n\004Grpc\022\035\n\025m"
+      "ax_concurrency_unary\030\001 \001(\005\022\036\n\026max_concur"
+      "rency_stream\030\002 \001(\005\022 \n\030max_receive_messag"
+      "e_size\030\003 \001(\005\022\035\n\025max_send_message_size\030\004 "
+      "\001(\005\022*\n\007timeout\030\005 \001(\0132\031.google.protobuf.D"
+      "uration\032\347\001\n\004Http\022>\n\rapi_formatter\030\001 \001(\0162"
+      "\'.go.pkg.webserver.Web.Http.ApiFormatter"
+      "\022\027\n\017max_concurrency\030\002 \001(\005\022*\n\007timeout\030\003 \001"
+      "(\0132\031.google.protobuf.Duration\"Z\n\014ApiForm"
+      "atter\022\014\n\010api_noop\020\000\022\022\n\016tcloud_api_v30\020\001\022"
+      "\023\n\017trivial_api_v10\020\002\022\023\n\017trivial_api_v20\020"
+      "\003\032\265\001\n\005Debug\022\030\n\020enable_profiling\030\001 \001(\010\022&\n"
+      "\036disable_print_inoutput_methods\030\002 \003(\t\022:\n"
+      "\010test_map\030\003 \003(\0132(.go.pkg.webserver.Web.D"
+      "ebug.TestMapEntry\032.\n\014TestMapEntry\022\013\n\003key"
+      "\030\001 \001(\005\022\r\n\005value\030\002 \001(\005:\0028\001\032\235\001\n\007Monitor\022<\n"
+      "\nprometheus\030\001 \001(\0132(.go.pkg.webserver.Web"
+      ".Monitor.Prometheus\032T\n\nPrometheus\022!\n\031ena"
+      "bled_metric_timer_cost\030\001 \001(\010\022#\n\033enabled_"
+      "metric_code_message\030\002 \001(\010B2Z0github.com/"
+      "kaydxh/golang/pkg/webserver;webserverb\006p"
+      "roto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1203);
+      descriptor, 1325);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "webserver.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fduration_2eproto::AddDescriptors();
@@ -2572,15 +2578,33 @@ void Web::InitAsDefaultInstance() {
       ::go::pkg::webserver::Web_Grpc::internal_default_instance());
   ::go::pkg::webserver::_Web_default_instance_._instance.get_mutable()->http_ = const_cast< ::go::pkg::webserver::Web_Http*>(
       ::go::pkg::webserver::Web_Http::internal_default_instance());
+  ::go::pkg::webserver::_Web_default_instance_._instance.get_mutable()->shutdown_delay_duration_ = const_cast< ::google::protobuf::Duration*>(
+      ::google::protobuf::Duration::internal_default_instance());
+  ::go::pkg::webserver::_Web_default_instance_._instance.get_mutable()->shutdown_timeout_duration_ = const_cast< ::google::protobuf::Duration*>(
+      ::google::protobuf::Duration::internal_default_instance());
   ::go::pkg::webserver::_Web_default_instance_._instance.get_mutable()->debug_ = const_cast< ::go::pkg::webserver::Web_Debug*>(
       ::go::pkg::webserver::Web_Debug::internal_default_instance());
   ::go::pkg::webserver::_Web_default_instance_._instance.get_mutable()->monitor_ = const_cast< ::go::pkg::webserver::Web_Monitor*>(
       ::go::pkg::webserver::Web_Monitor::internal_default_instance());
 }
+void Web::clear_shutdown_delay_duration() {
+  if (GetArenaNoVirtual() == NULL && shutdown_delay_duration_ != NULL) {
+    delete shutdown_delay_duration_;
+  }
+  shutdown_delay_duration_ = NULL;
+}
+void Web::clear_shutdown_timeout_duration() {
+  if (GetArenaNoVirtual() == NULL && shutdown_timeout_duration_ != NULL) {
+    delete shutdown_timeout_duration_;
+  }
+  shutdown_timeout_duration_ = NULL;
+}
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Web::kBindAddressFieldNumber;
 const int Web::kGrpcFieldNumber;
 const int Web::kHttpFieldNumber;
+const int Web::kShutdownDelayDurationFieldNumber;
+const int Web::kShutdownTimeoutDurationFieldNumber;
 const int Web::kDebugFieldNumber;
 const int Web::kMonitorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -2611,6 +2635,16 @@ Web::Web(const Web& from)
   } else {
     http_ = NULL;
   }
+  if (from.has_shutdown_delay_duration()) {
+    shutdown_delay_duration_ = new ::google::protobuf::Duration(*from.shutdown_delay_duration_);
+  } else {
+    shutdown_delay_duration_ = NULL;
+  }
+  if (from.has_shutdown_timeout_duration()) {
+    shutdown_timeout_duration_ = new ::google::protobuf::Duration(*from.shutdown_timeout_duration_);
+  } else {
+    shutdown_timeout_duration_ = NULL;
+  }
   if (from.has_debug()) {
     debug_ = new ::go::pkg::webserver::Web_Debug(*from.debug_);
   } else {
@@ -2639,6 +2673,8 @@ void Web::SharedDtor() {
   if (this != internal_default_instance()) delete bind_address_;
   if (this != internal_default_instance()) delete grpc_;
   if (this != internal_default_instance()) delete http_;
+  if (this != internal_default_instance()) delete shutdown_delay_duration_;
+  if (this != internal_default_instance()) delete shutdown_timeout_duration_;
   if (this != internal_default_instance()) delete debug_;
   if (this != internal_default_instance()) delete monitor_;
 }
@@ -2675,6 +2711,14 @@ void Web::Clear() {
     delete http_;
   }
   http_ = NULL;
+  if (GetArenaNoVirtual() == NULL && shutdown_delay_duration_ != NULL) {
+    delete shutdown_delay_duration_;
+  }
+  shutdown_delay_duration_ = NULL;
+  if (GetArenaNoVirtual() == NULL && shutdown_timeout_duration_ != NULL) {
+    delete shutdown_timeout_duration_;
+  }
+  shutdown_timeout_duration_ = NULL;
   if (GetArenaNoVirtual() == NULL && debug_ != NULL) {
     delete debug_;
   }
@@ -2726,6 +2770,30 @@ bool Web::MergePartialFromCodedStream(
             static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_http()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // .google.protobuf.Duration shutdown_delay_duration = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_shutdown_delay_duration()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // .google.protobuf.Duration shutdown_timeout_duration = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_shutdown_timeout_duration()));
         } else {
           goto handle_unusual;
         }
@@ -2800,6 +2868,18 @@ void Web::SerializeWithCachedSizes(
       4, this->_internal_http(), output);
   }
 
+  // .google.protobuf.Duration shutdown_delay_duration = 5;
+  if (this->has_shutdown_delay_duration()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->_internal_shutdown_delay_duration(), output);
+  }
+
+  // .google.protobuf.Duration shutdown_timeout_duration = 6;
+  if (this->has_shutdown_timeout_duration()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->_internal_shutdown_timeout_duration(), output);
+  }
+
   // .go.pkg.webserver.Web.Debug debug = 10;
   if (this->has_debug()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
@@ -2845,6 +2925,20 @@ void Web::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
         4, this->_internal_http(), deterministic, target);
+  }
+
+  // .google.protobuf.Duration shutdown_delay_duration = 5;
+  if (this->has_shutdown_delay_duration()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        5, this->_internal_shutdown_delay_duration(), deterministic, target);
+  }
+
+  // .google.protobuf.Duration shutdown_timeout_duration = 6;
+  if (this->has_shutdown_timeout_duration()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        6, this->_internal_shutdown_timeout_duration(), deterministic, target);
   }
 
   // .go.pkg.webserver.Web.Debug debug = 10;
@@ -2899,6 +2993,20 @@ size_t Web::ByteSizeLong() const {
         *http_);
   }
 
+  // .google.protobuf.Duration shutdown_delay_duration = 5;
+  if (this->has_shutdown_delay_duration()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *shutdown_delay_duration_);
+  }
+
+  // .google.protobuf.Duration shutdown_timeout_duration = 6;
+  if (this->has_shutdown_timeout_duration()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *shutdown_timeout_duration_);
+  }
+
   // .go.pkg.webserver.Web.Debug debug = 10;
   if (this->has_debug()) {
     total_size += 1 +
@@ -2949,6 +3057,12 @@ void Web::MergeFrom(const Web& from) {
   if (from.has_http()) {
     mutable_http()->::go::pkg::webserver::Web_Http::MergeFrom(from.http());
   }
+  if (from.has_shutdown_delay_duration()) {
+    mutable_shutdown_delay_duration()->::google::protobuf::Duration::MergeFrom(from.shutdown_delay_duration());
+  }
+  if (from.has_shutdown_timeout_duration()) {
+    mutable_shutdown_timeout_duration()->::google::protobuf::Duration::MergeFrom(from.shutdown_timeout_duration());
+  }
   if (from.has_debug()) {
     mutable_debug()->::go::pkg::webserver::Web_Debug::MergeFrom(from.debug());
   }
@@ -2984,6 +3098,8 @@ void Web::InternalSwap(Web* other) {
   swap(bind_address_, other->bind_address_);
   swap(grpc_, other->grpc_);
   swap(http_, other->http_);
+  swap(shutdown_delay_duration_, other->shutdown_delay_duration_);
+  swap(shutdown_timeout_duration_, other->shutdown_timeout_duration_);
   swap(debug_, other->debug_);
   swap(monitor_, other->monitor_);
   _internal_metadata_.Swap(&other->_internal_metadata_);

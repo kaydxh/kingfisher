@@ -3,27 +3,30 @@ web:
     host: 0.0.0.0
     port: 10000
   grpc:
-    max_concurrency_unary: 0 # max concurrency for grpc unary api, 0 means unlimited
-    max_concurrency_stream: 0 # max concurrency for grpc stream api
-    max_receive_message_size: 0 # 0 means max message size 
-    max_send_message_size : 0
+    max_concurrency_unary: 0 # gRPC unary API 最大并发，0 表示不限
+    max_concurrency_stream: 0 # gRPC stream API 最大并发
+    max_receive_message_size: 0 # 0 表示使用默认最大消息大小
+    max_send_message_size: 0
     timeout: 5s
   http:
-    api_formatter : tcloud_api_v30 
+    api_formatter: tcloud_api_v30
     max_concurrency: 0
     timeout: 0s
+  # 优雅关闭配置
+  shutdown_delay_duration: 0s      # 关闭前等待时间，让负载均衡摘除节点
+  shutdown_timeout_duration: 5s    # 强制关闭超时时间
   debug:
     enable_profiling: true
-    # print inoutput use local middleware function
+    # 禁止打印输入输出的方法列表
     disable_print_inoutput_methods: ["/api/test"]
   monitor:
     open_telemetry:
       enabled: true
       metric_collect_duration: 60s
-      otel_trace_exporter_type : trace_stdout
-      otel_metric_exporter_type : metric_stdout
-      otel_log_exporter_type : log_none
-      otel_metric_exporter :
+      otel_trace_exporter_type: trace_stdout
+      otel_metric_exporter_type: metric_stdout
+      otel_log_exporter_type: log_none
+      otel_metric_exporter:
         stdout:
           pretty_print: true
         prometheus:

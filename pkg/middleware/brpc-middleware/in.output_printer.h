@@ -1,6 +1,11 @@
 #ifndef KINGFISHER_PKG_MIDDLEWARE_BRPC_MIDDLEWARE_IN_OUTPUT_PRINTER_H_
 #define KINGFISHER_PKG_MIDDLEWARE_BRPC_MIDDLEWARE_IN_OUTPUT_PRINTER_H_
 
+// 注意：此文件保留用于向后兼容
+// 新的中间件系统已迁移到 HTTP 中间件链模式
+// 参见 webserver.h 中的 HttpMiddleware 类型定义
+
+#ifdef ENABLE_BRPC
 #include "brpc/controller.h"
 #include "brpc/server.h"
 
@@ -38,5 +43,6 @@ void InputPrinter(brpc::InputMessageBase* msg_base) {
     LOG(INFO) << "Request is nullptr";
   }
 }
+#endif
 
 #endif

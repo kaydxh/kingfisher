@@ -1,36 +1,46 @@
 #ifndef KINGFISHER_PKG_WEB_SERVER_CONTROLLER_DATE_DATE_H_
 #define KINGFISHER_PKG_WEB_SERVER_CONTROLLER_DATE_DATE_H_
 
-#include "api.pb.h"
-
-#ifdef ENABLE_BRPC
-#include "brpc/server.h"
-#endif
-
-#include "middleware/api/api_guard.hpp"
 #include "time/timestamp.h"
+#include "webserver/webserver.h"
 
-using namespace sea::api;
+namespace kingfisher {
+namespace web {
 
-// curl http://127.0.0.1:10000/DateService/Now
-class DateServiceImpl : public sea::api::date::DateService {
+// DateWebHandler: 日期服务 WebHandler
+// 对标 golang 项目中 DateService，同时支持 HTTP
+class DateWebHandler : public WebHandler {
  public:
-  void Now(::google::protobuf::RpcController* cntl_base,
-           const date::NowRequest* req, date::NowResponse* resp,
-           ::google::protobuf::Closure* done) override {
-    // This object helps you to call done->Run() in RAII style. If you need
-    // to process the request asynchronously, pass done_guard.release().
-#ifdef ENABLE_BRPC
-    brpc::ClosureGuard done_guard(done);
-    API_GUARD;
-    butil::IOBufBuilder os;
-    auto now = kingfisher::time::Timestamp::Now().ToFormattedString();
-    os << now;
-    resp->set_request_id(req->request_id());
-    resp->set_date(now);
-#endif
+  void SetRoutes(httplib::Server& http_server) override {
+    // HTTP 路由：GET /api/date/now
+    http_server.Get("/api/date/now",
+                    [](const httplib::Request& req, httplib::Response& resp) {
+                      auto now =
+                          kingfisher::time::Timestamp::Now().ToFormattedString();
+
+                      std::string request_id =
+                          resp.get_header_value("X-Request-Id");
+
+                      std::string json_resp =
+                          R"({"request_id":")" + request_id +
+                          R"(","date":")" + now + "\"}";
+
+                      resp.status = 200;
+                      resp.set_content(json_resp, "application/json");
+                    });
   }
+
+#ifdef ENABLE_GRPC
+  // gRPC service 注册（如果用户定义了 gRPC proto service）
+  void RegisterGRPCService(grpc::ServerBuilder& builder) override {
+    // 用户可以在这里注册 gRPC service
+    // 例如: builder.RegisterService(&date_grpc_service_);
+  }
+#endif
 };
+
+}  // namespace web
+}  // namespace kingfisher
 
 #endif
 
