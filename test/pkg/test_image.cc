@@ -8,6 +8,7 @@
 
 #include "core/scope_guard.h"
 #include "cv/image/image.h"
+#include "cv/image/image_pipeline.h"
 #include "cv/image/image_error.h"
 
 using namespace kingfisher;
