@@ -18,8 +18,15 @@ all: deps generate
 	@echo "${PROJECT_ROOT_DIR}"
 	@echo "${TARGET}"
 
+.PHONY: setup_third_party
+setup_third_party:
+	@echo "  >  设置 third_party: 合并分割文件并解压"
+	@if [ -x "${PROJECT_ROOT_DIR}/third_party/setup.sh" ]; then \
+		bash "${PROJECT_ROOT_DIR}/third_party/setup.sh"; \
+	fi
+
 .PHONY: deps
-deps:
+deps: setup_third_party
 	@echo "  >  downloading deps library"
 
 .PHONY: version
