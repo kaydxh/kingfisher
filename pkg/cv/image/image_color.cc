@@ -69,7 +69,7 @@ static int GetCvtColorCode(ColorSpace from, ColorSpace to) {
   if (from == RGBAColorSpace && to == BGRColorSpace) return cv::COLOR_RGBA2BGR;
   if (from == RGBAColorSpace && to == BGRAColorSpace) return cv::COLOR_RGBA2BGRA;
 
-  return -1;
+  return kImageUnsupportedColorSpace;
 }
 
 // ==================== ConvertColorSpace ====================
@@ -78,7 +78,7 @@ int Image::ConvertColorSpace(const cv::Mat &input, ColorSpace from,
                              ColorSpace to, cv::Mat &output) {
   if (input.empty()) {
     LOG(ERROR) << "ConvertColorSpace: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   if (from == to) {
@@ -90,7 +90,7 @@ int Image::ConvertColorSpace(const cv::Mat &input, ColorSpace from,
   if (code < 0) {
     LOG(ERROR) << "ConvertColorSpace: unsupported conversion from "
                << from << " to " << to;
-    return -1;
+    return kImageUnsupportedColorSpace;
   }
 
   auto ret = WrapOpencvFuncT([&]() {
@@ -98,7 +98,7 @@ int Image::ConvertColorSpace(const cv::Mat &input, ColorSpace from,
   });
   if (ret != 0) {
     LOG(ERROR) << "ConvertColorSpace: cv::cvtColor failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "ConvertColorSpace: converted from " << from << " to " << to;
@@ -110,7 +110,7 @@ int Image::ConvertColorSpace(const cv::Mat &input, ColorSpace from,
 int Image::HConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   if (images.empty()) {
     LOG(ERROR) << "HConcat: input images list is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (images.size() == 1) {
     output = images[0].clone();
@@ -121,11 +121,11 @@ int Image::HConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   for (size_t i = 1; i < images.size(); ++i) {
     if (images[i].empty()) {
       LOG(ERROR) << "HConcat: image at index " << i << " is empty";
-      return -1;
+      return kImageEmptyInput;
     }
     if (images[i].type() != type) {
       LOG(ERROR) << "HConcat: image type mismatch at index " << i;
-      return -1;
+      return kImageTypeMismatch;
     }
   }
 
@@ -151,7 +151,7 @@ int Image::HConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   });
   if (ret != 0) {
     LOG(ERROR) << "HConcat: cv::hconcat failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "HConcat: concatenated " << images.size()
@@ -163,7 +163,7 @@ int Image::HConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
 int Image::VConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   if (images.empty()) {
     LOG(ERROR) << "VConcat: input images list is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (images.size() == 1) {
     output = images[0].clone();
@@ -174,11 +174,11 @@ int Image::VConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   for (size_t i = 1; i < images.size(); ++i) {
     if (images[i].empty()) {
       LOG(ERROR) << "VConcat: image at index " << i << " is empty";
-      return -1;
+      return kImageEmptyInput;
     }
     if (images[i].type() != type) {
       LOG(ERROR) << "VConcat: image type mismatch at index " << i;
-      return -1;
+      return kImageTypeMismatch;
     }
   }
 
@@ -204,7 +204,7 @@ int Image::VConcat(const std::vector<cv::Mat> &images, cv::Mat &output) {
   });
   if (ret != 0) {
     LOG(ERROR) << "VConcat: cv::vconcat failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "VConcat: concatenated " << images.size()
@@ -219,11 +219,11 @@ int Image::Overlay(cv::Mat &dest, const cv::Mat &src, int x, int y,
                    double alpha) {
   if (dest.empty() || src.empty()) {
     LOG(ERROR) << "Overlay: dest or src mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (alpha < 0.0 || alpha > 1.0) {
     LOG(ERROR) << "Overlay: alpha value out of range [0, 1]: " << alpha;
-    return -1;
+    return kImageInvalidParam;
   }
 
   int srcX = 0, srcY = 0;
@@ -291,7 +291,7 @@ int Image::AnnotateImage(cv::Mat &image, const std::string &text,
                          const AnnotateOptions &opts) {
   if (image.empty()) {
     LOG(ERROR) << "AnnotateImage: input image is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (text.empty()) {
     LOG(WARNING) << "AnnotateImage: text is empty, nothing to draw";
@@ -318,7 +318,7 @@ int Image::AnnotateImage(cv::Mat &image, const std::string &text,
   });
   if (ret != 0) {
     LOG(ERROR) << "AnnotateImage: cv::putText failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "AnnotateImage: drew text \"" << text << "\" at ("

@@ -36,7 +36,7 @@ namespace kcv {
 static int ImageToMat(Magick::Image &image, ColorSpace targetColorSpace,
                       ::cv::Mat &matOutput) {
   if (!image.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
   int w = image.columns();
   int h = image.rows();
@@ -91,7 +91,7 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
   }
 
   if (!imageOutput.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
 
   return 0;
@@ -100,7 +100,7 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
 static int ConvertImage(Magick::Image &image, ColorSpace targetColorSpace,
                         bool autoOrient, ::cv::Mat &matOutput) {
   if (!image.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
 
   if (autoOrient) {
@@ -176,7 +176,7 @@ int Image::DecodeImageFile(const std::string &imageFile, ::cv::Mat &matOutput) {
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
   if (!stream.is_open()) {
     LOG(ERROR) << "failed to open image file: " << imageFile;
-    return -1;
+    return kImageFileOpenError;
   }
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
@@ -191,7 +191,7 @@ int Image::DecodeImageFile(const std::string &imageFile,
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
   if (!stream.is_open()) {
     LOG(ERROR) << "failed to open image file: " << imageFile;
-    return -1;
+    return kImageFileOpenError;
   }
   std::string content{std::istreambuf_iterator<char>(stream), {}};
   return kingfisher::kcv::Image::DecodeImage(content, opts, matOutput);
@@ -203,7 +203,7 @@ int Image::EncodeImage(const cv::Mat &mat, const std::string &format,
                        int quality, std::string &output) {
   if (mat.empty()) {
     LOG(ERROR) << "EncodeImage: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   std::vector<uchar> buf;
@@ -238,7 +238,7 @@ int Image::EncodeImage(const cv::Mat &mat, const std::string &format,
   });
   if (ret != 0) {
     LOG(ERROR) << "EncodeImage: failed to encode image to format: " << fmt;
-    return -1;
+    return kImageEncodeError;
   }
 
   output.assign(reinterpret_cast<const char *>(buf.data()), buf.size());
@@ -270,7 +270,7 @@ int Image::ConvertFormat(const std::string &inputData,
                          std::string &output) {
   if (inputData.empty()) {
     LOG(ERROR) << "ConvertFormat: input data is empty";
-    return -1;
+    return kImageInvalidData;
   }
 
   cv::Mat mat;

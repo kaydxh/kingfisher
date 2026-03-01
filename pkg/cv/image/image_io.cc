@@ -36,7 +36,7 @@ namespace kcv {
 int Image::MatToImage(const cv::Mat &mat, Magick::Image &imageOutput) {
   if (mat.empty()) {
     LOG(ERROR) << "MatToImage: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   std::string map;
@@ -53,7 +53,7 @@ int Image::MatToImage(const cv::Mat &mat, Magick::Image &imageOutput) {
       break;
     default:
       LOG(ERROR) << "MatToImage: unsupported channel count: " << channels;
-      return -1;
+      return kImageChannelMismatch;
   }
 
   cv::Mat continuous;
@@ -72,7 +72,7 @@ int Image::MatToImage(const cv::Mat &mat, Magick::Image &imageOutput) {
   });
   if (ret != 0) {
     LOG(ERROR) << "MatToImage: Magick::Image::read failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "MatToImage: converted cv::Mat (" << mat.cols << "x" << mat.rows
@@ -181,26 +181,26 @@ int Image::AdaptiveWatermarkFill(cv::Mat &dest, const cv::Mat &logo,
                                  cv::Rect region, int interpolation,
                                  double alpha) {
   if (dest.empty() || logo.empty()) {
-    return -1;
+    return kImageEmptyInput;
   }
 
   if (dest.depth() != CV_8U || logo.depth() != CV_8U) {
-    return -1;
+    return kImageTypeMismatch;
   }
 
   if (alpha < 0.0 || alpha > 1.0) {
-    return -1;
+    return kImageInvalidParam;
   }
 
   cv::Rect valid_region = CalculateValidRegion(dest.size(), region);
   if (valid_region.area() <= 0) {
-    return -1;
+    return kImageInvalidRegion;
   }
 
   cv::Size target_size =
       CalculateAspectRatioSize(logo.size(), valid_region.size());
   if (target_size.area() <= 0) {
-    return -1;
+    return kImageInvalidRegion;
   }
 
   cv::Mat scaled_logo;
