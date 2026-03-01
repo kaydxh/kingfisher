@@ -172,6 +172,10 @@ class GenericWebServer {
   // 安装 profiler 路由
   void installProfilerRoutes();
 
+  // 安装中间件链到 cpp-httplib 全局拦截器
+  // 对标 golang 的 http middleware chain
+  void installMiddlewareHooks();
+
   // 信号处理
   void onSignalStop(int sig);
 

@@ -5,6 +5,7 @@
 
 #include "log/config.h"
 #include "os/signal/signal.h"
+#include "time/time_counter.h"
 #include "time/timestamp.h"
 #include "uuid/guid.h"
 
@@ -429,7 +430,120 @@ int GenericWebServer::PrepareRun() {
   installHealthzRoutes();
   installProfilerRoutes();
 
+  // 安装中间件链到 cpp-httplib 的全局拦截器
+  // 对标 golang 的 http middleware chain，使所有路由都经过中间件链
+  installMiddlewareHooks();
+
   return 0;
+}
+
+void GenericWebServer::installMiddlewareHooks() {
+  // 对标 golang 的 http middleware chain:
+  //   RequestID → Recovery → CleanPath → Timer → InOutPrinter → Handler
+  //
+  // cpp-httplib 提供三个全局 hook 点:
+  //   - set_pre_routing_handler: 路由匹配前执行（前置逻辑）
+  //   - set_post_routing_handler: handler 执行后执行（后置逻辑）
+  //   - set_exception_handler: 异常恢复（Recovery）
+  //
+  // 我们将中间件拆分为前置和后置两部分:
+  //   前置（pre_routing）: RequestID, CleanPath
+  //   后置（post_routing）: Timer（打印耗时）, InOutPrinter（打印输出）
+  //   异常处理: Recovery
+
+  // 前置中间件：在路由匹配和 handler 执行前运行
+  http_server_.set_pre_routing_handler(
+      [this](const httplib::Request& req, httplib::Response& resp)
+          -> httplib::Server::HandlerResponse {
+        // 1. RequestID（对标 golang WithHttpHandlerInterceptorRequestIDOptions）
+        std::string request_id = req.get_header_value("X-Request-Id");
+        if (request_id.empty()) {
+          request_id = kingfisher::uuid::Guid::GuidString();
+        }
+        resp.set_header("X-Request-Id", request_id);
+
+        // 记录请求开始时间（存储在 response header 中，供 post_routing 使用）
+        auto now = std::chrono::steady_clock::now();
+        auto now_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          now.time_since_epoch())
+                          .count();
+        resp.set_header("X-Start-Time-Ns", std::to_string(now_ns));
+
+        // 继续路由匹配
+        return httplib::Server::HandlerResponse::Unhandled;
+      });
+
+  // 后置中间件：在 handler 执行后运行
+  auto disable_methods = opts_.disable_print_inoutput_methods;
+  http_server_.set_post_routing_handler(
+      [disable_methods](const httplib::Request& req, httplib::Response& resp) {
+        std::string request_id = resp.get_header_value("X-Request-Id");
+        std::string callee_method = req.method + " " + req.path;
+
+        // 检查是否禁用了该路径的打印
+        bool should_print = true;
+        for (const auto& m : disable_methods) {
+          if (req.path == m) {
+            should_print = false;
+            break;
+          }
+        }
+
+        // Timer: 计算耗时（对标 golang WithHttpHandlerInterceptorsTimerOptions）
+        std::string start_time_str = resp.get_header_value("X-Start-Time-Ns");
+        if (!start_time_str.empty()) {
+          auto start_ns = std::stoll(start_time_str);
+          auto now = std::chrono::steady_clock::now();
+          auto now_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            now.time_since_epoch())
+                            .count();
+          auto cost_us = (now_ns - start_ns) / 1000;
+          double cost_ms = static_cast<double>(cost_us) / 1000.0;
+
+          // 移除内部计时 header，避免暴露给客户端
+          resp.headers.erase("X-Start-Time-Ns");
+
+          if (should_print) {
+            LOG(INFO) << "[" << request_id << "] " << callee_method
+                      << ", status: " << resp.status
+                      << ", resp_size: " << resp.body.size()
+                      << ", cost: " << cost_ms << "ms";
+          }
+        }
+      });
+
+  // 异常处理（对标 golang WithHttpHandlerInterceptorRecoveryOptions）
+  http_server_.set_exception_handler(
+      [](const httplib::Request& req, httplib::Response& resp,
+         std::exception_ptr ep) {
+        std::string request_id = resp.get_header_value("X-Request-Id");
+        try {
+          if (ep) {
+            std::rethrow_exception(ep);
+          }
+        } catch (const std::exception& e) {
+          LOG(ERROR) << "[" << request_id
+                     << "] HTTP handler exception recovered: " << e.what()
+                     << ", method: " << req.method << ", path: " << req.path;
+          resp.status = 500;
+          resp.set_content(
+              R"({"error":"internal server error","message":")" +
+                  std::string(e.what()) + "\"}",
+              "application/json");
+        } catch (...) {
+          LOG(ERROR) << "[" << request_id
+                     << "] HTTP handler unknown exception recovered"
+                     << ", method: " << req.method << ", path: " << req.path;
+          resp.status = 500;
+          resp.set_content(R"({"error":"internal server error"})",
+                           "application/json");
+        }
+      });
+
+  LOG(INFO) << "Installed HTTP middleware hooks: "
+               "pre_routing(RequestID) + "
+               "post_routing(Timer+InOutPrinter) + "
+               "exception_handler(Recovery)";
 }
 
 // =================== Run ===================
