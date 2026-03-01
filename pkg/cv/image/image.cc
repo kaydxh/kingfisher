@@ -1,7 +1,9 @@
 #include "image.h"
 
+#ifdef ENABLE_GRAPHICS_MAGICK
 #include <Magick++.h>
 #include <magick/api.h>
+#endif
 
 #include <algorithm>
 #include <cstdint>
@@ -10,13 +12,20 @@
 #include <vector>
 
 #include "cv/image/image.pb.h"
+#include "cv/image/image_error.h"
 #include "cv/types/types.h"
 #include "log/config.h"
+
+#ifdef ENABLE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
+#endif
+
 #include "wrap.func.h"
 
+#ifdef ENABLE_GRAPHICS_MAGICK
 using namespace Magick;
 using namespace MagickLib;
+#endif
 
 namespace kingfisher {
 namespace kcv {
