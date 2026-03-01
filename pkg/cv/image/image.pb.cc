@@ -46,6 +46,21 @@ class AnnotateOptionsDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<AnnotateOptions>
       _instance;
 } _AnnotateOptions_default_instance_;
+class FilterOptionsDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<FilterOptions>
+      _instance;
+} _FilterOptions_default_instance_;
+class SimilarityResultDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<SimilarityResult>
+      _instance;
+} _SimilarityResult_default_instance_;
+class ExifInfoDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<ExifInfo>
+      _instance;
+} _ExifInfo_default_instance_;
 class RectDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Rect>
@@ -129,6 +144,48 @@ static void InitDefaultsAnnotateOptions() {
 ::google::protobuf::internal::SCCInfo<0> scc_info_AnnotateOptions =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsAnnotateOptions}, {}};
 
+static void InitDefaultsFilterOptions() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_FilterOptions_default_instance_;
+    new (ptr) ::kingfisher::kcv::FilterOptions();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::FilterOptions::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_FilterOptions =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFilterOptions}, {}};
+
+static void InitDefaultsSimilarityResult() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_SimilarityResult_default_instance_;
+    new (ptr) ::kingfisher::kcv::SimilarityResult();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::SimilarityResult::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_SimilarityResult =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsSimilarityResult}, {}};
+
+static void InitDefaultsExifInfo() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_ExifInfo_default_instance_;
+    new (ptr) ::kingfisher::kcv::ExifInfo();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::ExifInfo::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_ExifInfo =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsExifInfo}, {}};
+
 static void InitDefaultsRect() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -163,12 +220,15 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_Point.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Size.base);
   ::google::protobuf::internal::InitSCC(&scc_info_AnnotateOptions.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_FilterOptions.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_SimilarityResult.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_ExifInfo.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Rect.base);
   ::google::protobuf::internal::InitSCC(&scc_info_ImageInfo.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[7];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[4];
+::google::protobuf::Metadata file_level_metadata[10];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[7];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
@@ -213,6 +273,48 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, thickness_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, anti_alias_),
   ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, blur_type_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, kernel_size_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, sigma_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, sigma_color_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, sigma_space_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, brightness_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, contrast_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, sharpen_amount_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::FilterOptions, sharpen_kernel_size_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::SimilarityResult, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::SimilarityResult, score_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::SimilarityResult, method_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, camera_make_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, camera_model_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, datetime_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, exposure_time_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, f_number_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, iso_speed_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, focal_length_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, gps_latitude_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, gps_longitude_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, gps_altitude_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, image_width_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, image_height_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, orientation_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, software_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, description_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ExifInfo, copyright_),
+  ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -253,8 +355,11 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 15, -1, sizeof(::kingfisher::kcv::Point)},
   { 22, -1, sizeof(::kingfisher::kcv::Size)},
   { 29, -1, sizeof(::kingfisher::kcv::AnnotateOptions)},
-  { 41, -1, sizeof(::kingfisher::kcv::Rect)},
-  { 50, -1, sizeof(::kingfisher::kcv::ImageInfo)},
+  { 41, -1, sizeof(::kingfisher::kcv::FilterOptions)},
+  { 55, -1, sizeof(::kingfisher::kcv::SimilarityResult)},
+  { 62, -1, sizeof(::kingfisher::kcv::ExifInfo)},
+  { 83, -1, sizeof(::kingfisher::kcv::Rect)},
+  { 92, -1, sizeof(::kingfisher::kcv::ImageInfo)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -263,6 +368,9 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Point_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Size_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_AnnotateOptions_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_FilterOptions_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_SimilarityResult_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_ExifInfo_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Rect_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_ImageInfo_default_instance_),
 };
@@ -282,7 +390,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 7);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 10);
 }
 
 void AddDescriptorsImpl() {
@@ -298,41 +406,64 @@ void AddDescriptorsImpl() {
       "ns\022\014\n\004font\030\001 \001(\t\022\021\n\tfont_size\030\002 \001(\001\022\017\n\007c"
       "olor_r\030\003 \001(\005\022\017\n\007color_g\030\004 \001(\005\022\017\n\007color_b"
       "\030\005 \001(\005\022\021\n\tthickness\030\006 \001(\005\022\022\n\nanti_alias\030"
-      "\007 \001(\010\";\n\004Rect\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(\005\022\r\n\005w"
-      "idth\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"\311\003\n\tImageInfo"
-      "\022\014\n\004rows\030\002 \001(\003\022\017\n\007columns\030\003 \001(\003\022/\n\013color"
-      "_space\030\004 \001(\0162\032.kingfisher.kcv.ColorSpace"
-      "\022\r\n\005depth\030\005 \001(\003\022\021\n\tdirectory\030\006 \001(\t\022\021\n\tfi"
-      "le_name\030\007 \001(\t\022\021\n\tfile_size\030\010 \001(\003\022\016\n\006form"
-      "at\030\t \001(\t\022\014\n\004gama\030\n \001(\001\022\020\n\010is_valid\030\013 \001(\010"
-      "\022\r\n\005label\030\014 \001(\t\022\022\n\nline_width\030\r \001(\001\022\016\n\006m"
-      "agick\030\016 \001(\014\022\r\n\005matte\030\017 \001(\010\0224\n\013orientatio"
-      "n\030\020 \001(\0162\037.kingfisher.kcv.OrientationType"
-      "\022\017\n\007quality\030\021 \001(\003\022\027\n\017quantize_colors\030\022 \001"
-      "(\003\022\021\n\ttile_name\030\023 \001(\t\022\'\n\004type\030\024 \001(\0162\031.ki"
-      "ngfisher.kcv.ImageType\022\026\n\016magick_warning"
-      "\030\025 \001(\t*\232\001\n\nColorSpace\022\025\n\021UnknownColorSpa"
-      "ce\020\000\022\021\n\rBGRColorSpace\020\001\022\022\n\016BGRAColorSpac"
-      "e\020\002\022\022\n\016GRAYColorSpace\020\003\022\023\n\017GRAYAColorSpa"
-      "ce\020\004\022\021\n\rRGBColorSpace\020\005\022\022\n\016RGBAColorSpac"
-      "e\020\006*A\n\010FlipMode\022\021\n\rFLIP_VERTICAL\020\000\022\023\n\017FL"
-      "IP_HORIZONTAL\020\001\022\r\n\tFLIP_BOTH\020\002*\373\001\n\017Orien"
-      "tationType\022\030\n\024UndefinedOrientation\020\000\022\026\n\022"
-      "TopLeftOrientation\020\001\022\027\n\023TopRightOrientat"
-      "ion\020\002\022\032\n\026BottomRightOrientation\020\003\022\031\n\025Bot"
-      "tomLeftOrientation\020\004\022\026\n\022LeftTopOrientati"
-      "on\020\005\022\027\n\023RightTopOrientation\020\006\022\032\n\026RightBo"
-      "ttomOrientation\020\007\022\031\n\025LeftBottomOrientati"
-      "on\020\010*\343\001\n\tImageType\022\021\n\rUndefinedType\020\000\022\017\n"
-      "\013BilevelType\020\001\022\021\n\rGrayscaleType\020\002\022\026\n\022Gra"
-      "yscaleMatteType\020\003\022\017\n\013PaletteType\020\004\022\024\n\020Pa"
-      "letteMatteType\020\005\022\021\n\rTrueColorType\020\006\022\026\n\022T"
-      "rueColorMatteType\020\007\022\027\n\023ColorSeparationTy"
-      "pe\020\010\022\034\n\030ColorSeparationMatteType\020\tb\006prot"
-      "o3"
+      "\007 \001(\010\"\345\001\n\rFilterOptions\022+\n\tblur_type\030\001 \001"
+      "(\0162\030.kingfisher.kcv.BlurType\022\023\n\013kernel_s"
+      "ize\030\002 \001(\005\022\r\n\005sigma\030\003 \001(\001\022\023\n\013sigma_color\030"
+      "\004 \001(\001\022\023\n\013sigma_space\030\005 \001(\001\022\022\n\nbrightness"
+      "\030\n \001(\001\022\020\n\010contrast\030\013 \001(\001\022\026\n\016sharpen_amou"
+      "nt\030\024 \001(\001\022\033\n\023sharpen_kernel_size\030\025 \001(\005\"1\n"
+      "\020SimilarityResult\022\r\n\005score\030\001 \001(\001\022\016\n\006meth"
+      "od\030\002 \001(\t\"\367\002\n\010ExifInfo\022\023\n\013camera_make\030\001 \001"
+      "(\t\022\024\n\014camera_model\030\002 \001(\t\022\020\n\010datetime\030\003 \001"
+      "(\t\022\025\n\rexposure_time\030\004 \001(\001\022\020\n\010f_number\030\005 "
+      "\001(\001\022\021\n\tiso_speed\030\006 \001(\005\022\024\n\014focal_length\030\007"
+      " \001(\001\022\024\n\014gps_latitude\030\010 \001(\001\022\025\n\rgps_longit"
+      "ude\030\t \001(\001\022\024\n\014gps_altitude\030\n \001(\001\022\023\n\013image"
+      "_width\030\013 \001(\005\022\024\n\014image_height\030\014 \001(\005\0224\n\013or"
+      "ientation\030\r \001(\0162\037.kingfisher.kcv.Orienta"
+      "tionType\022\020\n\010software\030\016 \001(\t\022\023\n\013descriptio"
+      "n\030\017 \001(\t\022\021\n\tcopyright\030\020 \001(\t\";\n\004Rect\022\t\n\001x\030"
+      "\001 \001(\005\022\t\n\001y\030\002 \001(\005\022\r\n\005width\030\003 \001(\005\022\016\n\006heigh"
+      "t\030\004 \001(\005\"\311\003\n\tImageInfo\022\014\n\004rows\030\002 \001(\003\022\017\n\007c"
+      "olumns\030\003 \001(\003\022/\n\013color_space\030\004 \001(\0162\032.king"
+      "fisher.kcv.ColorSpace\022\r\n\005depth\030\005 \001(\003\022\021\n\t"
+      "directory\030\006 \001(\t\022\021\n\tfile_name\030\007 \001(\t\022\021\n\tfi"
+      "le_size\030\010 \001(\003\022\016\n\006format\030\t \001(\t\022\014\n\004gama\030\n "
+      "\001(\001\022\020\n\010is_valid\030\013 \001(\010\022\r\n\005label\030\014 \001(\t\022\022\n\n"
+      "line_width\030\r \001(\001\022\016\n\006magick\030\016 \001(\014\022\r\n\005matt"
+      "e\030\017 \001(\010\0224\n\013orientation\030\020 \001(\0162\037.kingfishe"
+      "r.kcv.OrientationType\022\017\n\007quality\030\021 \001(\003\022\027"
+      "\n\017quantize_colors\030\022 \001(\003\022\021\n\ttile_name\030\023 \001"
+      "(\t\022\'\n\004type\030\024 \001(\0162\031.kingfisher.kcv.ImageT"
+      "ype\022\026\n\016magick_warning\030\025 \001(\t*\232\001\n\nColorSpa"
+      "ce\022\025\n\021UnknownColorSpace\020\000\022\021\n\rBGRColorSpa"
+      "ce\020\001\022\022\n\016BGRAColorSpace\020\002\022\022\n\016GRAYColorSpa"
+      "ce\020\003\022\023\n\017GRAYAColorSpace\020\004\022\021\n\rRGBColorSpa"
+      "ce\020\005\022\022\n\016RGBAColorSpace\020\006*A\n\010FlipMode\022\021\n\r"
+      "FLIP_VERTICAL\020\000\022\023\n\017FLIP_HORIZONTAL\020\001\022\r\n\t"
+      "FLIP_BOTH\020\002*Q\n\010BlurType\022\021\n\rBLUR_GAUSSIAN"
+      "\020\000\022\r\n\tBLUR_MEAN\020\001\022\017\n\013BLUR_MEDIAN\020\002\022\022\n\016BL"
+      "UR_BILATERAL\020\003*F\n\010HashType\022\020\n\014HASH_AVERA"
+      "GE\020\000\022\023\n\017HASH_PERCEPTUAL\020\001\022\023\n\017HASH_DIFFER"
+      "ENCE\020\002*u\n\rCompareMethod\022\027\n\023COMPARE_CORRE"
+      "LATION\020\000\022\026\n\022COMPARE_CHI_SQUARE\020\001\022\030\n\024COMP"
+      "ARE_INTERSECTION\020\002\022\031\n\025COMPARE_BHATTACHAR"
+      "YYA\020\003*\373\001\n\017OrientationType\022\030\n\024UndefinedOr"
+      "ientation\020\000\022\026\n\022TopLeftOrientation\020\001\022\027\n\023T"
+      "opRightOrientation\020\002\022\032\n\026BottomRightOrien"
+      "tation\020\003\022\031\n\025BottomLeftOrientation\020\004\022\026\n\022L"
+      "eftTopOrientation\020\005\022\027\n\023RightTopOrientati"
+      "on\020\006\022\032\n\026RightBottomOrientation\020\007\022\031\n\025Left"
+      "BottomOrientation\020\010*\343\001\n\tImageType\022\021\n\rUnd"
+      "efinedType\020\000\022\017\n\013BilevelType\020\001\022\021\n\rGraysca"
+      "leType\020\002\022\026\n\022GrayscaleMatteType\020\003\022\017\n\013Pale"
+      "tteType\020\004\022\024\n\020PaletteMatteType\020\005\022\021\n\rTrueC"
+      "olorType\020\006\022\026\n\022TrueColorMatteType\020\007\022\027\n\023Co"
+      "lorSeparationType\020\010\022\034\n\030ColorSeparationMa"
+      "tteType\020\tb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1642);
+      descriptor, 2577);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "image.proto", &protobuf_RegisterTypes);
 }
@@ -384,9 +515,56 @@ bool FlipMode_IsValid(int value) {
   }
 }
 
-const ::google::protobuf::EnumDescriptor* OrientationType_descriptor() {
+const ::google::protobuf::EnumDescriptor* BlurType_descriptor() {
   protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
   return protobuf_image_2eproto::file_level_enum_descriptors[2];
+}
+bool BlurType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::google::protobuf::EnumDescriptor* HashType_descriptor() {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_image_2eproto::file_level_enum_descriptors[3];
+}
+bool HashType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::google::protobuf::EnumDescriptor* CompareMethod_descriptor() {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_image_2eproto::file_level_enum_descriptors[4];
+}
+bool CompareMethod_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::google::protobuf::EnumDescriptor* OrientationType_descriptor() {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_image_2eproto::file_level_enum_descriptors[5];
 }
 bool OrientationType_IsValid(int value) {
   switch (value) {
@@ -407,7 +585,7 @@ bool OrientationType_IsValid(int value) {
 
 const ::google::protobuf::EnumDescriptor* ImageType_descriptor() {
   protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_image_2eproto::file_level_enum_descriptors[3];
+  return protobuf_image_2eproto::file_level_enum_descriptors[6];
 }
 bool ImageType_IsValid(int value) {
   switch (value) {
@@ -2011,6 +2189,1683 @@ void AnnotateOptions::InternalSwap(AnnotateOptions* other) {
 
 // ===================================================================
 
+void FilterOptions::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int FilterOptions::kBlurTypeFieldNumber;
+const int FilterOptions::kKernelSizeFieldNumber;
+const int FilterOptions::kSigmaFieldNumber;
+const int FilterOptions::kSigmaColorFieldNumber;
+const int FilterOptions::kSigmaSpaceFieldNumber;
+const int FilterOptions::kBrightnessFieldNumber;
+const int FilterOptions::kContrastFieldNumber;
+const int FilterOptions::kSharpenAmountFieldNumber;
+const int FilterOptions::kSharpenKernelSizeFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+FilterOptions::FilterOptions()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_FilterOptions.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.FilterOptions)
+}
+FilterOptions::FilterOptions(const FilterOptions& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&blur_type_, &from.blur_type_,
+    static_cast<size_t>(reinterpret_cast<char*>(&sharpen_amount_) -
+    reinterpret_cast<char*>(&blur_type_)) + sizeof(sharpen_amount_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.FilterOptions)
+}
+
+void FilterOptions::SharedCtor() {
+  ::memset(&blur_type_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&sharpen_amount_) -
+      reinterpret_cast<char*>(&blur_type_)) + sizeof(sharpen_amount_));
+}
+
+FilterOptions::~FilterOptions() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.FilterOptions)
+  SharedDtor();
+}
+
+void FilterOptions::SharedDtor() {
+}
+
+void FilterOptions::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* FilterOptions::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const FilterOptions& FilterOptions::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_FilterOptions.base);
+  return *internal_default_instance();
+}
+
+
+void FilterOptions::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.FilterOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&blur_type_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&sharpen_amount_) -
+      reinterpret_cast<char*>(&blur_type_)) + sizeof(sharpen_amount_));
+  _internal_metadata_.Clear();
+}
+
+bool FilterOptions::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.FilterOptions)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(16383u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // .kingfisher.kcv.BlurType blur_type = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          set_blur_type(static_cast< ::kingfisher::kcv::BlurType >(value));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 kernel_size = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &kernel_size_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double sigma = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(25u /* 25 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &sigma_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double sigma_color = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(33u /* 33 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &sigma_color_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double sigma_space = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(41u /* 41 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &sigma_space_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double brightness = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(81u /* 81 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &brightness_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double contrast = 11;
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(89u /* 89 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &contrast_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double sharpen_amount = 20;
+      case 20: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(161u /* 161 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &sharpen_amount_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 sharpen_kernel_size = 21;
+      case 21: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(168u /* 168 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &sharpen_kernel_size_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.FilterOptions)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.FilterOptions)
+  return false;
+#undef DO_
+}
+
+void FilterOptions::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.FilterOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .kingfisher.kcv.BlurType blur_type = 1;
+  if (this->blur_type() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->blur_type(), output);
+  }
+
+  // int32 kernel_size = 2;
+  if (this->kernel_size() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->kernel_size(), output);
+  }
+
+  // double sigma = 3;
+  if (this->sigma() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->sigma(), output);
+  }
+
+  // double sigma_color = 4;
+  if (this->sigma_color() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->sigma_color(), output);
+  }
+
+  // double sigma_space = 5;
+  if (this->sigma_space() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->sigma_space(), output);
+  }
+
+  // double brightness = 10;
+  if (this->brightness() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(10, this->brightness(), output);
+  }
+
+  // double contrast = 11;
+  if (this->contrast() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(11, this->contrast(), output);
+  }
+
+  // double sharpen_amount = 20;
+  if (this->sharpen_amount() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(20, this->sharpen_amount(), output);
+  }
+
+  // int32 sharpen_kernel_size = 21;
+  if (this->sharpen_kernel_size() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(21, this->sharpen_kernel_size(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.FilterOptions)
+}
+
+::google::protobuf::uint8* FilterOptions::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.FilterOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .kingfisher.kcv.BlurType blur_type = 1;
+  if (this->blur_type() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->blur_type(), target);
+  }
+
+  // int32 kernel_size = 2;
+  if (this->kernel_size() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->kernel_size(), target);
+  }
+
+  // double sigma = 3;
+  if (this->sigma() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->sigma(), target);
+  }
+
+  // double sigma_color = 4;
+  if (this->sigma_color() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->sigma_color(), target);
+  }
+
+  // double sigma_space = 5;
+  if (this->sigma_space() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->sigma_space(), target);
+  }
+
+  // double brightness = 10;
+  if (this->brightness() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(10, this->brightness(), target);
+  }
+
+  // double contrast = 11;
+  if (this->contrast() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(11, this->contrast(), target);
+  }
+
+  // double sharpen_amount = 20;
+  if (this->sharpen_amount() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(20, this->sharpen_amount(), target);
+  }
+
+  // int32 sharpen_kernel_size = 21;
+  if (this->sharpen_kernel_size() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(21, this->sharpen_kernel_size(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.FilterOptions)
+  return target;
+}
+
+size_t FilterOptions::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.FilterOptions)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // .kingfisher.kcv.BlurType blur_type = 1;
+  if (this->blur_type() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->blur_type());
+  }
+
+  // int32 kernel_size = 2;
+  if (this->kernel_size() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->kernel_size());
+  }
+
+  // double sigma = 3;
+  if (this->sigma() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double sigma_color = 4;
+  if (this->sigma_color() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double sigma_space = 5;
+  if (this->sigma_space() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double brightness = 10;
+  if (this->brightness() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // int32 sharpen_kernel_size = 21;
+  if (this->sharpen_kernel_size() != 0) {
+    total_size += 2 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->sharpen_kernel_size());
+  }
+
+  // double contrast = 11;
+  if (this->contrast() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double sharpen_amount = 20;
+  if (this->sharpen_amount() != 0) {
+    total_size += 2 + 8;
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void FilterOptions::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.FilterOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  const FilterOptions* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const FilterOptions>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.FilterOptions)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.FilterOptions)
+    MergeFrom(*source);
+  }
+}
+
+void FilterOptions::MergeFrom(const FilterOptions& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.FilterOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.blur_type() != 0) {
+    set_blur_type(from.blur_type());
+  }
+  if (from.kernel_size() != 0) {
+    set_kernel_size(from.kernel_size());
+  }
+  if (from.sigma() != 0) {
+    set_sigma(from.sigma());
+  }
+  if (from.sigma_color() != 0) {
+    set_sigma_color(from.sigma_color());
+  }
+  if (from.sigma_space() != 0) {
+    set_sigma_space(from.sigma_space());
+  }
+  if (from.brightness() != 0) {
+    set_brightness(from.brightness());
+  }
+  if (from.sharpen_kernel_size() != 0) {
+    set_sharpen_kernel_size(from.sharpen_kernel_size());
+  }
+  if (from.contrast() != 0) {
+    set_contrast(from.contrast());
+  }
+  if (from.sharpen_amount() != 0) {
+    set_sharpen_amount(from.sharpen_amount());
+  }
+}
+
+void FilterOptions::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.FilterOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void FilterOptions::CopyFrom(const FilterOptions& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.FilterOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool FilterOptions::IsInitialized() const {
+  return true;
+}
+
+void FilterOptions::Swap(FilterOptions* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void FilterOptions::InternalSwap(FilterOptions* other) {
+  using std::swap;
+  swap(blur_type_, other->blur_type_);
+  swap(kernel_size_, other->kernel_size_);
+  swap(sigma_, other->sigma_);
+  swap(sigma_color_, other->sigma_color_);
+  swap(sigma_space_, other->sigma_space_);
+  swap(brightness_, other->brightness_);
+  swap(sharpen_kernel_size_, other->sharpen_kernel_size_);
+  swap(contrast_, other->contrast_);
+  swap(sharpen_amount_, other->sharpen_amount_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata FilterOptions::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void SimilarityResult::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int SimilarityResult::kScoreFieldNumber;
+const int SimilarityResult::kMethodFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+SimilarityResult::SimilarityResult()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_SimilarityResult.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.SimilarityResult)
+}
+SimilarityResult::SimilarityResult(const SimilarityResult& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  method_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.method().size() > 0) {
+    method_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.method_);
+  }
+  score_ = from.score_;
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.SimilarityResult)
+}
+
+void SimilarityResult::SharedCtor() {
+  method_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  score_ = 0;
+}
+
+SimilarityResult::~SimilarityResult() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.SimilarityResult)
+  SharedDtor();
+}
+
+void SimilarityResult::SharedDtor() {
+  method_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void SimilarityResult::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* SimilarityResult::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const SimilarityResult& SimilarityResult::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_SimilarityResult.base);
+  return *internal_default_instance();
+}
+
+
+void SimilarityResult::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.SimilarityResult)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  method_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  score_ = 0;
+  _internal_metadata_.Clear();
+}
+
+bool SimilarityResult::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.SimilarityResult)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // double score = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(9u /* 9 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &score_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string method = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_method()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->method().data(), static_cast<int>(this->method().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.SimilarityResult.method"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.SimilarityResult)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.SimilarityResult)
+  return false;
+#undef DO_
+}
+
+void SimilarityResult::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.SimilarityResult)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // double score = 1;
+  if (this->score() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->score(), output);
+  }
+
+  // string method = 2;
+  if (this->method().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->method().data(), static_cast<int>(this->method().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.SimilarityResult.method");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->method(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.SimilarityResult)
+}
+
+::google::protobuf::uint8* SimilarityResult::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.SimilarityResult)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // double score = 1;
+  if (this->score() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->score(), target);
+  }
+
+  // string method = 2;
+  if (this->method().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->method().data(), static_cast<int>(this->method().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.SimilarityResult.method");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->method(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.SimilarityResult)
+  return target;
+}
+
+size_t SimilarityResult::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.SimilarityResult)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string method = 2;
+  if (this->method().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->method());
+  }
+
+  // double score = 1;
+  if (this->score() != 0) {
+    total_size += 1 + 8;
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void SimilarityResult::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.SimilarityResult)
+  GOOGLE_DCHECK_NE(&from, this);
+  const SimilarityResult* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const SimilarityResult>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.SimilarityResult)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.SimilarityResult)
+    MergeFrom(*source);
+  }
+}
+
+void SimilarityResult::MergeFrom(const SimilarityResult& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.SimilarityResult)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.method().size() > 0) {
+
+    method_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.method_);
+  }
+  if (from.score() != 0) {
+    set_score(from.score());
+  }
+}
+
+void SimilarityResult::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.SimilarityResult)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SimilarityResult::CopyFrom(const SimilarityResult& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.SimilarityResult)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SimilarityResult::IsInitialized() const {
+  return true;
+}
+
+void SimilarityResult::Swap(SimilarityResult* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void SimilarityResult::InternalSwap(SimilarityResult* other) {
+  using std::swap;
+  method_.Swap(&other->method_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(score_, other->score_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata SimilarityResult::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void ExifInfo::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int ExifInfo::kCameraMakeFieldNumber;
+const int ExifInfo::kCameraModelFieldNumber;
+const int ExifInfo::kDatetimeFieldNumber;
+const int ExifInfo::kExposureTimeFieldNumber;
+const int ExifInfo::kFNumberFieldNumber;
+const int ExifInfo::kIsoSpeedFieldNumber;
+const int ExifInfo::kFocalLengthFieldNumber;
+const int ExifInfo::kGpsLatitudeFieldNumber;
+const int ExifInfo::kGpsLongitudeFieldNumber;
+const int ExifInfo::kGpsAltitudeFieldNumber;
+const int ExifInfo::kImageWidthFieldNumber;
+const int ExifInfo::kImageHeightFieldNumber;
+const int ExifInfo::kOrientationFieldNumber;
+const int ExifInfo::kSoftwareFieldNumber;
+const int ExifInfo::kDescriptionFieldNumber;
+const int ExifInfo::kCopyrightFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+ExifInfo::ExifInfo()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_ExifInfo.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.ExifInfo)
+}
+ExifInfo::ExifInfo(const ExifInfo& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  camera_make_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.camera_make().size() > 0) {
+    camera_make_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.camera_make_);
+  }
+  camera_model_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.camera_model().size() > 0) {
+    camera_model_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.camera_model_);
+  }
+  datetime_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.datetime().size() > 0) {
+    datetime_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.datetime_);
+  }
+  software_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.software().size() > 0) {
+    software_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.software_);
+  }
+  description_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.description().size() > 0) {
+    description_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.description_);
+  }
+  copyright_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.copyright().size() > 0) {
+    copyright_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.copyright_);
+  }
+  ::memcpy(&exposure_time_, &from.exposure_time_,
+    static_cast<size_t>(reinterpret_cast<char*>(&orientation_) -
+    reinterpret_cast<char*>(&exposure_time_)) + sizeof(orientation_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.ExifInfo)
+}
+
+void ExifInfo::SharedCtor() {
+  camera_make_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  camera_model_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  datetime_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  software_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  description_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  copyright_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&exposure_time_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&orientation_) -
+      reinterpret_cast<char*>(&exposure_time_)) + sizeof(orientation_));
+}
+
+ExifInfo::~ExifInfo() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.ExifInfo)
+  SharedDtor();
+}
+
+void ExifInfo::SharedDtor() {
+  camera_make_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  camera_model_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  datetime_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  software_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  description_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  copyright_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void ExifInfo::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* ExifInfo::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const ExifInfo& ExifInfo::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_ExifInfo.base);
+  return *internal_default_instance();
+}
+
+
+void ExifInfo::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.ExifInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  camera_make_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  camera_model_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  datetime_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  software_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  description_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  copyright_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&exposure_time_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&orientation_) -
+      reinterpret_cast<char*>(&exposure_time_)) + sizeof(orientation_));
+  _internal_metadata_.Clear();
+}
+
+bool ExifInfo::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.ExifInfo)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(16383u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // string camera_make = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_camera_make()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->camera_make().data(), static_cast<int>(this->camera_make().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.camera_make"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string camera_model = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_camera_model()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->camera_model().data(), static_cast<int>(this->camera_model().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.camera_model"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string datetime = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_datetime()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->datetime().data(), static_cast<int>(this->datetime().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.datetime"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double exposure_time = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(33u /* 33 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &exposure_time_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double f_number = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(41u /* 41 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &f_number_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 iso_speed = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u /* 48 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &iso_speed_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double focal_length = 7;
+      case 7: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(57u /* 57 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &focal_length_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double gps_latitude = 8;
+      case 8: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(65u /* 65 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &gps_latitude_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double gps_longitude = 9;
+      case 9: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(73u /* 73 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &gps_longitude_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double gps_altitude = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(81u /* 81 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &gps_altitude_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 image_width = 11;
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(88u /* 88 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &image_width_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 image_height = 12;
+      case 12: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(96u /* 96 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &image_height_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // .kingfisher.kcv.OrientationType orientation = 13;
+      case 13: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(104u /* 104 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          set_orientation(static_cast< ::kingfisher::kcv::OrientationType >(value));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string software = 14;
+      case 14: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(114u /* 114 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_software()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->software().data(), static_cast<int>(this->software().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.software"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string description = 15;
+      case 15: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(122u /* 122 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_description()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->description().data(), static_cast<int>(this->description().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.description"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string copyright = 16;
+      case 16: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(130u /* 130 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_copyright()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->copyright().data(), static_cast<int>(this->copyright().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.ExifInfo.copyright"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.ExifInfo)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.ExifInfo)
+  return false;
+#undef DO_
+}
+
+void ExifInfo::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.ExifInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string camera_make = 1;
+  if (this->camera_make().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->camera_make().data(), static_cast<int>(this->camera_make().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.camera_make");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->camera_make(), output);
+  }
+
+  // string camera_model = 2;
+  if (this->camera_model().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->camera_model().data(), static_cast<int>(this->camera_model().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.camera_model");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->camera_model(), output);
+  }
+
+  // string datetime = 3;
+  if (this->datetime().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->datetime().data(), static_cast<int>(this->datetime().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.datetime");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->datetime(), output);
+  }
+
+  // double exposure_time = 4;
+  if (this->exposure_time() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->exposure_time(), output);
+  }
+
+  // double f_number = 5;
+  if (this->f_number() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->f_number(), output);
+  }
+
+  // int32 iso_speed = 6;
+  if (this->iso_speed() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(6, this->iso_speed(), output);
+  }
+
+  // double focal_length = 7;
+  if (this->focal_length() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->focal_length(), output);
+  }
+
+  // double gps_latitude = 8;
+  if (this->gps_latitude() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(8, this->gps_latitude(), output);
+  }
+
+  // double gps_longitude = 9;
+  if (this->gps_longitude() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(9, this->gps_longitude(), output);
+  }
+
+  // double gps_altitude = 10;
+  if (this->gps_altitude() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(10, this->gps_altitude(), output);
+  }
+
+  // int32 image_width = 11;
+  if (this->image_width() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(11, this->image_width(), output);
+  }
+
+  // int32 image_height = 12;
+  if (this->image_height() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(12, this->image_height(), output);
+  }
+
+  // .kingfisher.kcv.OrientationType orientation = 13;
+  if (this->orientation() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      13, this->orientation(), output);
+  }
+
+  // string software = 14;
+  if (this->software().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->software().data(), static_cast<int>(this->software().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.software");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      14, this->software(), output);
+  }
+
+  // string description = 15;
+  if (this->description().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->description().data(), static_cast<int>(this->description().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.description");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      15, this->description(), output);
+  }
+
+  // string copyright = 16;
+  if (this->copyright().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->copyright().data(), static_cast<int>(this->copyright().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.copyright");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      16, this->copyright(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.ExifInfo)
+}
+
+::google::protobuf::uint8* ExifInfo::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.ExifInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string camera_make = 1;
+  if (this->camera_make().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->camera_make().data(), static_cast<int>(this->camera_make().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.camera_make");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->camera_make(), target);
+  }
+
+  // string camera_model = 2;
+  if (this->camera_model().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->camera_model().data(), static_cast<int>(this->camera_model().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.camera_model");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->camera_model(), target);
+  }
+
+  // string datetime = 3;
+  if (this->datetime().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->datetime().data(), static_cast<int>(this->datetime().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.datetime");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->datetime(), target);
+  }
+
+  // double exposure_time = 4;
+  if (this->exposure_time() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->exposure_time(), target);
+  }
+
+  // double f_number = 5;
+  if (this->f_number() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->f_number(), target);
+  }
+
+  // int32 iso_speed = 6;
+  if (this->iso_speed() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(6, this->iso_speed(), target);
+  }
+
+  // double focal_length = 7;
+  if (this->focal_length() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->focal_length(), target);
+  }
+
+  // double gps_latitude = 8;
+  if (this->gps_latitude() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(8, this->gps_latitude(), target);
+  }
+
+  // double gps_longitude = 9;
+  if (this->gps_longitude() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(9, this->gps_longitude(), target);
+  }
+
+  // double gps_altitude = 10;
+  if (this->gps_altitude() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(10, this->gps_altitude(), target);
+  }
+
+  // int32 image_width = 11;
+  if (this->image_width() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(11, this->image_width(), target);
+  }
+
+  // int32 image_height = 12;
+  if (this->image_height() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(12, this->image_height(), target);
+  }
+
+  // .kingfisher.kcv.OrientationType orientation = 13;
+  if (this->orientation() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      13, this->orientation(), target);
+  }
+
+  // string software = 14;
+  if (this->software().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->software().data(), static_cast<int>(this->software().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.software");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        14, this->software(), target);
+  }
+
+  // string description = 15;
+  if (this->description().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->description().data(), static_cast<int>(this->description().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.description");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        15, this->description(), target);
+  }
+
+  // string copyright = 16;
+  if (this->copyright().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->copyright().data(), static_cast<int>(this->copyright().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.ExifInfo.copyright");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        16, this->copyright(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.ExifInfo)
+  return target;
+}
+
+size_t ExifInfo::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.ExifInfo)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string camera_make = 1;
+  if (this->camera_make().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->camera_make());
+  }
+
+  // string camera_model = 2;
+  if (this->camera_model().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->camera_model());
+  }
+
+  // string datetime = 3;
+  if (this->datetime().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->datetime());
+  }
+
+  // string software = 14;
+  if (this->software().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->software());
+  }
+
+  // string description = 15;
+  if (this->description().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->description());
+  }
+
+  // string copyright = 16;
+  if (this->copyright().size() > 0) {
+    total_size += 2 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->copyright());
+  }
+
+  // double exposure_time = 4;
+  if (this->exposure_time() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double f_number = 5;
+  if (this->f_number() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double focal_length = 7;
+  if (this->focal_length() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double gps_latitude = 8;
+  if (this->gps_latitude() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // int32 iso_speed = 6;
+  if (this->iso_speed() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->iso_speed());
+  }
+
+  // int32 image_width = 11;
+  if (this->image_width() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->image_width());
+  }
+
+  // double gps_longitude = 9;
+  if (this->gps_longitude() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // double gps_altitude = 10;
+  if (this->gps_altitude() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // int32 image_height = 12;
+  if (this->image_height() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->image_height());
+  }
+
+  // .kingfisher.kcv.OrientationType orientation = 13;
+  if (this->orientation() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->orientation());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void ExifInfo::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.ExifInfo)
+  GOOGLE_DCHECK_NE(&from, this);
+  const ExifInfo* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const ExifInfo>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.ExifInfo)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.ExifInfo)
+    MergeFrom(*source);
+  }
+}
+
+void ExifInfo::MergeFrom(const ExifInfo& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.ExifInfo)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.camera_make().size() > 0) {
+
+    camera_make_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.camera_make_);
+  }
+  if (from.camera_model().size() > 0) {
+
+    camera_model_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.camera_model_);
+  }
+  if (from.datetime().size() > 0) {
+
+    datetime_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.datetime_);
+  }
+  if (from.software().size() > 0) {
+
+    software_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.software_);
+  }
+  if (from.description().size() > 0) {
+
+    description_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.description_);
+  }
+  if (from.copyright().size() > 0) {
+
+    copyright_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.copyright_);
+  }
+  if (from.exposure_time() != 0) {
+    set_exposure_time(from.exposure_time());
+  }
+  if (from.f_number() != 0) {
+    set_f_number(from.f_number());
+  }
+  if (from.focal_length() != 0) {
+    set_focal_length(from.focal_length());
+  }
+  if (from.gps_latitude() != 0) {
+    set_gps_latitude(from.gps_latitude());
+  }
+  if (from.iso_speed() != 0) {
+    set_iso_speed(from.iso_speed());
+  }
+  if (from.image_width() != 0) {
+    set_image_width(from.image_width());
+  }
+  if (from.gps_longitude() != 0) {
+    set_gps_longitude(from.gps_longitude());
+  }
+  if (from.gps_altitude() != 0) {
+    set_gps_altitude(from.gps_altitude());
+  }
+  if (from.image_height() != 0) {
+    set_image_height(from.image_height());
+  }
+  if (from.orientation() != 0) {
+    set_orientation(from.orientation());
+  }
+}
+
+void ExifInfo::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.ExifInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ExifInfo::CopyFrom(const ExifInfo& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.ExifInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ExifInfo::IsInitialized() const {
+  return true;
+}
+
+void ExifInfo::Swap(ExifInfo* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void ExifInfo::InternalSwap(ExifInfo* other) {
+  using std::swap;
+  camera_make_.Swap(&other->camera_make_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  camera_model_.Swap(&other->camera_model_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  datetime_.Swap(&other->datetime_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  software_.Swap(&other->software_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  description_.Swap(&other->description_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  copyright_.Swap(&other->copyright_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(exposure_time_, other->exposure_time_);
+  swap(f_number_, other->f_number_);
+  swap(focal_length_, other->focal_length_);
+  swap(gps_latitude_, other->gps_latitude_);
+  swap(iso_speed_, other->iso_speed_);
+  swap(image_width_, other->image_width_);
+  swap(gps_longitude_, other->gps_longitude_);
+  swap(gps_altitude_, other->gps_altitude_);
+  swap(image_height_, other->image_height_);
+  swap(orientation_, other->orientation_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata ExifInfo::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
 void Rect::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -3418,6 +5273,15 @@ template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::Size* Arena::Cr
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::AnnotateOptions* Arena::CreateMaybeMessage< ::kingfisher::kcv::AnnotateOptions >(Arena* arena) {
   return Arena::CreateInternal< ::kingfisher::kcv::AnnotateOptions >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::FilterOptions* Arena::CreateMaybeMessage< ::kingfisher::kcv::FilterOptions >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::FilterOptions >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::SimilarityResult* Arena::CreateMaybeMessage< ::kingfisher::kcv::SimilarityResult >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::SimilarityResult >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::ExifInfo* Arena::CreateMaybeMessage< ::kingfisher::kcv::ExifInfo >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::ExifInfo >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::Rect* Arena::CreateMaybeMessage< ::kingfisher::kcv::Rect >(Arena* arena) {
   return Arena::CreateInternal< ::kingfisher::kcv::Rect >(arena);
