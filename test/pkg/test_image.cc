@@ -805,4 +805,335 @@ TEST_F(test_Image, RotateImage_180) {
   EXPECT_EQ(output.rows, input.rows);
 }
 
+// ==================== ImagePipeline 链式调用测试 ====================
+
+TEST_F(test_Image, Pipeline_BasicChain) {
+  // 基础链式调用：创建 → 缩放 → 旋转 → 高斯模糊
+  cv::Mat input = cv::Mat::ones(400, 600, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.resize(200, 300)
+          .rotate(90)
+          .gaussianBlur(5, 1.0);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_FALSE(pipeline.empty());
+  // 旋转90度后宽高交换
+  EXPECT_EQ(pipeline.width(), 300);
+  EXPECT_EQ(pipeline.height(), 200);
+}
+
+TEST_F(test_Image, Pipeline_DecodeAndProcess) {
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  if (!stream.is_open()) {
+    GTEST_SKIP() << "Test image not found";
+  }
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+
+  kingfisher::kcv::ImagePipeline pipeline;
+  pipeline.decode(content, opts)
+          .resize(300, 300, true)
+          .sharpen(1.5);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_FALSE(pipeline.empty());
+  EXPECT_GT(pipeline.width(), 0);
+  EXPECT_GT(pipeline.height(), 0);
+}
+
+TEST_F(test_Image, Pipeline_DecodeFile) {
+  std::string imageFile = "./testdata/1.jpg";
+
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+
+  kingfisher::kcv::ImagePipeline pipeline;
+  pipeline.decodeFile(imageFile, opts);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_FALSE(pipeline.empty());
+}
+
+TEST_F(test_Image, Pipeline_EncodeOutput) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.resize(50, 50);
+
+  std::string jpegData = pipeline.encode(".jpg", 90);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_GT(jpegData.size(), 0u);
+
+  std::string pngData = pipeline.encode(".png", 3);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_GT(pngData.size(), 0u);
+}
+
+TEST_F(test_Image, Pipeline_WriteToFile) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.resize(50, 50);
+
+  int ret = pipeline.writeTo("/tmp/pipeline_test.jpg");
+  EXPECT_EQ(ret, 0);
+}
+
+TEST_F(test_Image, Pipeline_FilterChain) {
+  cv::Mat input = cv::Mat::ones(200, 200, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.gaussianBlur(5, 1.0)
+          .sharpen(1.5)
+          .adjustBrightnessContrast(20, 1.3);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.width(), 200);
+  EXPECT_EQ(pipeline.height(), 200);
+}
+
+TEST_F(test_Image, Pipeline_ColorAndGrayscale) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.grayscale();
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.channels(), 1);
+}
+
+TEST_F(test_Image, Pipeline_CropAndFlip) {
+  cv::Mat input = cv::Mat::ones(200, 300, CV_8UC3) * 128;
+
+  kingfisher::kcv::Rect rect;
+  rect.set_x(10);
+  rect.set_y(10);
+  rect.set_width(100);
+  rect.set_height(100);
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.crop(rect)
+          .flip(kingfisher::kcv::FLIP_HORIZONTAL);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.width(), 100);
+  EXPECT_EQ(pipeline.height(), 100);
+}
+
+TEST_F(test_Image, Pipeline_CenterCropAndThumbnail) {
+  cv::Mat input = cv::Mat::ones(800, 1200, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.centerCrop(600, 600)
+          .thumbnail(200);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_LE(pipeline.width(), 200);
+  EXPECT_LE(pipeline.height(), 200);
+}
+
+TEST_F(test_Image, Pipeline_OverlayAndAnnotate) {
+  cv::Mat input = cv::Mat::zeros(200, 400, CV_8UC3);
+  cv::Mat logo = cv::Mat::ones(30, 30, CV_8UC3) * 255;
+
+  kingfisher::kcv::AnnotateOptions annoOpts;
+  annoOpts.set_font_size(1.0);
+  annoOpts.set_color_r(255);
+  annoOpts.set_color_g(255);
+  annoOpts.set_color_b(255);
+  annoOpts.set_thickness(2);
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.overlay(logo, 10, 10, 0.8)
+          .annotate("Hello Pipeline", cv::Point(50, 100), annoOpts);
+
+  EXPECT_TRUE(pipeline.ok());
+}
+
+TEST_F(test_Image, Pipeline_ErrorPropagation) {
+  // 错误传播测试：第一步失败后，后续操作全部跳过
+  kingfisher::kcv::ImagePipeline pipeline;  // 空管道
+
+  // 空管道解码空数据——失败
+  pipeline.decode("", kingfisher::kcv::DecodeOptions());
+
+  EXPECT_FALSE(pipeline.ok());
+  EXPECT_NE(pipeline.error_code(), 0);
+  EXPECT_FALSE(pipeline.error_message().empty());
+
+  // 后续操作应该被短路跳过
+  pipeline.resize(100, 100)
+          .rotate(45)
+          .gaussianBlur(5);
+
+  // 仍然是同一个错误
+  EXPECT_FALSE(pipeline.ok());
+}
+
+TEST_F(test_Image, Pipeline_ResetAfterError) {
+  kingfisher::kcv::ImagePipeline pipeline;
+
+  // 触发一个错误
+  pipeline.decode("invalid data");
+  EXPECT_FALSE(pipeline.ok());
+
+  // 重置后可以重新使用
+  pipeline.reset();
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_TRUE(pipeline.empty());
+
+  // 重新加载有效图像
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+  pipeline.load(input).resize(50, 50);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.width(), 50);
+  EXPECT_EQ(pipeline.height(), 50);
+}
+
+TEST_F(test_Image, Pipeline_Clone) {
+  cv::Mat input = cv::Mat::ones(200, 200, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.resize(100, 100);
+
+  // 克隆管道
+  kingfisher::kcv::ImagePipeline cloned = pipeline.clone();
+
+  EXPECT_TRUE(cloned.ok());
+  EXPECT_EQ(cloned.width(), 100);
+  EXPECT_EQ(cloned.height(), 100);
+
+  // 修改原管道不影响克隆
+  pipeline.rotate(90);
+  EXPECT_EQ(cloned.width(), 100);  // 克隆的宽高不变
+}
+
+TEST_F(test_Image, Pipeline_CopyAndMove) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  // 测试拷贝构造
+  kingfisher::kcv::ImagePipeline p1(input);
+  kingfisher::kcv::ImagePipeline p2(p1);
+  EXPECT_EQ(p2.width(), 100);
+
+  // 修改原管道不影响拷贝
+  p1.resize(50, 50);
+  EXPECT_EQ(p2.width(), 100);
+
+  // 测试移动构造
+  kingfisher::kcv::ImagePipeline p3(std::move(p1));
+  EXPECT_EQ(p3.width(), 50);
+}
+
+TEST_F(test_Image, Pipeline_BilateralAndMedianBlur) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.medianBlur(5)
+          .bilateralFilter(9, 75, 75);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.width(), 100);
+  EXPECT_EQ(pipeline.height(), 100);
+}
+
+TEST_F(test_Image, Pipeline_MeanBlur) {
+  cv::Mat input = cv::Mat::ones(100, 100, CV_8UC3) * 128;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.meanBlur(7);
+
+  EXPECT_TRUE(pipeline.ok());
+}
+
+TEST_F(test_Image, Pipeline_ConvertColorSpace) {
+  cv::Mat input(100, 100, CV_8UC3, cv::Scalar(10, 20, 30));
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.convertColorSpace(kingfisher::kcv::BGRColorSpace,
+                              kingfisher::kcv::RGBColorSpace);
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_EQ(pipeline.channels(), 3);
+}
+
+TEST_F(test_Image, Pipeline_ComplexWorkflow) {
+  // 完整的复杂工作流测试
+  cv::Mat input = cv::Mat::ones(600, 800, CV_8UC3) * 100;
+  cv::Mat logo = cv::Mat::ones(20, 20, CV_8UC3) * 255;
+
+  kingfisher::kcv::AnnotateOptions annoOpts;
+  annoOpts.set_font_size(0.8);
+  annoOpts.set_color_r(0);
+  annoOpts.set_color_g(255);
+  annoOpts.set_color_b(0);
+  annoOpts.set_thickness(1);
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.resize(400, 300)                        // 1. 缩放
+          .rotate(15)                               // 2. 旋转
+          .gaussianBlur(3, 0.5)                     // 3. 轻微模糊
+          .sharpen(0.5)                             // 4. 轻微锐化
+          .adjustBrightnessContrast(10, 1.1)        // 5. 亮度对比度
+          .overlay(logo, 5, 5, 0.7)                 // 6. 叠加水印
+          .annotate("Processed", cv::Point(20, 30), annoOpts);  // 7. 标注
+
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_FALSE(pipeline.empty());
+
+  // 编码输出
+  std::string jpegOutput = pipeline.encode(".jpg", 85);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_GT(jpegOutput.size(), 0u);
+}
+
+TEST_F(test_Image, Pipeline_ConstructFromString) {
+  std::string imageFile = "./testdata/1.jpg";
+  std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  if (!stream.is_open()) {
+    GTEST_SKIP() << "Test image not found";
+  }
+  std::string content{std::istreambuf_iterator<char>(stream), {}};
+
+  kingfisher::kcv::DecodeOptions opts;
+  opts.set_targetcolorspace(kingfisher::kcv::BGRColorSpace);
+  opts.set_auto_orient(true);
+
+  // 直接从字符串构造
+  kingfisher::kcv::ImagePipeline pipeline(content, opts);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_FALSE(pipeline.empty());
+
+  // 继续链式操作
+  pipeline.thumbnail(200)
+          .sharpen(1.0);
+  EXPECT_TRUE(pipeline.ok());
+  EXPECT_LE(std::max(pipeline.width(), pipeline.height()), 200);
+}
+
+TEST_F(test_Image, Pipeline_LoadEmpty) {
+  kingfisher::kcv::ImagePipeline pipeline;
+  cv::Mat emptyMat;
+  pipeline.load(emptyMat);
+
+  EXPECT_FALSE(pipeline.ok());
+  EXPECT_TRUE(pipeline.empty());
+}
+
+TEST_F(test_Image, Pipeline_Watermark) {
+  cv::Mat input = cv::Mat::zeros(200, 200, CV_8UC3);
+  cv::Mat logo = cv::Mat::ones(50, 50, CV_8UC3) * 200;
+
+  kingfisher::kcv::ImagePipeline pipeline(input);
+  pipeline.watermark(logo, cv::Rect(10, 10, 80, 80), cv::INTER_LINEAR, 0.5);
+
+  EXPECT_TRUE(pipeline.ok());
+}
+
 #endif
