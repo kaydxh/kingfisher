@@ -20,7 +20,7 @@ int Image::GaussianBlur(const cv::Mat &input, cv::Mat &output,
                         int kernelSize, double sigma) {
   if (input.empty()) {
     LOG(ERROR) << "GaussianBlur: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (kernelSize <= 0) kernelSize = 5;
   if (kernelSize % 2 == 0) kernelSize += 1;
@@ -30,7 +30,7 @@ int Image::GaussianBlur(const cv::Mat &input, cv::Mat &output,
   });
   if (ret != 0) {
     LOG(ERROR) << "GaussianBlur: cv::GaussianBlur failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "GaussianBlur: kernel=" << kernelSize << ", sigma=" << sigma;
@@ -42,7 +42,7 @@ int Image::GaussianBlur(const cv::Mat &input, cv::Mat &output,
 int Image::MeanBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
   if (input.empty()) {
     LOG(ERROR) << "MeanBlur: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (kernelSize <= 0) kernelSize = 5;
   if (kernelSize % 2 == 0) kernelSize += 1;
@@ -52,7 +52,7 @@ int Image::MeanBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
   });
   if (ret != 0) {
     LOG(ERROR) << "MeanBlur: cv::blur failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "MeanBlur: kernel=" << kernelSize;
@@ -64,7 +64,7 @@ int Image::MeanBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
 int Image::MedianBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
   if (input.empty()) {
     LOG(ERROR) << "MedianBlur: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (kernelSize <= 0) kernelSize = 5;
   if (kernelSize % 2 == 0) kernelSize += 1;
@@ -74,7 +74,7 @@ int Image::MedianBlur(const cv::Mat &input, cv::Mat &output, int kernelSize) {
   });
   if (ret != 0) {
     LOG(ERROR) << "MedianBlur: cv::medianBlur failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "MedianBlur: kernel=" << kernelSize;
@@ -87,7 +87,7 @@ int Image::BilateralFilter(const cv::Mat &input, cv::Mat &output,
                            int d, double sigmaColor, double sigmaSpace) {
   if (input.empty()) {
     LOG(ERROR) << "BilateralFilter: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   auto ret = WrapOpencvFuncT([&]() {
@@ -95,7 +95,7 @@ int Image::BilateralFilter(const cv::Mat &input, cv::Mat &output,
   });
   if (ret != 0) {
     LOG(ERROR) << "BilateralFilter: cv::bilateralFilter failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "BilateralFilter: d=" << d
@@ -123,7 +123,7 @@ int Image::BlurImage(const cv::Mat &input, const FilterOptions &opts,
                              opts.sigma_space() > 0 ? opts.sigma_space() : 75);
     default:
       LOG(ERROR) << "BlurImage: unsupported blur type: " << opts.blur_type();
-      return -1;
+      return kImageInvalidParam;
   }
 }
 
@@ -133,7 +133,7 @@ int Image::Sharpen(const cv::Mat &input, cv::Mat &output,
                    double amount, int kernelSize) {
   if (input.empty()) {
     LOG(ERROR) << "Sharpen: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (kernelSize <= 0) kernelSize = 3;
   if (kernelSize % 2 == 0) kernelSize += 1;
@@ -145,7 +145,7 @@ int Image::Sharpen(const cv::Mat &input, cv::Mat &output,
   });
   if (ret != 0) {
     LOG(ERROR) << "Sharpen: USM sharpen failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "Sharpen: amount=" << amount << ", kernelSize=" << kernelSize;
@@ -158,7 +158,7 @@ int Image::AdjustBrightnessContrast(const cv::Mat &input, cv::Mat &output,
                                     double brightness, double contrast) {
   if (input.empty()) {
     LOG(ERROR) << "AdjustBrightnessContrast: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   auto ret = WrapOpencvFuncT([&]() {
@@ -166,7 +166,7 @@ int Image::AdjustBrightnessContrast(const cv::Mat &input, cv::Mat &output,
   });
   if (ret != 0) {
     LOG(ERROR) << "AdjustBrightnessContrast: convertTo failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "AdjustBrightnessContrast: brightness=" << brightness
@@ -179,7 +179,7 @@ int Image::AdjustBrightnessContrast(const cv::Mat &input, cv::Mat &output,
 int Image::Grayscale(const cv::Mat &input, cv::Mat &output) {
   if (input.empty()) {
     LOG(ERROR) << "Grayscale: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   if (input.channels() == 1) {
@@ -196,7 +196,7 @@ int Image::Grayscale(const cv::Mat &input, cv::Mat &output) {
   });
   if (ret != 0) {
     LOG(ERROR) << "Grayscale: cv::cvtColor failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "Grayscale: converted " << input.channels()

@@ -42,7 +42,7 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
   }
 
   if (!imageOutput.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
 
   return 0;
@@ -54,7 +54,7 @@ int Image::ComputeImageHash(const cv::Mat &input, HashType hashType,
                             uint64_t &hashValue) {
   if (input.empty()) {
     LOG(ERROR) << "ComputeImageHash: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   cv::Mat gray;
@@ -118,7 +118,7 @@ int Image::ComputeImageHash(const cv::Mat &input, HashType hashType,
     }
     default:
       LOG(ERROR) << "ComputeImageHash: unsupported hash type: " << hashType;
-      return -1;
+      return kImageInvalidParam;
   }
 
   LOG(INFO) << "ComputeImageHash: computed hash type=" << hashType
@@ -143,11 +143,11 @@ int Image::HammingDistance(uint64_t hash1, uint64_t hash2) {
 double Image::ComputeSSIM(const cv::Mat &img1, const cv::Mat &img2) {
   if (img1.empty() || img2.empty()) {
     LOG(ERROR) << "ComputeSSIM: input image is empty";
-    return -1.0;
+    return static_cast<double>(kImageEmptyInput);
   }
   if (img1.size() != img2.size() || img1.type() != img2.type()) {
     LOG(ERROR) << "ComputeSSIM: images must have same size and type";
-    return -1.0;
+    return static_cast<double>(kImageSizeMismatch);
   }
 
   cv::Mat gray1, gray2;
@@ -201,7 +201,7 @@ double Image::CompareHistogram(const cv::Mat &img1, const cv::Mat &img2,
                                CompareMethod method) {
   if (img1.empty() || img2.empty()) {
     LOG(ERROR) << "CompareHistogram: input image is empty";
-    return -1.0;
+    return static_cast<double>(kImageEmptyInput);
   }
 
   cv::Mat hsv1, hsv2;
@@ -290,7 +290,7 @@ double Image::CompareHistogram(const cv::Mat &img1, const cv::Mat &img2,
 int Image::ReadExifInfo(const std::string &imageData, ExifInfo &exifInfo) {
   if (imageData.empty()) {
     LOG(ERROR) << "ReadExifInfo: input data is empty";
-    return -1;
+    return kImageInvalidData;
   }
 
   Magick::Image image;
@@ -412,7 +412,7 @@ int Image::BatchDecodeImages(
     std::vector<cv::Mat> &matOutputs) {
   if (imageDatas.empty()) {
     LOG(ERROR) << "BatchDecodeImages: input list is empty";
-    return -1;
+    return kImageInvalidParam;
   }
 
   matOutputs.resize(imageDatas.size());
@@ -429,7 +429,7 @@ int Image::BatchDecodeImages(
 
   LOG(INFO) << "BatchDecodeImages: decoded " << successCount
             << "/" << imageDatas.size() << " images";
-  return successCount > 0 ? successCount : -1;
+  return successCount > 0 ? successCount : kImageDecodeError;
 }
 
 // ==================== BatchResizeImages ====================
@@ -439,12 +439,12 @@ int Image::BatchResizeImages(
     bool keepRatio, std::vector<cv::Mat> &outputs) {
   if (inputs.empty()) {
     LOG(ERROR) << "BatchResizeImages: input list is empty";
-    return -1;
+    return kImageInvalidParam;
   }
   if (width <= 0 || height <= 0) {
     LOG(ERROR) << "BatchResizeImages: invalid target size: "
                << width << "x" << height;
-    return -1;
+    return kImageInvalidParam;
   }
 
   outputs.resize(inputs.size());
@@ -461,7 +461,7 @@ int Image::BatchResizeImages(
 
   LOG(INFO) << "BatchResizeImages: resized " << successCount
             << "/" << inputs.size() << " images to " << width << "x" << height;
-  return successCount > 0 ? successCount : -1;
+  return successCount > 0 ? successCount : kImageUnsupportedOperation;
 }
 
 }  // namespace kcv

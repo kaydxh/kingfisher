@@ -35,7 +35,7 @@ namespace kcv {
 static int ImageToMat(Magick::Image &image, ColorSpace targetColorSpace,
                       ::cv::Mat &matOutput) {
   if (!image.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
   int w = image.columns();
   int h = image.rows();
@@ -90,7 +90,7 @@ static int imageRead(const std::string &imageData, Magick::Image &imageOutput) {
   }
 
   if (!imageOutput.isValid()) {
-    return -1;
+    return kImageInvalidData;
   }
 
   return 0;
@@ -180,7 +180,7 @@ int Image::RotateImage(const ::cv::Mat &matInput, double angle,
 int Image::ResizeImage(const std::string &imageData, int width, int height,
                        bool keepRatio, ::cv::Mat &matOutput) {
   if (width <= 0 || height <= 0) {
-    return -1;
+    return kImageInvalidParam;
   }
 
   Magick::Image image;
@@ -210,12 +210,12 @@ int Image::ResizeImage(const cv::Mat &matInput, int width, int height,
                        bool keepRatio, cv::Mat &matOutput) {
   if (matInput.empty()) {
     LOG(ERROR) << "ResizeImage(Mat): input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (width <= 0 || height <= 0) {
     LOG(ERROR) << "ResizeImage(Mat): invalid target size: "
                << width << "x" << height;
-    return -1;
+    return kImageInvalidParam;
   }
 
   int w0 = matInput.cols;
@@ -234,7 +234,7 @@ int Image::ResizeImage(const cv::Mat &matInput, int width, int height,
   });
   if (ret != 0) {
     LOG(ERROR) << "ResizeImage(Mat): cv::resize failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "ResizeImage(Mat): resized from " << w0 << "x" << h0
@@ -266,7 +266,7 @@ int Image::CropImage(const cv::Mat &matInput, const Rect &rect,
                      cv::Mat &matOutput) {
   if (matInput.empty()) {
     LOG(ERROR) << "CropImage(Mat): input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   auto rect0 = cv::Rect(0, 0, matInput.cols, matInput.rows);
@@ -275,7 +275,7 @@ int Image::CropImage(const cv::Mat &matInput, const Rect &rect,
 
   if (cropRect.width <= 0 || cropRect.height <= 0) {
     LOG(ERROR) << "CropImage(Mat): invalid crop region, intersection is empty";
-    return -1;
+    return kImageInvalidRegion;
   }
 
   matOutput = matInput(cropRect).clone();
@@ -291,12 +291,12 @@ int Image::CenterCropImage(const cv::Mat &matInput, int width, int height,
                             cv::Mat &matOutput) {
   if (matInput.empty()) {
     LOG(ERROR) << "CenterCropImage: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (width <= 0 || height <= 0) {
     LOG(ERROR) << "CenterCropImage: invalid crop size: "
                << width << "x" << height;
-    return -1;
+    return kImageInvalidParam;
   }
 
   int cropW = std::min(width, matInput.cols);
@@ -317,7 +317,7 @@ int Image::CenterCropImage(const cv::Mat &matInput, int width, int height,
 int Image::FlipImage(const cv::Mat &input, FlipMode mode, cv::Mat &output) {
   if (input.empty()) {
     LOG(ERROR) << "FlipImage: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
 
   int flipCode;
@@ -333,7 +333,7 @@ int Image::FlipImage(const cv::Mat &input, FlipMode mode, cv::Mat &output) {
       break;
     default:
       LOG(ERROR) << "FlipImage: unsupported flip mode: " << mode;
-      return -1;
+      return kImageInvalidParam;
   }
 
   auto ret = WrapOpencvFuncT([&]() {
@@ -341,7 +341,7 @@ int Image::FlipImage(const cv::Mat &input, FlipMode mode, cv::Mat &output) {
   });
   if (ret != 0) {
     LOG(ERROR) << "FlipImage: cv::flip failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "FlipImage: flipped with mode=" << mode;
@@ -368,7 +368,7 @@ int Image::Thumbnail(const std::string &imageData, int maxDimension,
                      cv::Mat &matOutput) {
   if (maxDimension <= 0) {
     LOG(ERROR) << "Thumbnail: invalid maxDimension: " << maxDimension;
-    return -1;
+    return kImageInvalidParam;
   }
 
   cv::Mat mat;
@@ -387,11 +387,11 @@ int Image::Thumbnail(const cv::Mat &matInput, int maxDimension,
                      cv::Mat &matOutput) {
   if (matInput.empty()) {
     LOG(ERROR) << "Thumbnail: input mat is empty";
-    return -1;
+    return kImageEmptyInput;
   }
   if (maxDimension <= 0) {
     LOG(ERROR) << "Thumbnail: invalid maxDimension: " << maxDimension;
-    return -1;
+    return kImageInvalidParam;
   }
 
   int w = matInput.cols;
@@ -418,7 +418,7 @@ int Image::Thumbnail(const cv::Mat &matInput, int maxDimension,
   });
   if (ret != 0) {
     LOG(ERROR) << "Thumbnail: cv::resize failed";
-    return -1;
+    return kImageUnsupportedOperation;
   }
 
   LOG(INFO) << "Thumbnail: resized from " << w << "x" << h
