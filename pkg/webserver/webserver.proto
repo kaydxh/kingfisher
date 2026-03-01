@@ -41,6 +41,10 @@ message Web {
     }
   }
 
+  // 优雅关闭配置
+  google.protobuf.Duration shutdown_delay_duration = 5;
+  google.protobuf.Duration shutdown_timeout_duration = 6;
+
   Debug debug = 10;
   message Debug {
     bool enable_profiling = 1;

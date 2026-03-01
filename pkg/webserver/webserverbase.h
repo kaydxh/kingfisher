@@ -6,15 +6,20 @@
 namespace kingfisher {
 namespace web {
 
+// WebServerBase: 抽象基类，用于自定义 WebServer 行为
+// 对标 golang 项目中的 preparedGenericWebServer
 class WebServerBase {
  public:
-  WebServerBase(){};
-  virtual ~WebServerBase(){};
+  WebServerBase() {}
+  virtual ~WebServerBase() {}
+
   virtual std::string ServerName() = 0;
 
-  virtual void Run();
-  virtual void PreRun(void *args);
-  virtual void PostRun(void *args);
+  // 服务运行前的准备
+  virtual void PreRun() {}
+
+  // 服务停止后的清理
+  virtual void PostRun() {}
 };
 
 }  // namespace web

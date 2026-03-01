@@ -64,6 +64,8 @@ include_directories (third_party)
 include(cmake/Build.options.cmake)
 
 
+enable_testing()
+
 add_subdirectory (base)
 add_subdirectory (pkg)
 

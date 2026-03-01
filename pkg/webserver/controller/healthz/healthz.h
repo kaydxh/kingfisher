@@ -1,34 +1,23 @@
 #ifndef KINGFISHER_PKG_WEB_SERVER_CONTROLLER_HEALTHZ_HEALTHZ_H_
 #define KINGFISHER_PKG_WEB_SERVER_CONTROLLER_HEALTHZ_HEALTHZ_H_
 
-#ifdef ENABLE_BRPC
-#include "brpc/server.h"
-#endif
-
-#include "healthz.pb.h"
+#include "webserver/webserver.h"
 
 namespace kingfisher {
 namespace web {
 
-// curl http://127.0.0.1:10000/HealthCheckService/HealthCheck
-class HealthCheckServiceImpl : public healthz::HealthCheckService {
+// HealthzWebHandler: 健康检查 WebHandler
+// 注意：核心的 /healthz, /livez, /readyz 路由已经由 GenericWebServer 内置注册
+// 这个 Handler 可以用于注册额外的自定义健康检查路由
+class HealthzWebHandler : public WebHandler {
  public:
-  void HealthCheck(::google::protobuf::RpcController* cntl_base,
-                   const healthz::HealthCheckRequest* req,
-                   healthz::HealthCheckResponse* resp,
-                   ::google::protobuf::Closure* done) override {
-    // This object helps you to call done->Run() in RAII style. If you need
-    // to process the request asynchronously, pass done_guard.release().
-#ifdef ENABLE_BRPC
-    brpc::ClosureGuard done_guard(done);
-
-    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
-    cntl->http_response().set_content_type("text/plain");
-
-    butil::IOBufBuilder os;
-    os << "healthz Ok\n";
-    os.move_to(cntl->response_attachment());
-#endif
+  void SetRoutes(httplib::Server& http_server) override {
+    // /healthz/ping - 简单的 ping 检查
+    http_server.Get("/healthz/ping",
+                    [](const httplib::Request& req, httplib::Response& resp) {
+                      resp.status = 200;
+                      resp.set_content("pong", "text/plain");
+                    });
   }
 };
 

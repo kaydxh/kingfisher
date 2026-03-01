@@ -1155,6 +1155,30 @@ class Web : public ::google::protobuf::Message /* @@protoc_insertion_point(class
   ::go::pkg::webserver::Web_Http* mutable_http();
   void set_allocated_http(::go::pkg::webserver::Web_Http* http);
 
+  // .google.protobuf.Duration shutdown_delay_duration = 5;
+  bool has_shutdown_delay_duration() const;
+  void clear_shutdown_delay_duration();
+  static const int kShutdownDelayDurationFieldNumber = 5;
+  private:
+  const ::google::protobuf::Duration& _internal_shutdown_delay_duration() const;
+  public:
+  const ::google::protobuf::Duration& shutdown_delay_duration() const;
+  ::google::protobuf::Duration* release_shutdown_delay_duration();
+  ::google::protobuf::Duration* mutable_shutdown_delay_duration();
+  void set_allocated_shutdown_delay_duration(::google::protobuf::Duration* shutdown_delay_duration);
+
+  // .google.protobuf.Duration shutdown_timeout_duration = 6;
+  bool has_shutdown_timeout_duration() const;
+  void clear_shutdown_timeout_duration();
+  static const int kShutdownTimeoutDurationFieldNumber = 6;
+  private:
+  const ::google::protobuf::Duration& _internal_shutdown_timeout_duration() const;
+  public:
+  const ::google::protobuf::Duration& shutdown_timeout_duration() const;
+  ::google::protobuf::Duration* release_shutdown_timeout_duration();
+  ::google::protobuf::Duration* mutable_shutdown_timeout_duration();
+  void set_allocated_shutdown_timeout_duration(::google::protobuf::Duration* shutdown_timeout_duration);
+
   // .go.pkg.webserver.Web.Debug debug = 10;
   bool has_debug() const;
   void clear_debug();
@@ -1186,6 +1210,8 @@ class Web : public ::google::protobuf::Message /* @@protoc_insertion_point(class
   ::go::pkg::webserver::Web_Net* bind_address_;
   ::go::pkg::webserver::Web_Grpc* grpc_;
   ::go::pkg::webserver::Web_Http* http_;
+  ::google::protobuf::Duration* shutdown_delay_duration_;
+  ::google::protobuf::Duration* shutdown_timeout_duration_;
   ::go::pkg::webserver::Web_Debug* debug_;
   ::go::pkg::webserver::Web_Monitor* monitor_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1878,6 +1904,104 @@ inline void Web::set_allocated_http(::go::pkg::webserver::Web_Http* http) {
   }
   http_ = http;
   // @@protoc_insertion_point(field_set_allocated:go.pkg.webserver.Web.http)
+}
+
+// .google.protobuf.Duration shutdown_delay_duration = 5;
+inline bool Web::has_shutdown_delay_duration() const {
+  return this != internal_default_instance() && shutdown_delay_duration_ != NULL;
+}
+inline const ::google::protobuf::Duration& Web::_internal_shutdown_delay_duration() const {
+  return *shutdown_delay_duration_;
+}
+inline const ::google::protobuf::Duration& Web::shutdown_delay_duration() const {
+  const ::google::protobuf::Duration* p = shutdown_delay_duration_;
+  // @@protoc_insertion_point(field_get:go.pkg.webserver.Web.shutdown_delay_duration)
+  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
+      &::google::protobuf::_Duration_default_instance_);
+}
+inline ::google::protobuf::Duration* Web::release_shutdown_delay_duration() {
+  // @@protoc_insertion_point(field_release:go.pkg.webserver.Web.shutdown_delay_duration)
+  
+  ::google::protobuf::Duration* temp = shutdown_delay_duration_;
+  shutdown_delay_duration_ = NULL;
+  return temp;
+}
+inline ::google::protobuf::Duration* Web::mutable_shutdown_delay_duration() {
+  
+  if (shutdown_delay_duration_ == NULL) {
+    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
+    shutdown_delay_duration_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:go.pkg.webserver.Web.shutdown_delay_duration)
+  return shutdown_delay_duration_;
+}
+inline void Web::set_allocated_shutdown_delay_duration(::google::protobuf::Duration* shutdown_delay_duration) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete reinterpret_cast< ::google::protobuf::MessageLite*>(shutdown_delay_duration_);
+  }
+  if (shutdown_delay_duration) {
+    ::google::protobuf::Arena* submessage_arena =
+      reinterpret_cast<::google::protobuf::MessageLite*>(shutdown_delay_duration)->GetArena();
+    if (message_arena != submessage_arena) {
+      shutdown_delay_duration = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, shutdown_delay_duration, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  shutdown_delay_duration_ = shutdown_delay_duration;
+  // @@protoc_insertion_point(field_set_allocated:go.pkg.webserver.Web.shutdown_delay_duration)
+}
+
+// .google.protobuf.Duration shutdown_timeout_duration = 6;
+inline bool Web::has_shutdown_timeout_duration() const {
+  return this != internal_default_instance() && shutdown_timeout_duration_ != NULL;
+}
+inline const ::google::protobuf::Duration& Web::_internal_shutdown_timeout_duration() const {
+  return *shutdown_timeout_duration_;
+}
+inline const ::google::protobuf::Duration& Web::shutdown_timeout_duration() const {
+  const ::google::protobuf::Duration* p = shutdown_timeout_duration_;
+  // @@protoc_insertion_point(field_get:go.pkg.webserver.Web.shutdown_timeout_duration)
+  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Duration*>(
+      &::google::protobuf::_Duration_default_instance_);
+}
+inline ::google::protobuf::Duration* Web::release_shutdown_timeout_duration() {
+  // @@protoc_insertion_point(field_release:go.pkg.webserver.Web.shutdown_timeout_duration)
+  
+  ::google::protobuf::Duration* temp = shutdown_timeout_duration_;
+  shutdown_timeout_duration_ = NULL;
+  return temp;
+}
+inline ::google::protobuf::Duration* Web::mutable_shutdown_timeout_duration() {
+  
+  if (shutdown_timeout_duration_ == NULL) {
+    auto* p = CreateMaybeMessage<::google::protobuf::Duration>(GetArenaNoVirtual());
+    shutdown_timeout_duration_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:go.pkg.webserver.Web.shutdown_timeout_duration)
+  return shutdown_timeout_duration_;
+}
+inline void Web::set_allocated_shutdown_timeout_duration(::google::protobuf::Duration* shutdown_timeout_duration) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete reinterpret_cast< ::google::protobuf::MessageLite*>(shutdown_timeout_duration_);
+  }
+  if (shutdown_timeout_duration) {
+    ::google::protobuf::Arena* submessage_arena =
+      reinterpret_cast<::google::protobuf::MessageLite*>(shutdown_timeout_duration)->GetArena();
+    if (message_arena != submessage_arena) {
+      shutdown_timeout_duration = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, shutdown_timeout_duration, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  shutdown_timeout_duration_ = shutdown_timeout_duration;
+  // @@protoc_insertion_point(field_set_allocated:go.pkg.webserver.Web.shutdown_timeout_duration)
 }
 
 // .go.pkg.webserver.Web.Debug debug = 10;
