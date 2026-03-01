@@ -10,6 +10,8 @@ enum ColorSpace {
   BGRAColorSpace = 2;
   GRAYColorSpace = 3;
   GRAYAColorSpace = 4;
+  RGBColorSpace = 5;
+  RGBAColorSpace = 6;
 }
 
 message DecodeOptions {
@@ -17,11 +19,43 @@ message DecodeOptions {
   bool auto_orient = 2;
 }
 
+message EncodeOptions {
+  string format = 1;      // 编码格式: "jpeg", "png", "webp", "bmp"
+  int32 quality = 2;      // JPEG/WebP 质量 (0-100)
+  int32 compression = 3;  // PNG 压缩级别 (0-9)
+}
+
+message Point {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Size {
+  int32 width = 1;
+  int32 height = 2;
+}
+
+enum FlipMode {
+  FLIP_VERTICAL = 0;    // 垂直翻转（沿X轴）
+  FLIP_HORIZONTAL = 1;  // 水平翻转（沿Y轴）
+  FLIP_BOTH = 2;        // 同时翻转（沿两轴）
+}
+
+message AnnotateOptions {
+  string font = 1;          // 字体路径或名称
+  double font_size = 2;     // 字体大小
+  int32 color_r = 3;        // 文字颜色 R 分量 (0-255)
+  int32 color_g = 4;        // 文字颜色 G 分量 (0-255)
+  int32 color_b = 5;        // 文字颜色 B 分量 (0-255)
+  int32 thickness = 6;      // 文字线条粗细（默认1）
+  bool anti_alias = 7;      // 是否开启抗锯齿
+}
+
 message Rect {
   int32 x = 1;
   int32 y = 2;
-  int32 height = 3;
-  int32 width = 4;
+  int32 width = 3;
+  int32 height = 4;
 }
 
 enum OrientationType {

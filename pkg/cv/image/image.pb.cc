@@ -26,6 +26,26 @@ class DecodeOptionsDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<DecodeOptions>
       _instance;
 } _DecodeOptions_default_instance_;
+class EncodeOptionsDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<EncodeOptions>
+      _instance;
+} _EncodeOptions_default_instance_;
+class PointDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<Point>
+      _instance;
+} _Point_default_instance_;
+class SizeDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<Size>
+      _instance;
+} _Size_default_instance_;
+class AnnotateOptionsDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<AnnotateOptions>
+      _instance;
+} _AnnotateOptions_default_instance_;
 class RectDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Rect>
@@ -52,6 +72,62 @@ static void InitDefaultsDecodeOptions() {
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_DecodeOptions =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsDecodeOptions}, {}};
+
+static void InitDefaultsEncodeOptions() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_EncodeOptions_default_instance_;
+    new (ptr) ::kingfisher::kcv::EncodeOptions();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::EncodeOptions::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_EncodeOptions =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsEncodeOptions}, {}};
+
+static void InitDefaultsPoint() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_Point_default_instance_;
+    new (ptr) ::kingfisher::kcv::Point();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::Point::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_Point =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsPoint}, {}};
+
+static void InitDefaultsSize() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_Size_default_instance_;
+    new (ptr) ::kingfisher::kcv::Size();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::Size::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_Size =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsSize}, {}};
+
+static void InitDefaultsAnnotateOptions() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::kingfisher::kcv::_AnnotateOptions_default_instance_;
+    new (ptr) ::kingfisher::kcv::AnnotateOptions();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::kingfisher::kcv::AnnotateOptions::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_AnnotateOptions =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsAnnotateOptions}, {}};
 
 static void InitDefaultsRect() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -83,12 +159,16 @@ static void InitDefaultsImageInfo() {
 
 void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_DecodeOptions.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_EncodeOptions.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_Point.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_Size.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_AnnotateOptions.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Rect.base);
   ::google::protobuf::internal::InitSCC(&scc_info_ImageInfo.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[3];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[3];
+::google::protobuf::Metadata file_level_metadata[7];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[4];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
@@ -99,14 +179,48 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::DecodeOptions, targetcolorspace_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::DecodeOptions, auto_orient_),
   ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::EncodeOptions, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::EncodeOptions, format_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::EncodeOptions, quality_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::EncodeOptions, compression_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Point, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Point, x_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Point, y_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Size, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Size, width_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Size, height_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, font_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, font_size_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, color_r_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, color_g_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, color_b_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, thickness_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::AnnotateOptions, anti_alias_),
+  ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, x_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, y_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, height_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, width_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::Rect, height_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kingfisher::kcv::ImageInfo, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -135,12 +249,20 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::kingfisher::kcv::DecodeOptions)},
-  { 7, -1, sizeof(::kingfisher::kcv::Rect)},
-  { 16, -1, sizeof(::kingfisher::kcv::ImageInfo)},
+  { 7, -1, sizeof(::kingfisher::kcv::EncodeOptions)},
+  { 15, -1, sizeof(::kingfisher::kcv::Point)},
+  { 22, -1, sizeof(::kingfisher::kcv::Size)},
+  { 29, -1, sizeof(::kingfisher::kcv::AnnotateOptions)},
+  { 41, -1, sizeof(::kingfisher::kcv::Rect)},
+  { 50, -1, sizeof(::kingfisher::kcv::ImageInfo)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_DecodeOptions_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_EncodeOptions_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Point_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Size_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_AnnotateOptions_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_Rect_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::kingfisher::kcv::_ImageInfo_default_instance_),
 };
@@ -160,7 +282,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 3);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 7);
 }
 
 void AddDescriptorsImpl() {
@@ -169,38 +291,48 @@ void AddDescriptorsImpl() {
       "\n\013image.proto\022\016kingfisher.kcv\"Z\n\rDecodeO"
       "ptions\0224\n\020targetColorSpace\030\001 \001(\0162\032.kingf"
       "isher.kcv.ColorSpace\022\023\n\013auto_orient\030\002 \001("
-      "\010\";\n\004Rect\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(\005\022\016\n\006heigh"
-      "t\030\003 \001(\005\022\r\n\005width\030\004 \001(\005\"\311\003\n\tImageInfo\022\014\n\004"
-      "rows\030\002 \001(\003\022\017\n\007columns\030\003 \001(\003\022/\n\013color_spa"
-      "ce\030\004 \001(\0162\032.kingfisher.kcv.ColorSpace\022\r\n\005"
-      "depth\030\005 \001(\003\022\021\n\tdirectory\030\006 \001(\t\022\021\n\tfile_n"
-      "ame\030\007 \001(\t\022\021\n\tfile_size\030\010 \001(\003\022\016\n\006format\030\t"
-      " \001(\t\022\014\n\004gama\030\n \001(\001\022\020\n\010is_valid\030\013 \001(\010\022\r\n\005"
-      "label\030\014 \001(\t\022\022\n\nline_width\030\r \001(\001\022\016\n\006magic"
-      "k\030\016 \001(\014\022\r\n\005matte\030\017 \001(\010\0224\n\013orientation\030\020 "
-      "\001(\0162\037.kingfisher.kcv.OrientationType\022\017\n\007"
-      "quality\030\021 \001(\003\022\027\n\017quantize_colors\030\022 \001(\003\022\021"
-      "\n\ttile_name\030\023 \001(\t\022\'\n\004type\030\024 \001(\0162\031.kingfi"
-      "sher.kcv.ImageType\022\026\n\016magick_warning\030\025 \001"
-      "(\t*s\n\nColorSpace\022\025\n\021UnknownColorSpace\020\000\022"
-      "\021\n\rBGRColorSpace\020\001\022\022\n\016BGRAColorSpace\020\002\022\022"
-      "\n\016GRAYColorSpace\020\003\022\023\n\017GRAYAColorSpace\020\004*"
-      "\373\001\n\017OrientationType\022\030\n\024UndefinedOrientat"
-      "ion\020\000\022\026\n\022TopLeftOrientation\020\001\022\027\n\023TopRigh"
-      "tOrientation\020\002\022\032\n\026BottomRightOrientation"
-      "\020\003\022\031\n\025BottomLeftOrientation\020\004\022\026\n\022LeftTop"
-      "Orientation\020\005\022\027\n\023RightTopOrientation\020\006\022\032"
-      "\n\026RightBottomOrientation\020\007\022\031\n\025LeftBottom"
-      "Orientation\020\010*\343\001\n\tImageType\022\021\n\rUndefined"
-      "Type\020\000\022\017\n\013BilevelType\020\001\022\021\n\rGrayscaleType"
-      "\020\002\022\026\n\022GrayscaleMatteType\020\003\022\017\n\013PaletteTyp"
-      "e\020\004\022\024\n\020PaletteMatteType\020\005\022\021\n\rTrueColorTy"
-      "pe\020\006\022\026\n\022TrueColorMatteType\020\007\022\027\n\023ColorSep"
-      "arationType\020\010\022\034\n\030ColorSeparationMatteTyp"
-      "e\020\tb\006proto3"
+      "\010\"E\n\rEncodeOptions\022\016\n\006format\030\001 \001(\t\022\017\n\007qu"
+      "ality\030\002 \001(\005\022\023\n\013compression\030\003 \001(\005\"\035\n\005Poin"
+      "t\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(\005\"%\n\004Size\022\r\n\005width"
+      "\030\001 \001(\005\022\016\n\006height\030\002 \001(\005\"\214\001\n\017AnnotateOptio"
+      "ns\022\014\n\004font\030\001 \001(\t\022\021\n\tfont_size\030\002 \001(\001\022\017\n\007c"
+      "olor_r\030\003 \001(\005\022\017\n\007color_g\030\004 \001(\005\022\017\n\007color_b"
+      "\030\005 \001(\005\022\021\n\tthickness\030\006 \001(\005\022\022\n\nanti_alias\030"
+      "\007 \001(\010\";\n\004Rect\022\t\n\001x\030\001 \001(\005\022\t\n\001y\030\002 \001(\005\022\r\n\005w"
+      "idth\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"\311\003\n\tImageInfo"
+      "\022\014\n\004rows\030\002 \001(\003\022\017\n\007columns\030\003 \001(\003\022/\n\013color"
+      "_space\030\004 \001(\0162\032.kingfisher.kcv.ColorSpace"
+      "\022\r\n\005depth\030\005 \001(\003\022\021\n\tdirectory\030\006 \001(\t\022\021\n\tfi"
+      "le_name\030\007 \001(\t\022\021\n\tfile_size\030\010 \001(\003\022\016\n\006form"
+      "at\030\t \001(\t\022\014\n\004gama\030\n \001(\001\022\020\n\010is_valid\030\013 \001(\010"
+      "\022\r\n\005label\030\014 \001(\t\022\022\n\nline_width\030\r \001(\001\022\016\n\006m"
+      "agick\030\016 \001(\014\022\r\n\005matte\030\017 \001(\010\0224\n\013orientatio"
+      "n\030\020 \001(\0162\037.kingfisher.kcv.OrientationType"
+      "\022\017\n\007quality\030\021 \001(\003\022\027\n\017quantize_colors\030\022 \001"
+      "(\003\022\021\n\ttile_name\030\023 \001(\t\022\'\n\004type\030\024 \001(\0162\031.ki"
+      "ngfisher.kcv.ImageType\022\026\n\016magick_warning"
+      "\030\025 \001(\t*\232\001\n\nColorSpace\022\025\n\021UnknownColorSpa"
+      "ce\020\000\022\021\n\rBGRColorSpace\020\001\022\022\n\016BGRAColorSpac"
+      "e\020\002\022\022\n\016GRAYColorSpace\020\003\022\023\n\017GRAYAColorSpa"
+      "ce\020\004\022\021\n\rRGBColorSpace\020\005\022\022\n\016RGBAColorSpac"
+      "e\020\006*A\n\010FlipMode\022\021\n\rFLIP_VERTICAL\020\000\022\023\n\017FL"
+      "IP_HORIZONTAL\020\001\022\r\n\tFLIP_BOTH\020\002*\373\001\n\017Orien"
+      "tationType\022\030\n\024UndefinedOrientation\020\000\022\026\n\022"
+      "TopLeftOrientation\020\001\022\027\n\023TopRightOrientat"
+      "ion\020\002\022\032\n\026BottomRightOrientation\020\003\022\031\n\025Bot"
+      "tomLeftOrientation\020\004\022\026\n\022LeftTopOrientati"
+      "on\020\005\022\027\n\023RightTopOrientation\020\006\022\032\n\026RightBo"
+      "ttomOrientation\020\007\022\031\n\025LeftBottomOrientati"
+      "on\020\010*\343\001\n\tImageType\022\021\n\rUndefinedType\020\000\022\017\n"
+      "\013BilevelType\020\001\022\021\n\rGrayscaleType\020\002\022\026\n\022Gra"
+      "yscaleMatteType\020\003\022\017\n\013PaletteType\020\004\022\024\n\020Pa"
+      "letteMatteType\020\005\022\021\n\rTrueColorType\020\006\022\026\n\022T"
+      "rueColorMatteType\020\007\022\027\n\023ColorSeparationTy"
+      "pe\020\010\022\034\n\030ColorSeparationMatteType\020\tb\006prot"
+      "o3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1251);
+      descriptor, 1642);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "image.proto", &protobuf_RegisterTypes);
 }
@@ -229,6 +361,23 @@ bool ColorSpace_IsValid(int value) {
     case 2:
     case 3:
     case 4:
+    case 5:
+    case 6:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::google::protobuf::EnumDescriptor* FlipMode_descriptor() {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_image_2eproto::file_level_enum_descriptors[1];
+}
+bool FlipMode_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -237,7 +386,7 @@ bool ColorSpace_IsValid(int value) {
 
 const ::google::protobuf::EnumDescriptor* OrientationType_descriptor() {
   protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_image_2eproto::file_level_enum_descriptors[1];
+  return protobuf_image_2eproto::file_level_enum_descriptors[2];
 }
 bool OrientationType_IsValid(int value) {
   switch (value) {
@@ -258,7 +407,7 @@ bool OrientationType_IsValid(int value) {
 
 const ::google::protobuf::EnumDescriptor* ImageType_descriptor() {
   protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_image_2eproto::file_level_enum_descriptors[2];
+  return protobuf_image_2eproto::file_level_enum_descriptors[3];
 }
 bool ImageType_IsValid(int value) {
   switch (value) {
@@ -546,13 +695,1329 @@ void DecodeOptions::InternalSwap(DecodeOptions* other) {
 
 // ===================================================================
 
+void EncodeOptions::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int EncodeOptions::kFormatFieldNumber;
+const int EncodeOptions::kQualityFieldNumber;
+const int EncodeOptions::kCompressionFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+EncodeOptions::EncodeOptions()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_EncodeOptions.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.EncodeOptions)
+}
+EncodeOptions::EncodeOptions(const EncodeOptions& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.format().size() > 0) {
+    format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
+  }
+  ::memcpy(&quality_, &from.quality_,
+    static_cast<size_t>(reinterpret_cast<char*>(&compression_) -
+    reinterpret_cast<char*>(&quality_)) + sizeof(compression_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.EncodeOptions)
+}
+
+void EncodeOptions::SharedCtor() {
+  format_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&quality_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&compression_) -
+      reinterpret_cast<char*>(&quality_)) + sizeof(compression_));
+}
+
+EncodeOptions::~EncodeOptions() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.EncodeOptions)
+  SharedDtor();
+}
+
+void EncodeOptions::SharedDtor() {
+  format_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void EncodeOptions::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* EncodeOptions::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const EncodeOptions& EncodeOptions::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_EncodeOptions.base);
+  return *internal_default_instance();
+}
+
+
+void EncodeOptions::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.EncodeOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  format_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&quality_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&compression_) -
+      reinterpret_cast<char*>(&quality_)) + sizeof(compression_));
+  _internal_metadata_.Clear();
+}
+
+bool EncodeOptions::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.EncodeOptions)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // string format = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_format()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->format().data(), static_cast<int>(this->format().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.EncodeOptions.format"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 quality = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &quality_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 compression = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &compression_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.EncodeOptions)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.EncodeOptions)
+  return false;
+#undef DO_
+}
+
+void EncodeOptions::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.EncodeOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string format = 1;
+  if (this->format().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->format().data(), static_cast<int>(this->format().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.EncodeOptions.format");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->format(), output);
+  }
+
+  // int32 quality = 2;
+  if (this->quality() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->quality(), output);
+  }
+
+  // int32 compression = 3;
+  if (this->compression() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->compression(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.EncodeOptions)
+}
+
+::google::protobuf::uint8* EncodeOptions::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.EncodeOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string format = 1;
+  if (this->format().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->format().data(), static_cast<int>(this->format().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.EncodeOptions.format");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->format(), target);
+  }
+
+  // int32 quality = 2;
+  if (this->quality() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->quality(), target);
+  }
+
+  // int32 compression = 3;
+  if (this->compression() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->compression(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.EncodeOptions)
+  return target;
+}
+
+size_t EncodeOptions::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.EncodeOptions)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string format = 1;
+  if (this->format().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->format());
+  }
+
+  // int32 quality = 2;
+  if (this->quality() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->quality());
+  }
+
+  // int32 compression = 3;
+  if (this->compression() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->compression());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void EncodeOptions::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.EncodeOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  const EncodeOptions* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const EncodeOptions>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.EncodeOptions)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.EncodeOptions)
+    MergeFrom(*source);
+  }
+}
+
+void EncodeOptions::MergeFrom(const EncodeOptions& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.EncodeOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.format().size() > 0) {
+
+    format_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.format_);
+  }
+  if (from.quality() != 0) {
+    set_quality(from.quality());
+  }
+  if (from.compression() != 0) {
+    set_compression(from.compression());
+  }
+}
+
+void EncodeOptions::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.EncodeOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void EncodeOptions::CopyFrom(const EncodeOptions& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.EncodeOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool EncodeOptions::IsInitialized() const {
+  return true;
+}
+
+void EncodeOptions::Swap(EncodeOptions* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void EncodeOptions::InternalSwap(EncodeOptions* other) {
+  using std::swap;
+  format_.Swap(&other->format_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(quality_, other->quality_);
+  swap(compression_, other->compression_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata EncodeOptions::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void Point::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int Point::kXFieldNumber;
+const int Point::kYFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+Point::Point()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_Point.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.Point)
+}
+Point::Point(const Point& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&x_, &from.x_,
+    static_cast<size_t>(reinterpret_cast<char*>(&y_) -
+    reinterpret_cast<char*>(&x_)) + sizeof(y_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.Point)
+}
+
+void Point::SharedCtor() {
+  ::memset(&x_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&y_) -
+      reinterpret_cast<char*>(&x_)) + sizeof(y_));
+}
+
+Point::~Point() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.Point)
+  SharedDtor();
+}
+
+void Point::SharedDtor() {
+}
+
+void Point::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* Point::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const Point& Point::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_Point.base);
+  return *internal_default_instance();
+}
+
+
+void Point::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.Point)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&x_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&y_) -
+      reinterpret_cast<char*>(&x_)) + sizeof(y_));
+  _internal_metadata_.Clear();
+}
+
+bool Point::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.Point)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 x = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &x_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 y = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &y_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.Point)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.Point)
+  return false;
+#undef DO_
+}
+
+void Point::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.Point)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 x = 1;
+  if (this->x() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->x(), output);
+  }
+
+  // int32 y = 2;
+  if (this->y() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->y(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.Point)
+}
+
+::google::protobuf::uint8* Point::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.Point)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 x = 1;
+  if (this->x() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->x(), target);
+  }
+
+  // int32 y = 2;
+  if (this->y() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->y(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.Point)
+  return target;
+}
+
+size_t Point::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.Point)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // int32 x = 1;
+  if (this->x() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->x());
+  }
+
+  // int32 y = 2;
+  if (this->y() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->y());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void Point::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.Point)
+  GOOGLE_DCHECK_NE(&from, this);
+  const Point* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const Point>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.Point)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.Point)
+    MergeFrom(*source);
+  }
+}
+
+void Point::MergeFrom(const Point& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.Point)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.x() != 0) {
+    set_x(from.x());
+  }
+  if (from.y() != 0) {
+    set_y(from.y());
+  }
+}
+
+void Point::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.Point)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Point::CopyFrom(const Point& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.Point)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Point::IsInitialized() const {
+  return true;
+}
+
+void Point::Swap(Point* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void Point::InternalSwap(Point* other) {
+  using std::swap;
+  swap(x_, other->x_);
+  swap(y_, other->y_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata Point::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void Size::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int Size::kWidthFieldNumber;
+const int Size::kHeightFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+Size::Size()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_Size.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.Size)
+}
+Size::Size(const Size& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&width_, &from.width_,
+    static_cast<size_t>(reinterpret_cast<char*>(&height_) -
+    reinterpret_cast<char*>(&width_)) + sizeof(height_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.Size)
+}
+
+void Size::SharedCtor() {
+  ::memset(&width_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&height_) -
+      reinterpret_cast<char*>(&width_)) + sizeof(height_));
+}
+
+Size::~Size() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.Size)
+  SharedDtor();
+}
+
+void Size::SharedDtor() {
+}
+
+void Size::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* Size::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const Size& Size::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_Size.base);
+  return *internal_default_instance();
+}
+
+
+void Size::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.Size)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&width_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&height_) -
+      reinterpret_cast<char*>(&width_)) + sizeof(height_));
+  _internal_metadata_.Clear();
+}
+
+bool Size::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.Size)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 width = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &width_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 height = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &height_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.Size)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.Size)
+  return false;
+#undef DO_
+}
+
+void Size::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.Size)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 width = 1;
+  if (this->width() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->width(), output);
+  }
+
+  // int32 height = 2;
+  if (this->height() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->height(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.Size)
+}
+
+::google::protobuf::uint8* Size::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.Size)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 width = 1;
+  if (this->width() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->width(), target);
+  }
+
+  // int32 height = 2;
+  if (this->height() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->height(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.Size)
+  return target;
+}
+
+size_t Size::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.Size)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // int32 width = 1;
+  if (this->width() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->width());
+  }
+
+  // int32 height = 2;
+  if (this->height() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->height());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void Size::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.Size)
+  GOOGLE_DCHECK_NE(&from, this);
+  const Size* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const Size>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.Size)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.Size)
+    MergeFrom(*source);
+  }
+}
+
+void Size::MergeFrom(const Size& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.Size)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.width() != 0) {
+    set_width(from.width());
+  }
+  if (from.height() != 0) {
+    set_height(from.height());
+  }
+}
+
+void Size::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.Size)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Size::CopyFrom(const Size& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.Size)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Size::IsInitialized() const {
+  return true;
+}
+
+void Size::Swap(Size* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void Size::InternalSwap(Size* other) {
+  using std::swap;
+  swap(width_, other->width_);
+  swap(height_, other->height_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata Size::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void AnnotateOptions::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int AnnotateOptions::kFontFieldNumber;
+const int AnnotateOptions::kFontSizeFieldNumber;
+const int AnnotateOptions::kColorRFieldNumber;
+const int AnnotateOptions::kColorGFieldNumber;
+const int AnnotateOptions::kColorBFieldNumber;
+const int AnnotateOptions::kThicknessFieldNumber;
+const int AnnotateOptions::kAntiAliasFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+AnnotateOptions::AnnotateOptions()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_image_2eproto::scc_info_AnnotateOptions.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:kingfisher.kcv.AnnotateOptions)
+}
+AnnotateOptions::AnnotateOptions(const AnnotateOptions& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  font_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.font().size() > 0) {
+    font_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.font_);
+  }
+  ::memcpy(&font_size_, &from.font_size_,
+    static_cast<size_t>(reinterpret_cast<char*>(&anti_alias_) -
+    reinterpret_cast<char*>(&font_size_)) + sizeof(anti_alias_));
+  // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.AnnotateOptions)
+}
+
+void AnnotateOptions::SharedCtor() {
+  font_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&font_size_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&anti_alias_) -
+      reinterpret_cast<char*>(&font_size_)) + sizeof(anti_alias_));
+}
+
+AnnotateOptions::~AnnotateOptions() {
+  // @@protoc_insertion_point(destructor:kingfisher.kcv.AnnotateOptions)
+  SharedDtor();
+}
+
+void AnnotateOptions::SharedDtor() {
+  font_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void AnnotateOptions::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* AnnotateOptions::descriptor() {
+  ::protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const AnnotateOptions& AnnotateOptions::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_image_2eproto::scc_info_AnnotateOptions.base);
+  return *internal_default_instance();
+}
+
+
+void AnnotateOptions::Clear() {
+// @@protoc_insertion_point(message_clear_start:kingfisher.kcv.AnnotateOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  font_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&font_size_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&anti_alias_) -
+      reinterpret_cast<char*>(&font_size_)) + sizeof(anti_alias_));
+  _internal_metadata_.Clear();
+}
+
+bool AnnotateOptions::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:kingfisher.kcv.AnnotateOptions)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // string font = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_font()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->font().data(), static_cast<int>(this->font().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "kingfisher.kcv.AnnotateOptions.font"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double font_size = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(17u /* 17 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &font_size_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 color_r = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &color_r_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 color_g = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &color_g_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 color_b = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &color_b_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 thickness = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u /* 48 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &thickness_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool anti_alias = 7;
+      case 7: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(56u /* 56 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &anti_alias_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:kingfisher.kcv.AnnotateOptions)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:kingfisher.kcv.AnnotateOptions)
+  return false;
+#undef DO_
+}
+
+void AnnotateOptions::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:kingfisher.kcv.AnnotateOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string font = 1;
+  if (this->font().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->font().data(), static_cast<int>(this->font().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.AnnotateOptions.font");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->font(), output);
+  }
+
+  // double font_size = 2;
+  if (this->font_size() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->font_size(), output);
+  }
+
+  // int32 color_r = 3;
+  if (this->color_r() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->color_r(), output);
+  }
+
+  // int32 color_g = 4;
+  if (this->color_g() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->color_g(), output);
+  }
+
+  // int32 color_b = 5;
+  if (this->color_b() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->color_b(), output);
+  }
+
+  // int32 thickness = 6;
+  if (this->thickness() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(6, this->thickness(), output);
+  }
+
+  // bool anti_alias = 7;
+  if (this->anti_alias() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(7, this->anti_alias(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:kingfisher.kcv.AnnotateOptions)
+}
+
+::google::protobuf::uint8* AnnotateOptions::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:kingfisher.kcv.AnnotateOptions)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string font = 1;
+  if (this->font().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->font().data(), static_cast<int>(this->font().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "kingfisher.kcv.AnnotateOptions.font");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->font(), target);
+  }
+
+  // double font_size = 2;
+  if (this->font_size() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->font_size(), target);
+  }
+
+  // int32 color_r = 3;
+  if (this->color_r() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->color_r(), target);
+  }
+
+  // int32 color_g = 4;
+  if (this->color_g() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->color_g(), target);
+  }
+
+  // int32 color_b = 5;
+  if (this->color_b() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->color_b(), target);
+  }
+
+  // int32 thickness = 6;
+  if (this->thickness() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(6, this->thickness(), target);
+  }
+
+  // bool anti_alias = 7;
+  if (this->anti_alias() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(7, this->anti_alias(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kingfisher.kcv.AnnotateOptions)
+  return target;
+}
+
+size_t AnnotateOptions::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kingfisher.kcv.AnnotateOptions)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string font = 1;
+  if (this->font().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->font());
+  }
+
+  // double font_size = 2;
+  if (this->font_size() != 0) {
+    total_size += 1 + 8;
+  }
+
+  // int32 color_r = 3;
+  if (this->color_r() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->color_r());
+  }
+
+  // int32 color_g = 4;
+  if (this->color_g() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->color_g());
+  }
+
+  // int32 color_b = 5;
+  if (this->color_b() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->color_b());
+  }
+
+  // int32 thickness = 6;
+  if (this->thickness() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->thickness());
+  }
+
+  // bool anti_alias = 7;
+  if (this->anti_alias() != 0) {
+    total_size += 1 + 1;
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void AnnotateOptions::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:kingfisher.kcv.AnnotateOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  const AnnotateOptions* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const AnnotateOptions>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:kingfisher.kcv.AnnotateOptions)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:kingfisher.kcv.AnnotateOptions)
+    MergeFrom(*source);
+  }
+}
+
+void AnnotateOptions::MergeFrom(const AnnotateOptions& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kingfisher.kcv.AnnotateOptions)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.font().size() > 0) {
+
+    font_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.font_);
+  }
+  if (from.font_size() != 0) {
+    set_font_size(from.font_size());
+  }
+  if (from.color_r() != 0) {
+    set_color_r(from.color_r());
+  }
+  if (from.color_g() != 0) {
+    set_color_g(from.color_g());
+  }
+  if (from.color_b() != 0) {
+    set_color_b(from.color_b());
+  }
+  if (from.thickness() != 0) {
+    set_thickness(from.thickness());
+  }
+  if (from.anti_alias() != 0) {
+    set_anti_alias(from.anti_alias());
+  }
+}
+
+void AnnotateOptions::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:kingfisher.kcv.AnnotateOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void AnnotateOptions::CopyFrom(const AnnotateOptions& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kingfisher.kcv.AnnotateOptions)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool AnnotateOptions::IsInitialized() const {
+  return true;
+}
+
+void AnnotateOptions::Swap(AnnotateOptions* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void AnnotateOptions::InternalSwap(AnnotateOptions* other) {
+  using std::swap;
+  font_.Swap(&other->font_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(font_size_, other->font_size_);
+  swap(color_r_, other->color_r_);
+  swap(color_g_, other->color_g_);
+  swap(color_b_, other->color_b_);
+  swap(thickness_, other->thickness_);
+  swap(anti_alias_, other->anti_alias_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata AnnotateOptions::GetMetadata() const {
+  protobuf_image_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_image_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
 void Rect::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Rect::kXFieldNumber;
 const int Rect::kYFieldNumber;
-const int Rect::kHeightFieldNumber;
 const int Rect::kWidthFieldNumber;
+const int Rect::kHeightFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Rect::Rect()
@@ -567,15 +2032,15 @@ Rect::Rect(const Rect& from)
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&x_, &from.x_,
-    static_cast<size_t>(reinterpret_cast<char*>(&width_) -
-    reinterpret_cast<char*>(&x_)) + sizeof(width_));
+    static_cast<size_t>(reinterpret_cast<char*>(&height_) -
+    reinterpret_cast<char*>(&x_)) + sizeof(height_));
   // @@protoc_insertion_point(copy_constructor:kingfisher.kcv.Rect)
 }
 
 void Rect::SharedCtor() {
   ::memset(&x_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&width_) -
-      reinterpret_cast<char*>(&x_)) + sizeof(width_));
+      reinterpret_cast<char*>(&height_) -
+      reinterpret_cast<char*>(&x_)) + sizeof(height_));
 }
 
 Rect::~Rect() {
@@ -607,8 +2072,8 @@ void Rect::Clear() {
   (void) cached_has_bits;
 
   ::memset(&x_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&width_) -
-      reinterpret_cast<char*>(&x_)) + sizeof(width_));
+      reinterpret_cast<char*>(&height_) -
+      reinterpret_cast<char*>(&x_)) + sizeof(height_));
   _internal_metadata_.Clear();
 }
 
@@ -650,28 +2115,28 @@ bool Rect::MergePartialFromCodedStream(
         break;
       }
 
-      // int32 height = 3;
+      // int32 width = 3;
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &height_)));
+                 input, &width_)));
         } else {
           goto handle_unusual;
         }
         break;
       }
 
-      // int32 width = 4;
+      // int32 height = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &width_)));
+                 input, &height_)));
         } else {
           goto handle_unusual;
         }
@@ -714,14 +2179,14 @@ void Rect::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->y(), output);
   }
 
-  // int32 height = 3;
-  if (this->height() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->height(), output);
+  // int32 width = 3;
+  if (this->width() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->width(), output);
   }
 
-  // int32 width = 4;
-  if (this->width() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->width(), output);
+  // int32 height = 4;
+  if (this->height() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->height(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -748,14 +2213,14 @@ void Rect::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->y(), target);
   }
 
-  // int32 height = 3;
-  if (this->height() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->height(), target);
+  // int32 width = 3;
+  if (this->width() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->width(), target);
   }
 
-  // int32 width = 4;
-  if (this->width() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->width(), target);
+  // int32 height = 4;
+  if (this->height() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->height(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -789,18 +2254,18 @@ size_t Rect::ByteSizeLong() const {
         this->y());
   }
 
-  // int32 height = 3;
-  if (this->height() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->height());
-  }
-
-  // int32 width = 4;
+  // int32 width = 3;
   if (this->width() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->width());
+  }
+
+  // int32 height = 4;
+  if (this->height() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->height());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -836,11 +2301,11 @@ void Rect::MergeFrom(const Rect& from) {
   if (from.y() != 0) {
     set_y(from.y());
   }
-  if (from.height() != 0) {
-    set_height(from.height());
-  }
   if (from.width() != 0) {
     set_width(from.width());
+  }
+  if (from.height() != 0) {
+    set_height(from.height());
   }
 }
 
@@ -870,8 +2335,8 @@ void Rect::InternalSwap(Rect* other) {
   using std::swap;
   swap(x_, other->x_);
   swap(y_, other->y_);
-  swap(height_, other->height_);
   swap(width_, other->width_);
+  swap(height_, other->height_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -1941,6 +3406,18 @@ namespace google {
 namespace protobuf {
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::DecodeOptions* Arena::CreateMaybeMessage< ::kingfisher::kcv::DecodeOptions >(Arena* arena) {
   return Arena::CreateInternal< ::kingfisher::kcv::DecodeOptions >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::EncodeOptions* Arena::CreateMaybeMessage< ::kingfisher::kcv::EncodeOptions >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::EncodeOptions >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::Point* Arena::CreateMaybeMessage< ::kingfisher::kcv::Point >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::Point >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::Size* Arena::CreateMaybeMessage< ::kingfisher::kcv::Size >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::Size >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::AnnotateOptions* Arena::CreateMaybeMessage< ::kingfisher::kcv::AnnotateOptions >(Arena* arena) {
+  return Arena::CreateInternal< ::kingfisher::kcv::AnnotateOptions >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::kingfisher::kcv::Rect* Arena::CreateMaybeMessage< ::kingfisher::kcv::Rect >(Arena* arena) {
   return Arena::CreateInternal< ::kingfisher::kcv::Rect >(arena);
