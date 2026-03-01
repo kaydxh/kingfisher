@@ -6,10 +6,6 @@
 #include "config/yaml/yaml.h"
 #include "core/singleton.hpp"
 #include "log/config.h"
-#include "middleware/api/in_out_printer.h"
-#include "middleware/api/request_id.h"
-#include "time/time_counter.h"
-#include "uuid/guid.h"
 #include "webserver.h"
 
 namespace kingfisher {
@@ -122,79 +118,14 @@ WebServerOptions CompletedConfig::buildOptions() {
 }
 
 void CompletedConfig::installDefaultMiddlewares(GenericWebServer& ws) {
-  auto& debug_proto = config_->proto_.web().debug();
-
-  // 1. RequestID 中间件（对标 golang 的 WithHttpHandlerInterceptorRequestIDOptions）
-  ws.Use([](const httplib::Request& req, httplib::Response& resp,
-            std::function<void()> next) {
-    // 生成或提取 request_id
-    std::string request_id = req.get_header_value("X-Request-Id");
-    if (request_id.empty()) {
-      request_id = kingfisher::uuid::Guid::GuidString();
-    }
-    resp.set_header("X-Request-Id", request_id);
-    next();
-  });
-
-  // 2. Recovery 中间件（对标 golang 的 WithHttpHandlerInterceptorRecoveryOptions）
-  ws.Use([](const httplib::Request& req, httplib::Response& resp,
-            std::function<void()> next) {
-    try {
-      next();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "HTTP handler panic recovered: " << e.what()
-                 << ", method: " << req.method << ", path: " << req.path;
-      resp.status = 500;
-      resp.set_content(
-          R"({"error":"internal server error","message":")" +
-              std::string(e.what()) + "\"}",
-          "application/json");
-    } catch (...) {
-      LOG(ERROR) << "HTTP handler unknown panic recovered"
-                 << ", method: " << req.method << ", path: " << req.path;
-      resp.status = 500;
-      resp.set_content(R"({"error":"internal server error"})",
-                       "application/json");
-    }
-  });
-
-  // 3. Timer 中间件（对标 golang 的 WithHttpHandlerInterceptorsTimerOptions）
-  // 同时包含 InOutPrinter 功能
-  std::vector<std::string> disable_methods;
-  for (int i = 0; i < debug_proto.disable_print_inoutput_methods_size(); ++i) {
-    disable_methods.push_back(debug_proto.disable_print_inoutput_methods(i));
-  }
-
-  ws.Use([disable_methods](const httplib::Request& req, httplib::Response& resp,
-                           std::function<void()> next) {
-    // 检查是否禁用了打印
-    bool should_print = true;
-    for (auto& m : disable_methods) {
-      if (req.path == m) {
-        should_print = false;
-        break;
-      }
-    }
-
-    std::string request_id = resp.get_header_value("X-Request-Id");
-    kingfisher::time::TimeCounter tc;
-
-    if (should_print) {
-      LOG(INFO) << "[" << request_id << "] recv HTTP " << req.method << " "
-                << req.path << ", body_size: " << req.body.size();
-    }
-
-    next();
-
-    tc.Tick("http");
-    if (should_print) {
-      LOG(INFO) << "[" << request_id << "] send HTTP " << req.method << " "
-                << req.path << ", status: " << resp.status
-                << ", resp_size: " << resp.body.size() << tc.String();
-    }
-  });
-
-  // 添加用户自定义的中间件
+  // 默认的 HTTP 中间件链（RequestID、Recovery、CleanPath、Timer、InOutPrinter）
+  // 已经在 GenericWebServer::installMiddlewareHooks() 中通过 cpp-httplib 的
+  // set_pre_routing_handler + set_post_routing_handler + set_exception_handler 实现
+  //
+  // 对标 golang 的 installHttpMiddlewareChain 中间件顺序:
+  //   RequestID → Recovery → CleanPath → Timer → InOutPrinter
+  //
+  // 这里只需要添加用户自定义的中间件（通过 ConfigOptions.http_middlewares 传入）
   for (auto& mw : config_->options_.http_middlewares) {
     ws.Use(mw);
   }
