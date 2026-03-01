@@ -1,17 +1,30 @@
 #ifndef KINGFISHER_PKG_CV_IMAGE_H_
 #define KINGFISHER_PKG_CV_IMAGE_H_
 
+#include "image_error.h"
+#include "image.pb.h"
+
+// ==================== 条件编译保护 ====================
+// 参考 video 模块的 ffmpeg_types.h，使用 ENABLE_OPENCV/ENABLE_GRAPHICS_MAGICK
+// 宏由 cmake/Build.options.cmake 中的 add_definitions 定义
+
+#ifdef ENABLE_OPENCV
 #if (CV_MAJOR_VERSION >= 4)
 #include <opencv2/imgcodecs/legacy/constants_c.h>
 #include <opencv2/imgproc/types_c.h>
-
 #include <opencv2/opencv.hpp>
 #else
 #include <opencv2/opencv.hpp>
 #endif
+#endif  // ENABLE_OPENCV
 
+#ifdef ENABLE_GRAPHICS_MAGICK
 #include "Magick++.h"
-#include "image.pb.h"
+#endif  // ENABLE_GRAPHICS_MAGICK
+
+#include <string>
+#include <vector>
+#include <cstdint>
 
 namespace kingfisher {
 namespace kcv {
@@ -370,6 +383,7 @@ class Image {
       const std::vector<cv::Mat> &inputs, int width, int height,
       bool keepRatio, std::vector<cv::Mat> &outputs);
 
+#ifdef ENABLE_GRAPHICS_MAGICK
   // ==================== Mat ↔ Magick::Image 转换 ====================
 
   /**
@@ -380,6 +394,7 @@ class Image {
    * @return 0 成功，负数失败
    */
   static int MatToImage(const cv::Mat &mat, Magick::Image &imageOutput);
+#endif  // ENABLE_GRAPHICS_MAGICK
 
   // ==================== 写入/导出 ====================
 
@@ -395,11 +410,7 @@ class Image {
                                   const std::string &path);
 
   static int DumpImageToBytes(const cv::Mat &mat, const std::string &path);
-  // static int AnnotateImage(const std::string &imageData,
-  //                        const std::string &text, const Rect &rect,
-  //                       ::cv::Mat &matOutput);
-  // static int ZoomImage(const std::string &imageData, double ratio,
-  //                     ::cv::Mat &matOutput);
+
 
   /**
    * @brief 将水印自适应填充到目标图像的指定区域
