@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Magick++.h"
+#include "glog/logging.h"
 
 namespace kingfisher {
 namespace kcv {
@@ -15,13 +16,12 @@ ssize_t WrapMagickFuncT(Func f, Args... args) {
   try {
     f(args...);
   } catch (Magick::Warning &w) {
-    std::cout << "warn: " << w.what() << std::endl;
+    LOG(WARNING) << "magick warning: " << w.what();
   } catch (Magick::Error &e) {
-    std::cout << "a Magick++ error occurred: " << e.what() << std::endl;
+    LOG(ERROR) << "a Magick++ error occurred: " << e.what();
     return -1;
   } catch (...) {
-    std::cout << "an unhandled error has occurred; exiting application."
-              << std::endl;
+    LOG(ERROR) << "an unhandled error has occurred";
     return -1;
   }
 
@@ -33,15 +33,14 @@ ssize_t WrapMagickFuncTWithMsg(std::string &msg, Func f, Args... args) {
   try {
     f(args...);
   } catch (Magick::Warning &w) {
-    std::cout << "warn: " << w.what() << std::endl;
+    LOG(WARNING) << "magick warning: " << w.what();
     msg = w.what();
   } catch (Magick::Error &e) {
-    std::cout << "a Magick++ error occurred: " << e.what() << std::endl;
+    LOG(ERROR) << "a Magick++ error occurred: " << e.what();
     msg = e.what();
     return -1;
   } catch (...) {
-    std::cout << "an unhandled error has occurred; exiting application."
-              << std::endl;
+    LOG(ERROR) << "an unhandled error has occurred";
     return -1;
   }
 
@@ -53,11 +52,10 @@ ssize_t WrapOpencvFuncT(Func f, Args... args) {
   try {
     f(args...);
   } catch (cv::Exception &e) {
-    std::cout << "a opencv error occurred: " << e.what() << std::endl;
+    LOG(ERROR) << "a opencv error occurred: " << e.what();
     return -1;
   } catch (...) {
-    std::cout << "an unhandled error has occurred; exiting application."
-              << std::endl;
+    LOG(ERROR) << "an unhandled error has occurred";
     return -1;
   }
 

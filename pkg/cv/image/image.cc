@@ -23,7 +23,7 @@ namespace kcv {
 #define COLOR_BGR2BGRA CV_BGR2BGRA
 #define COLOR_GRAY2BGRA CV_GRAY2BGRA
 #define COLOR_GRAY2BGR CV_GRAY2BGR
-#define COLOR_BGR2GRAY CV_BGR2BGRA
+#define COLOR_BGR2GRAY CV_BGR2GRAY
 
 // 其他需要兼容的宏...
 #endif
@@ -121,7 +121,7 @@ int Image::PingImage(ImageInfo &result, const std::string &imageData) {
     image.ping(blob);
   });
   if (ret != 0) {
-    return 0;
+    return ret;
   }
 
   result.set_columns(image.columns());
@@ -153,7 +153,7 @@ int Image::DecodeImage(const std::string &imageData, const DecodeOptions &opts,
   Magick::Image image;
   auto ret = imageRead(imageData, image);
   if (ret != 0) {
-    return 0;
+    return ret;
   }
   return ConvertImage(image, opts.targetcolorspace(), opts.auto_orient(),
                       matOutput);
@@ -161,6 +161,10 @@ int Image::DecodeImage(const std::string &imageData, const DecodeOptions &opts,
 
 int Image::DecodeImageFile(const std::string &imageFile, ::cv::Mat &matOutput) {
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  if (!stream.is_open()) {
+    LOG(ERROR) << "failed to open image file: " << imageFile;
+    return -1;
+  }
   std::string content{std::istreambuf_iterator<char>(stream), {}};
 
   kingfisher::kcv::DecodeOptions opts;
@@ -172,6 +176,10 @@ int Image::DecodeImageFile(const std::string &imageFile, ::cv::Mat &matOutput) {
 int Image::DecodeImageFile(const std::string &imageFile,
                            const DecodeOptions &opts, ::cv::Mat &matOutput) {
   std::ifstream stream(imageFile, std::ios::in | std::ios::binary);
+  if (!stream.is_open()) {
+    LOG(ERROR) << "failed to open image file: " << imageFile;
+    return -1;
+  }
   std::string content{std::istreambuf_iterator<char>(stream), {}};
   return kingfisher::kcv::Image::DecodeImage(content, opts, matOutput);
 }
@@ -287,7 +295,7 @@ int Image::CropImage(const std::string &imageData, const Rect &rect,
 
   auto rect0 = ::cv::Rect(0, 0, w0, h0);
   auto intesectRect =
-      rect0 & cv::Rect(rect.x(), rect.y(), rect.height(), rect.width());
+      rect0 & cv::Rect(rect.x(), rect.y(), rect.width(), rect.height());
   image.crop(Magick::Geometry(intesectRect.width, intesectRect.height,
                               intesectRect.x, intesectRect.y));
   return ImageToMat(image, matOutput);
@@ -321,7 +329,7 @@ int Image::DumpImageToBytes(const cv::Mat &mat, const std::string &path) {
   std::ofstream ofs(path);
   ofs.precision(6);
   ofs.setf(std::ios::fixed, std::ios::floatfield);
-  int sz = mat.dims * mat.rows * mat.cols;
+  int sz = mat.total() * mat.channels();
   for (int i = 0; i < sz; ++i) {
     ofs << static_cast<int>(static_cast<uint8_t *>(mat.data)[i]) << std::endl;
   }
